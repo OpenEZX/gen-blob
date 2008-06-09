@@ -1,0 +1,22 @@
+README for the "utils/build" directory
+
+This directory contains two little scripts that allow developers to configure
+and build blob for all supported architectures.
+
+Usage:
+- make a directory that will contain all build directories:
+    mkdir ~/blob-build
+- copy build_Makefile and build_all to that directory:
+    cp build_Makefile ~/blob-build/Makefile
+    cp build_all ~/blob-build/
+- cd to the build directory:
+    cd ~/blob-build/
+- edit build_all and change linux_prefix and blob_src so they reflect your
+  system
+- run "./build_all" and watch how all architectures get automatically
+  configured
+- run "make" and all architectures are build
+- run "make clean" to clean up all architectures
+
+Note: the blob source directory should not be configured or otherwise this
+trick won't work

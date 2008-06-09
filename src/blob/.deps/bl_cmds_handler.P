@@ -1,0 +1,9 @@
+bl_cmds_handler.o: bl_cmds_handler.c ../../include/blob/bl_cmds_handler.h \
+  ../../include/blob/types.h ../../include/blob/bl_parser.h \
+  ../../include/blob/bl_utility.h ../../include/blob/bl_flash_header.h
+bl_cmds_handler.c :
+../../include/blob/bl_cmds_handler.h :
+../../include/blob/types.h :
+../../include/blob/bl_parser.h :
+../../include/blob/bl_utility.h :
+../../include/blob/bl_flash_header.h :

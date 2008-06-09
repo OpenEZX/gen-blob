@@ -1,0 +1,4 @@
+ctype.o: ctype.c \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/ctype.h
+ctype.c :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/ctype.h :

@@ -1,0 +1,591 @@
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# -*- makefile -*-
+#
+# Makefile.am
+#
+# Copyright (C) 2001 Erik Mouw (J.A.K.Mouw@its.tudelft.nl)
+#
+# $Id: Makefile.am,v 1.15 2002/01/07 15:00:14 erikm Exp $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+# Copyright (C) 2005, Motorola Inc.
+# 
+# 2005-5-20  add some link files for ezx platform
+
+SHELL = @SHELL@
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ../..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AR = @AR@
+BLOB_ETH_OBJS = @BLOB_ETH_OBJS@
+BLOB_FLASH_OBJS = @BLOB_FLASH_OBJS@
+BLOB_PLATFORM_OBJ = @BLOB_PLATFORM_OBJ@
+BLOB_USB_OBJS = @BLOB_USB_OBJS@
+CC = @CC@
+CHKMEM = @CHKMEM@
+CLOCK = @CLOCK@
+DEBUG = @DEBUG@
+DIAG_PLATFORM_OBJ = @DIAG_PLATFORM_OBJ@
+LCD = @LCD@
+LN_S = @LN_S@
+MAINT = @MAINT@
+MAKEINFO = @MAKEINFO@
+MEMSETUP = @MEMSETUP@
+OBJCOPY = @OBJCOPY@
+OCFLAGS = @OCFLAGS@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+VERSION = @VERSION@
+
+
+bin_PROGRAMS = \
+	blob-start-elf32 \
+	blob-start \
+	blob-start-chain-elf32 \
+	blob-start-chain \
+	blob-rest-elf32 \
+	blob-rest \
+	blob \
+	blob-chain
+
+
+INCLUDES =  \
+	-I${top_builddir}/include \
+	-I${top_srcdir}/include
+
+
+# ---- Built sources -------------------------------------------------
+
+BUILT_SOURCES = \
+	rest-ld-script
+
+
+# ---- Blob first stage loader ---------------------------------------
+
+# WARNING: start.S *must* be the first file, otherwise the target will
+# be linked in the wrong order!
+blob_start_elf32_SOURCES = \
+	start.S \
+	memsetup.S \
+	ledasm.S \
+	testmem.S
+
+
+blob_start_elf32_LDFLAGS =  \
+	-Wl,-T,${srcdir}/start-ld-script
+
+
+blob_start_elf32_LDADD =  \
+	-lgcc
+
+
+blob_start_SOURCES = 
+
+# ---- Blob first stage chain loader --------------------------------
+
+# WARNING: chain.S *must* be the first file, otherwise the target will
+# be linked in the wrong order!
+blob_start_chain_elf32_SOURCES = \
+	chain.S \
+	ledasm.S
+
+
+blob_start_chain_elf32_DEPENDENCIES = \
+	start-ld-script
+
+
+blob_start_chain_elf32_LDFLAGS =  \
+	-Wl,-T,${srcdir}/start-ld-script
+
+
+blob_start_chain_elf32_LDADD =  \
+	-lgcc
+
+
+blob_start_chain_SOURCES = 
+
+# ---- Blob second stage ---------------------------------------------
+
+# WARNING: trampoline.S *must* be the first file, otherwise the target
+# will be linked in the wrong order!
+blob_rest_elf32_SOURCES = \
+	trampoline.S \
+        flashasm.S \
+        stack.S \
+        testmem2.S \
+        bootldrpart.c \
+        commands.c \
+        flash.c \
+        initcalls.c \
+        linux.c \
+        main.c \
+        memory.c \
+        param_block.c \
+        reboot.c \
+	printlcd_8bit.c \
+        pcap.c \
+        uucodec.c \
+        keypad.c \
+        SW_init.c \
+        HW_init.c \
+        handshake.c \
+        boot_modes.c \
+		mmc.c \
+		vsprintf.c \
+		ctype.c \
+		part.c \
+		part_dos.c \
+		fat.c \
+		file.c \
+		menu.c
+
+# conditionally compiled sources
+EXTRA_blob_rest_elf32_SOURCES = \
+	chkmem.c \
+        clock.c \
+        debug.c \
+        intel16.c \
+        intel32.c \
+        assabet.c \
+        brutus.c \
+        badge4.c \
+        clart.c \
+        h3600.c \
+        idr.c \
+        jornada720.c \
+        lart.c \
+        nesa.c \
+        pleb.c \
+        shannon.c \
+        system3.c
+
+blob_rest_elf32_DEPENDENCIES = \
+	@BLOB_PLATFORM_OBJ@ \
+	@BLOB_FLASH_OBJS@ \
+	@BLOB_USB_OBJS@ \
+	@BLOB_ETH_OBJS@ \
+	@CHKMEM@ \
+	@DEBUG@ \
+	@CLOCK@ \
+	${top_builddir}/src/lib/libblob.a \
+	rest-ld-script
+
+
+blob_rest_elf32_LDFLAGS =  \
+	-Wl,-T,rest-ld-script
+
+
+blob_rest_elf32_LDADD =  \
+	@BLOB_USB_OBJS@ \
+	@BLOB_PLATFORM_OBJ@ \
+	@BLOB_FLASH_OBJS@ \
+	@BLOB_ETH_OBJS@ \
+	@CHKMEM@ \
+	@DEBUG@ \
+	@CLOCK@ \
+	-L${top_builddir}/src/lib -lblob\
+	-lgcc
+
+
+blob_rest_SOURCES = 
+
+# ---- Final blob binary ---------------------------------------------
+
+blob_SOURCES = 
+
+# ---- Final blob chain loader binary --------------------------------
+
+blob_chain_SOURCES = 
+
+# ---- Automake administrativia --------------------------------------
+
+EXTRA_DIST = \
+	start-ld-script \
+	rest-ld-script.in
+
+
+CLEANFILES = ${srcdir}/*~ rest-ld-script
+
+DISTCLEANFILES = ${builddir}/.deps/*.P
+mkinstalldirs = $(SHELL) $(top_srcdir)/tools/mkinstalldirs
+CONFIG_HEADER = ../../include/blob/config.h
+CONFIG_CLEAN_FILES = 
+PROGRAMS =  $(bin_PROGRAMS)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I../../include/blob
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+blob_start_elf32_OBJECTS =  start.o memsetup.o ledasm.o testmem.o
+blob_start_elf32_DEPENDENCIES = 
+blob_start_OBJECTS = 
+blob_start_LDADD = $(LDADD)
+blob_start_DEPENDENCIES = 
+blob_start_LDFLAGS = 
+blob_start_chain_elf32_OBJECTS =  chain.o ledasm.o
+blob_start_chain_OBJECTS = 
+blob_start_chain_LDADD = $(LDADD)
+blob_start_chain_DEPENDENCIES = 
+blob_start_chain_LDFLAGS = 
+blob_rest_elf32_OBJECTS =  trampoline.o flashasm.o stack.o testmem2.o \
+bootldrpart.o linux.o main.o initcalls.o memory.o\
+param_block.o printlcd_8bit.o flash.o pcap.o keypad.o SW_init.o HW_init.o handshake.o boot_modes.o\
+usb-mot1.o bl_cmds_handler.o bl_parser.o bl_utility.o \
+mmc.o vsprintf.o ctype.o part.o part_dos.o file.o fat.o menu.o
+blob_rest_OBJECTS = 
+blob_rest_LDADD = $(LDADD)
+blob_rest_DEPENDENCIES = 
+blob_rest_LDFLAGS = 
+blob_OBJECTS = 
+blob_LDADD = $(LDADD)
+blob_DEPENDENCIES = 
+blob_LDFLAGS = 
+blob_chain_OBJECTS = 
+blob_chain_LDADD = $(LDADD)
+blob_chain_DEPENDENCIES = 
+blob_chain_LDFLAGS = 
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP_ENV = --best
+DEP_FILES =  .deps/amd32.P .deps/assabet.P .deps/badge4.P \
+.deps/bootldrpart.P .deps/brutus.P .deps/chain.P .deps/chkmem.P \
+.deps/clart.P .deps/clock.P .deps/commands.P .deps/debug.P \
+.deps/flash.P .deps/flashasm.P .deps/h3600.P .deps/idr.P \
+.deps/initcalls.P .deps/intel16.P .deps/intel32.P .deps/jornada720.P \
+.deps/lart.P .deps/ledasm.P .deps/linux.P .deps/main.P .deps/memory.P \
+.deps/memsetup.P .deps/nesa.P .deps/nullflash.P .deps/param_block.P \
+.deps/partition.P .deps/pleb.P .deps/printlcd_8bit.P .deps/reboot.P \
+.deps/shannon.P .deps/stack.P .deps/start.P .deps/system3.P \
+.deps/testmem.P .deps/testmem2.P .deps/trampoline.P .deps/uucodec.P \
+.deps/xmodem.P
+SOURCES = $(blob_start_elf32_SOURCES) $(blob_start_SOURCES) $(blob_start_chain_elf32_SOURCES) $(blob_start_chain_SOURCES) $(blob_rest_elf32_SOURCES) $(EXTRA_blob_rest_elf32_SOURCES) $(blob_rest_SOURCES) $(blob_SOURCES) $(blob_chain_SOURCES)
+OBJECTS = $(blob_start_elf32_OBJECTS) $(blob_start_OBJECTS) $(blob_start_chain_elf32_OBJECTS) $(blob_start_chain_OBJECTS) $(blob_rest_elf32_OBJECTS) $(blob_rest_OBJECTS) $(blob_OBJECTS) $(blob_chain_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .o .s
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/blob/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+blob-start-elf32: $(blob_start_elf32_OBJECTS) $(blob_start_elf32_DEPENDENCIES)
+	@rm -f blob-start-elf32
+	$(LINK) $(blob_start_elf32_LDFLAGS) $(blob_start_elf32_OBJECTS) $(blob_start_elf32_LDADD) $(LIBS)
+
+blob-start-chain-elf32: $(blob_start_chain_elf32_OBJECTS) $(blob_start_chain_elf32_DEPENDENCIES)
+	@rm -f blob-start-chain-elf32
+	$(LINK) $(blob_start_chain_elf32_LDFLAGS) $(blob_start_chain_elf32_OBJECTS) $(blob_start_chain_elf32_LDADD) $(LIBS)
+
+blob-rest-elf32: $(blob_rest_elf32_OBJECTS) $(blob_rest_elf32_DEPENDENCIES)
+	@rm -f blob-rest-elf32
+	$(LINK) $(blob_rest_elf32_LDFLAGS) $(blob_rest_elf32_OBJECTS) $(blob_rest_elf32_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = src/blob
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/blob/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am: install-binPROGRAMS
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-binPROGRAMS
+uninstall: uninstall-am
+all-am: Makefile $(PROGRAMS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(bindir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
+
+maintainer-clean-generic:
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-depend \
+		clean-generic mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-binPROGRAMS distclean-compile distclean-tags \
+		distclean-depend distclean-generic clean-am
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-binPROGRAMS \
+		maintainer-clean-compile maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags distdir mostlyclean-depend \
+distclean-depend clean-depend maintainer-clean-depend info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+rest-ld-script: rest-ld-script.in
+	$(CC) -x c-header -undef -nostdinc ${INCLUDES} -E $< | sed 's/^#.*//' > $@
+
+blob-start: blob-start-elf32
+	$(OBJCOPY) $(OCFLAGS) $< $@
+
+blob-start-chain: blob-start-chain-elf32
+	$(OBJCOPY) $(OCFLAGS) $< $@
+
+blob-rest: blob-rest-elf32
+	$(OBJCOPY) $(OCFLAGS) $< $@
+
+blob: blob-start blob-rest
+	rm -f $@
+	dd if=blob-start of=$@ bs=1k conv=sync
+#	dd if=blob-rest of=$@ bs=1k seek=2 conv=sync
+	dd if=blob-rest of=$@ bs=1k seek=4 conv=sync
+#	dd if=blob-rest of=$@ bs=1k conv=sync
+	chmod +x $@
+
+blob-chain: blob-start-chain blob-rest
+	rm -f $@
+	dd if=blob-start-chain of=$@ bs=1k conv=sync
+	dd if=blob-rest of=$@ bs=1k seek=1
+	chmod +x $@
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

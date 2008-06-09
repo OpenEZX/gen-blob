@@ -1,0 +1,15 @@
+command.o: command.c ../../include/blob/config.h \
+  ../../include/blob/command.h ../../include/blob/types.h \
+  ../../include/blob/errno.h ../../include/blob/error.h \
+  ../../include/blob/init.h ../../include/blob/serial.h \
+  ../../include/blob/time.h ../../include/blob/util.h
+command.c :
+../../include/blob/config.h :
+../../include/blob/command.h :
+../../include/blob/types.h :
+../../include/blob/errno.h :
+../../include/blob/error.h :
+../../include/blob/init.h :
+../../include/blob/serial.h :
+../../include/blob/time.h :
+../../include/blob/util.h :

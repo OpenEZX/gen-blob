@@ -1,0 +1,632 @@
+(emacs users can use -*- outline -*- mode for this file)
+
+$Id: README,v 1.7 2002/01/07 20:16:49 erikm Exp $
+
+* Info
+======
+
+** What is blob?
+----------------
+
+Blob is the Boot Loader OBject, the boot loader for the LART. Blob is
+able to boot a Linux kernel stored in flash or RAM and provide that
+kernel with a ramdisk (again from flash or RAM).
+
+Blob is copyrighted by Jan-Derk Bakker and Erik Mouw. Blob is released
+with a slightly modified GNU GPL license: we don't consider the
+operating systems that blob boots as a derived work. Later on, several
+other people also contributed to blob.
+
+Blob started its life as a boot loader for the LART, but nowadays it
+has been ported to the Intel Assabet SA-1110 evaluation platform, the
+Intel Brutus SA-1100 evaluation platform, the PLEB board, the Nesa
+board, the TuxScreen (aka Shannon), and to the CreditLART board.
+
+
+
+
+** Where is the latest blob source available?
+---------------------------------------------
+
+The latest and greatest blob source is available from SourceForge, see
+http://www.sourceforge.net/projects/blob/ . The latest source is
+available from anonymous CVS. First log in to the CVS server:
+
+  cvs -d:pserver:anonymous@cvs.blob.sourceforge.net:/cvsroot/blob login
+
+There is no password, so just press enter. Now check out the blob source:
+
+  cvs -z3 -d:pserver:anonymous@cvs.blob.sourceforge.net:/cvsroot/blob co blob
+
+If you're using the blob CVS source, it's a good idea to subscribe to
+the blob-cvs-commit mailing list so you know about blob patches. See
+http://lists.sourceforge.net/lists/listinfo/blob-cvs-commit . The
+general blob discussion is done on the LART mailing list, see
+http://www.lart.tudelft.nl/list/ for more information.
+
+There is also a blob IRC channel: log on to irc.openprojects.net and
+join #blob. Note that this is a strictly on-topic development IRC
+channel, not a general blob help channel.
+
+Blob even has a home page: http://www.lart.tudelft.nl/lartware/blob/ .
+
+
+
+
+** So what is LART?
+-------------------
+
+LART is the Linux Advanced Radio Terminal, a small low power computing
+element used in the MMC project and the Ubiquitous Communications
+programme (see http://www.lart.tudelft.nl, http://www.mmc.tudelft.nl,
+and http://www.ubicom.tudelft.nl ).
+
+LART features:
+
+- 10x7.5 cm (that's 4x3 inch in Stonehenge Units)
+- 220 MHz Digital StrongARM SA-1100 CPU
+- 4 Mbyte flash memory
+- 32 Mbyte DRAM memory
+- Low power: peak power consumption is 1W
+
+
+
+
+* Building blob
+===============
+
+** Prerequisites
+----------------
+
+- A native ARM/StrongARM Linux system with gcc 2.95.2, and
+  binutils 2.9.5.0.22 or better
+- Or any UNIX system with cross compiling binutils 2.9.5.0.22 (or
+  better) and gcc 2.95.2 installed
+- GNU make (although some vendor supplied make utilities will do)
+- GNU autoconf and automake (if you build blob from CVS)
+- A configured Linux kernel source tree: the latest linux-2.4.* kernel
+  will usually do. If not, apply the appropriate -rmk patch (see the
+  LART website for details). Linux-2.2.* kernels will NOT work, but
+  it's considered obsolete for arm-linux anyway.
+
+We tested blob with a native system (Corel/Rebel Netwinder) and with
+several i386-linux to arm-linux cross compiler systems, but the GNU
+tools are that good that we don't think that a sun-sparc-solaris to
+arm-linux cross compiler will fail.
+
+
+
+
+** Generating configure and Makefiles
+-------------------------------------
+
+This step is only necessary if you build blob from CVS.
+
+- Run "tools/rebuild-gcc" ttwwiiccee
+
+
+
+
+** Configuring and compiling the package
+----------------------------------------
+
+With a cross compiler tool chain (using tcsh as shell):
+
+- setenv CC /path/to/cross/gcc
+- setenv OBJCOPY /path/to/cross/objcopy
+- Run "./configure --with-linux-prefix=/path/to/armlinux/source \
+       --with-board=boardname arm-unknown-linux-gnu"
+
+  There are currently a couple of valid board names, choose from:
+  assabet, brutus, creditlart, lart, nesa, pleb, or shannon. If the
+  board name is ommited, lart will be chosen as a default.
+
+  If you want to do some serious hacking on blob, consider using the
+  "--enable-maintainer-mode" flag. This will automatically regenerate
+  Makefiles and configure scripts if you change the source files. You
+  need autoconf (>= 2.13) and automake (>= 1.4) for this feature.
+
+  Note that the linux kernel needs to be configured or otherwise
+  blob will not compile. To get a configured kernel tree, unpack the
+  kernel and run:
+
+  make ARCH=arm CROSS_COMPILE=arm-linux- mrproper
+  make ARCH=arm CROSS_COMPILE=arm-linux- lart_config
+  yes no | make ARCH=arm CROSS_COMPILE=arm-linux- oldconfig
+
+- Run "make"
+
+If you use the bash shell, use "export FOO=bar" instead of
+"setenv FOO bar".
+
+With a native ARM Linux tool chain:
+
+- Run "./configure --with-board=boardname" 
+- Run "make"
+
+The binary image is in src/blob; src/blob-start-elf32 and
+src/blob-rest-elf32 are the two parts of the images with complete ELF
+headers. To disassemble "blob-start-elf32", use:
+
+  arm-linux-objdump -D -S blob-start-elf32
+
+To see the actual hex codes of blob, use:
+
+  od -t x4 blob
+
+
+
+
+** Installing
+-------------
+
+*** LART
+--------
+
+The current wisdom to install blob on a LART is:
+
+- Connect the JTAG dongle to the LART
+- Connect the other end of the JTAG dongle to the parallel port of
+  your PC
+- Power up the LART
+- Use the jflash utility (available from the LART web site) to write
+  blob (you usually need  to be root for this): jflash blob
+
+The JTAG flash burn code however is now worked out as a set of Linux
+executables provided by the JTAG flash project located at the LART page
+as well as JTAG executables ported to support the TuxScreen screen phone.
+
+The LART project initially used the following wisdom to install blob:
+
+Required hardware & software:
+
+- The LART itself with 4 Mbyte flash memory
+- An external 128 kbyte flash board
+- A PCI 7200 (???) digital I/O card with a Linux driver
+- A flash burn program for this I/O card
+
+The external flash board is connected to the PCI 7200 card and blob is
+written into the flash memory using the flash burn program. The
+external flash board is connected to the LART low speed interface. The
+external flash chip is mapped at address 0x00000000, and the internal
+flash is re-mapped at 0x08000000. As soon as the LART boots, the
+external flash is copied to the first 128 kbyte of the internal
+flash. The next time the LART is started without external flash board,
+it starts from its internal flash which now contains the just
+downloaded blob.
+
+Why this strange way to download blob? We first tried to use the
+SA-1100 JTAG interface to program the flash directly, but soon found
+out that it would take weeks to write a decent JTAG tool because JTAG
+is a real brain-damaged protocol (it was designed by a committee, need
+we say more?). To meet a deadline, we decided to make a special board
+with 128 kbyte external flash memory (and an LCD interface).
+
+
+*** Assabet
+-----------
+
+(From Justin Seger:) The best way is to use the JTAG cable:
+- Connect the JTAG cable from the Assabet to your hosts parallel port
+- Power up the Assabet
+- Use the jflash utility to write blob: jflash-linux blob
+- Power cycle the Assabet; you should see the the bootloader starting
+  up with the output on the serial port.
+
+
+*** SHANNON (TuxScreen web phone)
+-----------
+
+http://TuxScreen.net/
+
+The Shannon comes with Inferno (http://www.vitanuova.com/inferno/)
+installed on it. You can DL and install a hosted version of Inferno
+and then use the sboot remote interface to install blob for the first
+time. Afterwards blob can reinstall itself.
+
+http://TuxScreen.net/wiki/view//InfernoRemote
+
+Alternately, you can use JTAG hardware to do the install if you have
+this equipment.
+
+http://TuxScreen.net/wiki/view/Main/JTAG
+
+** Making a distribution
+------------------------
+
+This is only needed when you want to make a tar file from the current
+blob sources.
+
+- First configure the package
+- Run "make dist"
+
+
+
+
+* Using blob
+============
+
+** Booting
+----------
+
+First connect a terminal (or a terminal emulator like miniterm or
+Seyon) to the serial port. Use the following settings for your
+terminal: 9600 baud, 8 data bits, no parity, 1 stop bit, no start bits
+(9600 8N1, a pretty standard setting for Unix systems). If possible,
+use VT100 terminal emulation. Switch on the power to the SA-11x0
+board. The board should respond with:
+
+  Consider yourself LARTed!
+
+  blob version 2.0.3
+  Copyright (C) 1999 2000 2001 Jan-Derk Bakker and Erik Mouw
+  Copyright (C) 2000 Johan Pouwelse
+  blob comes with ABSOLUTELY NO WARRANTY; read the GNU GPL for details.
+  This is free software, and you are welcome to redistribute it
+  under certain conditions; read the GNU GPL for details.
+  Memory Map:
+    0x08000000 @ 0xC0000000 (8MB)
+    0x08000000 @ 0xC1000000 (8MB)
+    0x08000000 @ 0xC8000000 (8MB)
+    0x08000000 @ 0xC9000000 (8MB)
+  Loading blob from flash . done
+  Loading kernel from flash ....... done
+  Loading ramdisk from flash ............... done
+  Autoboot in progress, press any key to stop ...
+
+If you don't press a key within 10 seconds, blob will automatically
+start the Linux kernel:
+
+  Starting kernel ...
+
+  Uncompressing Linux...done.
+  Now booting the kernel
+  ...
+
+However, if you press the <enter> key, you will get the blob
+prompt:
+
+  Autoboot aborted
+  Type "help" to get a list of commands
+  blob> 
+
+
+
+
+** Commands
+-----------
+
+Blob knows several commands, typing "help" (without the ") will show
+you which:
+
+  Help for blob 2.0.3, the LART bootloader
+  The following commands are supported:
+  * boot [kernel options]           Boot Linux with optional kernel options
+  * clock PPCR MDCNFG MDCAS0 MDCAS1 MDCAS2
+                                    Set the SA1100 core clock and DRAM timings
+                                    (WARNING: dangerous command!)
+  * download {blob|kernel|ramdisk}  Download blob/kernel/ramdisk image to RAM
+  * flash {kernel|ramdisk}          Copy blob/kernel/ramdisk from RAM to flash
+  * help                            Get this help
+  * reblob                          Restart blob from RAM
+  * reboot                          Reboot system
+  * reload {blobkernel|ramdisk}     Reload blob/kernel/ramdisk from flash to RAM
+  * reset                           Reset terminal
+  * speed                           Set download speed
+  * status                          Display current status
+
+
+*** "boot"
+----------
+
+Boot the Linux kernel. You can supply extra parameters to the Linux
+kernel; if you don't, the kernel will use it's default command
+line. Blob will respond with:
+
+  blob> boot
+
+  Starting kernel ...
+
+  Uncompressing Linux...done.
+  Now booting the kernel
+  ...
+
+
+*** "clock"
+-----------
+
+This an experimental command to set the SA1100 core clock and DRAM
+timings. We've used it to test clock scaling. This command writes the
+exact values supplied on the command line to the PPCR, MDCNFG, MDCAS0,
+MDCAS1, and MDCAS2 registers, but it doesn't check the validity of the
+values. Example (that will crash your system for sure):
+
+  blob> clock 0x11111111 0x22222222 0x33333333 0x44444444 0x55555555
+
+WARNING: This command is DANGEROUS and HIGHLY EXPERIMENTAL. Don't use
+it unless you have a VERY thorough understanding on the inner workings
+of the SA1100 CPU! It works for us, YMMV. If it breaks your CPU, don't
+say that we didn't warn you!
+
+
+*** "download"
+--------------
+
+Download a uuencoded blob, kernel, or ramdisk to RAM. This command
+needs an extra parameter: "blob", "kernel", or "ramdisk". Blob will
+respond with:
+
+  blob> download kernel
+  Switching to 115200 baud
+  You have 60 seconds to switch your terminal emulator to the same speed and
+  start downloading. After that blob will switch back to 9600 baud.
+
+Switch your terminal emulator to the indicated speed and start
+downloading the kernel or ramdisk. With minicom, you can use the ASCII
+download method, or use another shell to download the file:
+
+  uuencode zImage zImage > /dev/ttyS1
+
+Of course, use the correct serial port. If the download is successful,
+blob will respond with:
+
+  (Please switch your terminal emulator back to 9600 baud)
+  Received 65536 (0x00010000) bytes.
+
+If an error occurs during downloading, blob will respond with:
+
+  (Please switch your terminal emulator back to 9600 baud)
+  *** Uudecode receive failed
+
+A failed download session can have several reasons: the file is too
+big, the download speed too high (see the "speed" command), or the
+uuencoded file to be downloaded is corrupt. Correct the error and
+retry.
+
+A downloaded kernel or ramdisk can be written to flash with the
+"flash" command, or it can directly be used to boot with the "boot"
+command.
+
+
+*** "flash"
+-----------
+
+Write blob, kernel, or ramdisk from RAM to flash memory. This command
+needs an extra parameter: "blob", "kernel" or "ramdisk". Blob will
+respond with:
+
+  blob> flash kernel
+  Saving kernel to flash ..... .... done
+
+This won't work on all architectures, check the RELEASE-NOTES.
+
+
+*** "reblob"
+------------
+
+Restart blob from RAM. This is mainly useful if you are working on
+blob itself because it allows you to download blob and immediately
+start it without having to burn it to flash first.
+
+
+*** "reboot"
+------------
+
+This command simply reboots the system.
+
+
+*** "reload"
+------------
+
+Reload blob, kernel, or ramdisk from flash memory to RAM. This command
+needs an extra parameter: "blob", "kernel", or "ramdisk". Blob will
+respond with:
+
+  blob> reload kernel
+  Loading kernel from flash ....... done
+
+The "reload command" will overwrite a just downloaded a kernel or ramdisk.
+
+
+*** "reset"
+-----------
+
+Reset the terminal. This command will write the VT100 reset sequence
+(Esc-c) to the terminal. Useful if you forgot to switch your terminal
+emulator back to 9600 baud after downloading a kernel or ramdisk.
+
+
+*** "speed"
+-----------
+
+Set the download speed. This command needs a download speed value as
+an extra parameter. Valid values are: 1200, 9600, 19200, 38400, 57600,
+and 115200. Blob will respond with:
+
+  blob> speed 19200
+  Download speed set to 19200 baud
+
+
+*** "status"
+------------
+
+Show the current status. Blob will respond with:
+
+  blob> status
+  Bootloader    : blob
+  Version       : 2.0.3
+  Running from  : internal flash
+  Blocksize     : 0x00800000
+  Download speed: 115200 baud
+  Blob          : from flash
+  Kernel        : downloaded, 424333 bytes
+  Ramdisk       : from flash
+
+Depending on what commands you used before, these values may or may
+not be different.
+
+
+
+
+* Porting blob
+==============
+
+Porting blob to a new SA11x0 platform is quite easy and consist of
+four steps:
+
+1. Define the features of the architecture
+2. Write some architecture specific code
+3. Test the new architecture
+4. Submit the patch
+
+The next couple of paragraphs describe the process of porting blob to
+the "foobar" platform.
+
+
+** Define the architecture in configure.in
+------------------------------------------
+
+First you need two know a couple of things: the name of the board,
+what kind of CPU the board uses (SA1100 or SA1110), whether it has
+LCD support, and the name of the platform obj and flash obj.
+Let's assume the foobar platform has an SA1100 CPU, no use LCD,
+and platform obj and flahs obj are foobar.o.
+The correct lines for configure.in will be:
+
+    foobar)
+	board_name="Foobar Board"
+        AC_DEFINE(FOOBAR)
+	BLOB_PLATFORM_OBJ="foobar.o"
+	BLOB_FLASH_OBJS="foobar.o"
+	use_cpu="sa1100"
+	use_lcd="no"
+        ;;
+
+Put this just after the CreditLART definition.
+
+
+** Define the architecture in acconfig.h
+----------------------------------------
+
+Because configure.in was instructed to define FOOBAR for the foobar
+platform, we have to define the symbol in acconfig.h as well. Add the
+following two lines to acconfig.h, just after the CLART define:
+
+  /* Define for foobar boards */
+  #undef FOOBAR
+
+
+** Update the build system
+--------------------------
+
+Run the following commands to update the configure script,
+include/config.h.in, and the Makefile.in files:
+
+  tools/rebuild-gcc
+  tools/rebuild-gcc
+
+(yes, twice)
+
+
+** Configure blob
+-----------------
+
+Configure blob for the new foobar architecture:
+
+  setenv CC arm-linux-gcc
+  ./configure --with-linux-prefix=/path/to/armlinux/source \
+     --with-board=foobar --enable-maintainer-mode \
+     --enable-blob-debug arm-unknown-linux-gnu
+
+We're using maintainer-mode and debug information to help the
+port. See the section about "Configuring and compiling the package"
+for general information.
+
+
+** Select correct clock speed
+-----------------------------
+
+Open src/blob/start.S in an editor, and add a line to select the correct
+clock speed (just before the SHANNON definition):
+
+  #if defined FOOBAR
+  cpuspeed:       .long   0x09    /* 190 MHz */
+
+
+** Edit memory settings
+-----------------------
+
+Edit src/blob/memsetup-sa1100.S or src/blob/memsetup-sa1110.S,
+and add the correct memory setting for the foobar architecture.
+Add these (example) settings right before the PLEB definitions:
+
+  #if defined FOOBAR
+  mdcas0:         .long   0x1c71c01f
+  mdcas1:         .long   0xff1c71c7
+  mdcas2:         .long   0xffffffff
+  mdcnfg:         .long   0x0334b21f
+  #endif
+
+Note that the SA1110 memory settings are not as modular as the SA1100
+settings, so you'll have to use your imagination over there to get
+proper memory settings.
+
+Right now, the basic blob functionality is ported to your board and
+you should be able to compile blob by running "make".
+
+
+** Edit LED defines
+-------------------
+
+If your board has a LED on a GPIO pin, edit include/blob/led.h in an editor
+to switch it on early in the boot stage. Let's assume the foobar board
+has the LED on GPIO pin 1, so add the following lines just before the
+PLEB definition:
+
+  #elif defined FOOBAR
+  # define LED_GPIO 0x00000002 /* GPIO 1 */
+
+
+** Compile blob
+---------------
+
+Now compile blob by running:
+
+  make
+
+If everything went right, you have a new blob binary in src/blob.
+
+
+** Test blob
+------------
+
+You are now ready to flash blob to your board and test it. If
+something goes wrong in the early boot process, blob will flash the
+LED (that's why you should always have a LED on your board), or not
+work at all. As soon as you get character on the serial port the most
+difficult part is done and you should be ready to port arm-linux to
+your board.
+
+
+** Submit the patch
+-------------------
+
+First run "make distclean" in your blob tree so you'll get a clean
+source tree. Now rename your current tree and untar the original blob
+source (assuming that you're hacking on blob-2.0.3):
+
+  cd ..
+  mv blob-2.0.3 blob-2.0.3-foobar
+  gzip -dc blob-2.0.3.tar.gz | tar xvf -
+
+Diff the two trees and create a patch file:
+
+  diff -urN blob-2.0.3 blob-2.0.3-foobar > foobar.diff
+
+Now send the patch to me (erikm@users.sourceforge.net) and be sure to
+CC a couple of other blob developers (for the current list of blob
+developers, see
+https://sourceforge.net/project/memberlist.php?group_id=30155 ). The
+best way to send the patch is to attach it as plain text to your
+message because in that way email clients have less chance to corrupt
+the patch.

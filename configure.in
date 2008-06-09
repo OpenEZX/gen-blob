@@ -1,0 +1,544 @@
+dnl Process this file with autoconf to produce a configure script. -*- m4 -*-
+dnl
+dnl $Id: configure.in,v 1.34 2002/01/07 14:58:16 erikm Exp $
+dnl
+
+AC_REVISION([$Id: configure.in,v 1.34 2002/01/07 14:58:16 erikm Exp $])
+
+
+
+
+dnl Init autoconf
+AC_INIT(src/blob/start.S)
+AC_CONFIG_AUX_DIR(tools)
+
+
+
+
+dnl Init automake
+PACKAGE=blob
+BLOB_MAJOR_VERSION=2
+BLOB_MINOR_VERSION=0
+BLOB_MICRO_VERSION=5-pre2
+BLOB_VERSION=$BLOB_MAJOR_VERSION.$BLOB_MINOR_VERSION.$BLOB_MICRO_VERSION
+VERSION=$BLOB_VERSION
+
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+AM_CONFIG_HEADER(include/blob/config.h)
+
+
+
+dnl Init maintainer mode
+AM_MAINTAINER_MODE
+
+
+
+
+dnl Guess the host OS
+AC_CANONICAL_HOST
+
+
+
+
+dnl Do some basic checks to see if we are cross compiling
+dnl Hint: if we find arm-linux-whatever, we are cross compiling
+AC_CHECK_PROGS(CC, xscale_le-gcc gcc, echo)
+AC_CHECK_PROGS(OBJCOPY, xscale_le-objcopy objcopy, echo)
+AC_CHECK_PROGS(RANLIB, xscale_le-ranlib ranlib, echo)
+AC_CHECK_PROGS(AR, xscale_le-ar ar, echo)
+
+
+
+
+dnl Checks for programs.
+AC_PROG_CC
+if test "x$ac_cv_prog_gcc" != "xyes" ; then
+  AC_MSG_WARN("C compiler is not gcc. This may lead to problems!");
+  AC_MSG_WARN("Trying to continue with $CC ...");
+fi
+AC_PROG_RANLIB
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+
+
+dnl Checks for libraries.
+
+
+
+dnl Checks for header files.
+
+
+
+
+dnl Check board we want to build for
+AC_ARG_WITH(board, [  --with-board=NAME       Name of the target board
+                          Valid names are:
+                            assabet     Intel Assabet
+                            neponset    Intel Assabet with Neponset board
+                            badge4      HPL Badge 4
+                            brutus      Intel Brutus
+                            creditlart  CreditLART
+                            h3600       Compaq Ipaq H36x0
+                            idr         Vercel UD-1
+                            jornada720  HP Jornada 720 with Flash board
+                            lart        LART
+                            nesa        NESA
+                            pleb        PLEB
+                            shannon     TuxScreen (Shannon)
+			    system3     Prueftechnik Digital Board
+                          Default board is lart],
+	board_name="$withval",
+	board_name="lart")
+
+
+AC_MSG_CHECKING(target board)
+case "$board_name" in
+    assabet)
+	board_name="Intel Assabet"
+	AC_DEFINE(ASSABET)
+	BLOB_PLATFORM_OBJ="assabet.o"
+	AC_MSG_WARN([Please check assabet memory config in arch/assabet.h])
+	BLOB_FLASH_OBJS="intel32.o"
+	DIAG_PLATFORM_OBJ="assabet.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+    lubbock)
+	board_name="Intel Lubbock"
+	AC_DEFINE(LUBBOCK)
+	BLOB_PLATFORM_OBJ="lubbock.o"
+	AC_MSG_WARN([Please check assabet memory config in arch/assabet.h])
+	BLOB_FLASH_OBJS="intel16.o"
+	DIAG_PLATFORM_OBJ="lubbock.o"
+	use_cpu="pxa250"
+	use_lcd="no"
+	;;
+    neponset)
+	board_name="Intel Assabet with Neponset Expansion Board"
+	AC_DEFINE(ASSABET)
+	AC_DEFINE(NEPONSET)
+	BLOB_PLATFORM_OBJ="assabet.o"
+	AC_MSG_WARN([Please check assabet memory config in arch/assabet.h])
+	BLOB_FLASH_OBJS="intel32.o"
+	DIAG_PLATFORM_OBJ="assabet.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+    brutus)
+	board_name="Intel Brutus"
+	AC_DEFINE(BRUTUS)
+	BLOB_PLATFORM_OBJ="brutus.o"
+	AC_MSG_WARN([Please check Brutus flash])
+	BLOB_FLASH_OBJS="nullflash.o"
+	DIAG_PLATFORM_OBJ="brutus.o"
+	use_cpu="sa1100"
+	use_lcd="no"
+	;;
+    creditlart)
+	board_name="Delft University of Technology CreditLART"
+	AC_DEFINE(CLART)
+	BLOB_PLATFORM_OBJ="clart.o"
+	AC_MSG_WARN([Please check creditlart memory config in arch/clart.h])
+	BLOB_FLASH_OBJS="intel16.o"
+	DIAG_PLATFORM_OBJ="clart.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+    h3600)
+	board_name="Compaq Ipaq H3600 series"
+	AC_DEFINE(H3600)
+	BLOB_PLATFORM_OBJ="h3600.o"
+	AC_MSG_WARN([Warning: untested platform!])
+	AC_MSG_WARN([Please check h3600 memory config in arch/h3600.h])
+	BLOB_FLASH_OBJS="intel32.o"
+	DIAG_PLATFORM_OBJ="h3600.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+    idr)
+	board_name="Vercel UD-1 (IDR)"
+	AC_DEFINE(IDR)
+	BLOB_PLATFORM_OBJ="idr.o"
+	BLOB_FLASH_OBJS="intel16.o"
+	DIAG_PLATFORM_OBJ="idr.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+    lart)
+	board_name="Delft University of Technology LART"
+	AC_DEFINE(LART)
+	BLOB_PLATFORM_OBJ="lart.o"
+	BLOB_FLASH_OBJS="intel32.o"
+	DIAG_PLATFORM_OBJ="lart.o"
+	use_cpu="sa1100"
+	use_lcd="no"
+	;;
+    nesa)
+	board_name="NESA"
+	AC_DEFINE(NESA)
+	BLOB_PLATFORM_OBJ="nesa.o"
+	BLOB_FLASH_OBJS="amd32.o"
+	DIAG_PLATFORM_OBJ="nesa.o"
+	use_cpu="sa1100"
+	use_lcd="no"
+	;;
+    pleb)
+	board_name="University of New South Wales PLEB"
+	AC_DEFINE(PLEB)
+	BLOB_PLATFORM_OBJ="pleb.o"
+	AC_MSG_WARN([Please check PLEB flash])
+	BLOB_FLASH_OBJS="nullflash.o"
+	DIAG_PLATFORM_OBJ="pleb.o"
+	use_cpu="sa1100"
+	use_lcd="no"
+	;;
+    shannon)
+	board_name="TuxScreen (Shannon)"
+	AC_DEFINE(SHANNON)
+	BLOB_PLATFORM_OBJ="shannon.o"
+	BLOB_FLASH_OBJS="amd32.o"
+	DIAG_PLATFORM_OBJ="shannon.o"
+	use_cpu="sa1100"
+	use_lcd="no"
+	;;
+    system3)
+	board_name="Prueftechnik Digital Board"
+	AC_DEFINE(PT_SYSTEM3)
+	BLOB_PLATFORM_OBJ="system3.o"
+	BLOB_FLASH_OBJS="intel32.o"
+	DIAG_PLATFORM_OBJ="system3.o"
+	use_cpu="sa1110"
+	use_lcd="yes"
+	;;
+    jornada720)
+	board_name="Hewlett-Packard Jornada 720 with flash daughter board"
+	AC_DEFINE(JORNADA720)
+	BLOB_PLATFORM_OBJ="jornada720.o"
+	AC_MSG_WARN([Warning: untested platform!])
+	BLOB_FLASH_OBJS="intel32.o"
+	DIAG_PLATFORM_OBJ="jornada720.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+    badge4)
+	board_name="Hewlett-Packard Laboratories Badge-4"
+	AC_DEFINE(BADGE4)
+	BLOB_PLATFORM_OBJ="badge4.o"
+	BLOB_FLASH_OBJS="intel16.o"
+	DIAG_PLATFORM_OBJ="badge4.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+    *)
+	AC_MSG_RESULT(unknown)
+	AC_MSG_ERROR([Unknown board name, bailing out])
+	;;
+esac
+
+dnl define board name in configuration
+AC_MSG_RESULT("${board_name}")
+AC_DEFINE_UNQUOTED(BOARD_NAME, "${board_name}")
+
+AC_ARG_WITH(cpu, [ --with-cpu=NAME	Name of the target cpu
+			Valid names are:
+				pxa210	Intel Sabanial
+				pxa250	Intel Cottula
+				pxa260	Intel Cottula/C0
+				pxa261	Intel Dalhart with builtin Flash(128x16)
+				pxa262	Intel Dalhart with builtin Flash(256x16)
+				pxa263	Intel Dalhart with builtin Flash(256x32)
+			Default cpu is pxa250],
+	use_cpu="$withval",
+	use_cpu="pxa250")
+
+AC_ARG_WITH(eth, [ --wtih-eth=NAME 	Name of the ethernet interface
+			Valid names are:
+				91c96	SMC91c96 Ethernet Controller
+				usb	Intel Ethernet Over USB
+			Default eth is usb],
+	use_eth="$withval",
+	use_eth="none")
+
+if test "x$use_cpu" = "xsa1100" ; then
+	dnl SA1100 CPU: EDORAM memory setup code
+	MEMSETUP="memsetup-sa1100.o"
+elif test "x$use_cpu" = "xsa1110" ; then
+	dnl SA1110 CPU: SDRAM memory setup code
+	MEMSETUP="memsetup-sa1110.o"
+elif test "x$use_cpu" = "xpxa210" ; then
+	dnl PXA210 CPU: SDRAM memory setup code
+	MEMSETUP="memsetup-pxa.o"
+	BLOB_FLASH_OBJS="intel16.o"
+elif test "x$use_cpu" = "xpxa250" ; then
+	dnl PXA250 CPU: SDRAM memory setup code
+	MEMSETUP="memsetup-pxa.o"
+	BLOB_FLASH_OBJS="intel32.o"
+elif test "x$use_cpu" = "xpxa260" ; then
+	dnl PXA250 CPU: SDRAM memory setup code
+	MEMSETUP="memsetup-pxa.o"
+	BLOB_FLASH_OBJS="intel32.o"
+elif test "x$use_cpu"="xpxa261" ; then
+	dnl PXA250 CPU: SDRAM memory setup code
+	MEMSETUP="memsetup-pxa.o"
+	BLOB_FLASH_OBJS="intel16.o"
+elif test "x$use_cpu"="xpxa262" ; then
+	dnl Dalhart/B0: 16-bit flash, 32-bit SDRAM
+	MEMSETUP="memsetup-pxa.o"
+	BLOB_FLASH_OBJS="intel16.o"
+else
+	AC_MSG_WARN([No CPU defined!]);
+	use_cpu="(none)"
+	MEMSETUP=""
+fi
+
+if test "x$use_eth" = "xusb" ; then
+	BLOB_ETH_OBJS="usb-eth.o net.o"
+else 
+	BLOB_ETH_OBJS=""
+fi
+
+AC_SUBST(MEMSETUP)
+AC_DEFINE_UNQUOTED(CPU, "${use_cpu}")
+
+
+
+dnl Find out where the Linux headers are
+AC_ARG_WITH(linux-prefix,[  --with-linux-prefix=PFX Prefix where the ARM Linux sources live],
+	linux_prefix="$withval",
+	linux_prefix="/usr/src/linux")
+
+dnl Do some sanity checks
+AC_MSG_CHECKING([if the Linux source tree in $linux_prefix is sane])
+if test ! -d "$linux_prefix/include" ; then
+	AC_MSG_RESULT([no])
+	AC_MSG_ERROR([$linux_prefix doesn't look like a configured Linux source tree.])
+	AC_MSG_ERROR([Please supply a proper prefix with the --with-linux-prefix flag])
+	exit -1
+fi
+if test ! -f "$linux_prefix/include/asm/setup.h" ; then
+	AC_MSG_RESULT([no])
+	AC_MSG_ERROR([The Linux source tree in $linux_prefix is not configured.])
+	AC_MSG_ERROR([Please run "make lart_config ; yes no | make old_config" in the])
+	AC_MSG_ERROR([Linux source tree and retry.])
+	exit -1
+fi
+AC_MSG_RESULT([yes])
+CFLAGS=`echo $CFLAGS -I${linux_prefix}/include`
+
+
+
+dnl Check for individual features
+AC_ARG_ENABLE(clock-scaling,
+[  --enable-clock-scaling  Enable support for clock scaling (SA1100 only)],
+[clock_scaling_flag=$enable_clock_scaling],
+[clock_scaling_flag=no])
+
+AC_ARG_ENABLE(memtest,
+[  --enable-memtest        Enable support for memory tests ],
+[chkmem_flag=$enable_memtest],
+[chkmem_flag=no])
+
+AC_ARG_ENABLE(debug,
+[  --enable-debug          Enable support for misc debugging functions ],
+[debug_flag=$enable_debug],
+[debug_flag=no])
+
+AC_ARG_ENABLE(lcd,
+[  --enable-lcd            Enable lcd support ],
+[lcd_flag=$enable_lcd],
+[lcd_flag=no])
+
+AC_ARG_ENABLE(md5,
+[  --enable-md5            Enable md5 support ],
+[md5_flag=$enable_md5],
+[md5_flag=no])
+
+AC_ARG_ENABLE(usb,
+[  --enable-usb            Enable USB support ],
+[usb_flag=$enable_usb],
+[usb_flag=no])
+
+dnl Check if the user wants *all* features
+AC_ARG_ENABLE(all-features,
+[  --enable-all-features   Enable all features],
+[all_features_flag=$enable_all_features],
+[all_features_flag=no])
+
+if test "x$all_features_flag" = "xyes" ; then
+	clock_scaling_flag=yes
+	chkmem_flag=yes
+	debug_flag=yes
+	lcd_flag=yes
+	md5_flag=yes
+fi
+
+
+
+dnl Check wether or not clock scaling code is wanted
+if test "x$clock_scaling_flag" = "xyes" ; then
+	if test "x$use_cpu" = "xsa1100"; then
+		CLOCK="clock.o"
+	else
+		AC_MSG_WARN([No clock scaling support for SA1110 CPUs, disabling])
+		clock_scaling_flag=no
+		CLOCK=""
+	fi
+fi
+
+if test "x$usb_flag" = "xyes" ; then
+	if test "x$use_cpu" = "xpxa250"; then
+		BLOB_USB_OBJS="usb_ctl.o usb_ep0.o usb_ep1.o usb_ep2.o usb_ep6.o usb_ep7.o"
+	elif test "x$use_cpu" = "xpxa260"; then
+		BLOB_USB_OBJS="usb_ctl.o usb_ep0.o usb_ep1.o usb_ep2.o usb_ep6.o usb_ep7.o"
+	elif test "x$use_cpu" = "xpxa261"; then
+		BLOB_USB_OBJS="usb_ctl.o usb_ep0.o usb_ep1.o usb_ep2.o usb_ep6.o usb_ep7.o"
+	elif test "x$use_cpu" = "xpxa262"; then
+		BLOB_USB_OBJS="usb_ctl.o usb_ep0.o usb_ep1.o usb_ep2.o"
+	else
+		AC_MSG_WARN([No USB support for target CPU, disabling])
+		usb_flag=no
+		BLOB_USB_OBJS=""
+	fi
+fi
+
+AC_SUBST(CLOCK)
+
+
+
+
+dnl Check wether or not memtest code is wanted
+if test "x$chkmem_flag" = "xyes" ; then
+	CHKMEM="chkmem.o"
+fi
+
+AC_SUBST(CHKMEM)
+
+dnl Check wether or not debug code is wanted
+if test "x$debug_flag" = "xyes" ; then
+	DEBUG="debug.o"
+fi
+
+AC_SUBST(DEBUG)
+
+dnl Check wether or not lcd support code is wanted
+if test "x$lcd_flag" = "xyes" ; then
+	if test "x$use_lcd" = "xyes" ; then
+		LCD="lcd.o"
+		AC_DEFINE(CONFIG_LCD_SUPPORT)
+	else
+		AC_MSG_WARN([No LCD support for ${board_name}, disabling])
+		LCD=""
+		lcd_flag="no"
+	fi
+fi
+
+AC_SUBST(LCD)
+
+dnl Check wether or not MD5 support is wanted
+if test "x$md5_flag" = "xyes" ; then
+        AC_DEFINE(CONFIG_MD5_SUPPORT)
+fi
+
+
+dnl Check wether or not additional platform source code
+dnl for is needed
+AC_SUBST(BLOB_FLASH_OBJS)
+AC_SUBST(BLOB_ETH_OBJS)
+AC_SUBST(BLOB_USB_OBJS)
+AC_SUBST(BLOB_PLATFORM_OBJ)
+AC_SUBST(DIAG_PLATFORM_OBJ)
+
+
+
+dnl Check for extra debug info
+AC_ARG_ENABLE(blob-debug,
+[  --enable-blob-debug     Enable run-time debug information],
+[blob_debug_flag=$enable_blob_debug],
+[blob_debug_flag=no])
+
+if test "x$blob_debug_flag" = "xyes" ; then
+  AC_DEFINE(BLOB_DEBUG)
+fi
+
+
+
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_INLINE
+
+
+
+dnl Checks for library functions.
+
+
+
+
+dnl Add C flags to display more warnings
+AC_MSG_CHECKING(for C flags to get more warnings)
+ac_save_CFLAGS="$CFLAGS"
+AC_LANG_SAVE
+if test "x$ac_cv_prog_gcc" = "xyes" ; then
+  dnl gcc is the easiest C compiler
+  warning_CFLAGS="-Wall"
+fi
+AC_LANG_RESTORE
+CFLAGS="$ac_save_CFLAGS"
+if test "$warning_CFLAGS" = "none" ; then
+  AC_MSG_RESULT(none)
+else
+  CFLAGS="$CFLAGS $warning_CFLAGS"
+  AC_MSG_RESULT($warning_CFLAGS)
+fi  
+
+
+dnl Remove the "-g" flag from CFLAGS and LDFLAGS
+CFLAGS=`echo $CFLAGS | sed 's/\ *-g\ */\ /'`
+LDFLAGS=`echo $LDFLAGS | sed 's/\ *-g\ */\ /'`
+CCAS=`echo $CC`
+CCASFLAGS=`echo $CFLAGS -D__ASSEMBLY__ `
+
+dnl Change the "-O2" flag in "-Os"
+CFLAGS=`echo $CFLAGS | sed 's/-O2/-Os/'`
+
+dnl Add some StrongARM specific flags
+CFLAGS=`echo $CFLAGS -march=armv4 -mtune=strongarm1100 -fomit-frame-pointer -fno-builtin -mapcs-32 -nostdinc -DCPU_$use_cpu`
+LDFLAGS=`echo $LDFLAGS -static -nostdlib`
+OCFLAGS="-O binary -R .note -R .comment -S"
+AC_SUBST(OCFLAGS)
+
+
+AC_OUTPUT(Makefile
+doc/Makefile
+include/Makefile
+include/blob/Makefile
+include/blob/arch/Makefile
+src/Makefile
+src/blob/Makefile
+src/diag/Makefile
+src/lib/Makefile
+tools/Makefile
+utils/Makefile
+utils/build/Makefile
+utils/mkparamblock/Makefile)
+
+
+echo ""
+echo "Configuration"
+echo "------------------------------------------------------------------------"
+echo "Target cpu                  ${use_cpu}"
+echo "Target board                ${board_name}"
+echo "C compiler                  ${CC}"
+echo "C flags                     ${CFLAGS}"
+echo "Linker flags                ${LDFLAGS}"
+echo "Objcopy tool                ${OBJCOPY}"
+echo "Objcopy flags               ${OCFLAGS}"
+echo "Ethernet support            ${use_eth}"
+echo "USB support                 ${usb_flag}"
+echo "Clock scaling support       ${clock_scaling_flag}"
+echo "Memory test support         ${chkmem_flag}"
+echo "Debugging commands support  ${debug_flag}"
+echo "LCD support                 ${lcd_flag}"
+echo "MD5 support                 ${md5_flag}"
+echo "Run-time debug information  ${blob_debug_flag}"
+echo ""

@@ -1,0 +1,6 @@
+part.o: part.c ../../include/blob/common.h ../../include/blob/types.h \
+  ../../include/blob/part.h
+part.c :
+../../include/blob/common.h :
+../../include/blob/types.h :
+../../include/blob/part.h :

@@ -1,0 +1,109 @@
+/*-------------------------------------------------------------------------
+ * Filename:      acconfig.h
+ * Version:       $Id: acconfig.h,v 1.12 2002/01/07 14:58:16 erikm Exp $
+ * Copyright:     Copyright (C) 1999, Erik Mouw
+ * Author:        Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+ * Description:   Definitions for GNU autoconf/automake/libtool
+ * Created at:    Wed Jul 28 22:35:51 1999
+ * Modified by:   Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+ * Modified at:   Sun Oct  3 18:47:48 1999
+ *-----------------------------------------------------------------------*/
+/*
+ * acconfig.h: Definitions for GNU autoconf/automake/libtool
+ *
+ * Copyright (C) 1999  Erik Mouw (J.A.K.Mouw@its.tudelft.nl)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+/* 
+ *
+ * WARNING:
+ *   Don't try to edit config.h.in or config.h, because your changes
+ *   will be overwritten once you run automake, autoconf or
+ *   configure. Edit acconfig.h instead.
+ *
+ */
+
+#ident "$Id: acconfig.h,v 1.12 2002/01/07 14:58:16 erikm Exp $"
+
+#ifndef BLOB_CONFIG_H
+#define BLOB_CONFIG_H
+
+@TOP@
+
+/* Define the package name here */
+#undef PACKAGE
+
+/* Define the package version here */
+#undef VERSION
+
+/* Define the board name over here */
+#undef BOARD_NAME
+
+/* Define to enable run-time debug information */
+#undef BLOB_DEBUG
+
+/* Define for Assabet boards */
+#undef ASSABET
+
+/* Define if Neponset board attached to Assabet */
+#undef NEPONSET
+
+/* Define for Badge 4 */
+#undef BADGE4
+
+/* Define for Brutus boards */
+#undef BRUTUS
+
+/* Define for CreditLART boards */
+#undef CLART
+
+/* Define for Ipaq H3600 */
+#undef H3600
+
+/* Define for Vercel UD-1 (IDR) */
+#undef IDR
+
+/* Define for Jornada 720 */
+#undef JORNADA720
+
+/* Define for LART boards */
+#undef LART
+
+/* Define for NESA boards */
+#undef NESA
+
+/* Define for PLEB boards */
+#undef PLEB
+
+/* Define for PT System 3 boards */
+#undef PT_SYSTEM3
+
+/* Define for Shannon (TuxScreen) */
+#undef SHANNON
+
+/* Define if LCD support is wanted */
+#undef CONFIG_LCD_SUPPORT
+
+/* Define if MD5 support is wanted */
+#undef CONFIG_MD5_SUPPORT
+
+/* Define the CPU type */
+#undef CPU
+
+@BOTTOM@
+
+#endif

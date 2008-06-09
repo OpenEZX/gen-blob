@@ -1,0 +1,76 @@
+(If somebody can show me how to update the ChangeLog from CVS, I'd be
+more than grateful -- Erik)
+
+$Id: ChangeLog,v 1.14 2002/01/06 19:03:36 erikm Exp $
+
+blob-2.0.5-pre2:
+- MD5 support						Christopher Hoover
+- New call command					Christopher Hoover
+- Xmodem support					Christopher Hoover
+- Serial port driver modularisation			Erik Mouw
+- Flash code updates					Christopher Hoover
+- HP Labs Badge4 support				Christopher Hoover
+- HP Jornada 720 support				Christopher Hoover
+- Vercel UD-1 (IDR) support				Tim Riker
+- New dump command					Tim Riker
+- Fix compile time bug with newer linux kernels		Stefan Eletzhofer
+- README update						Kevin Lo
+
+blob-2.0.5-pre1:
+- New flash ROM program code				Erik Mouw
+- Ipaq H3600 port					Erik Mouw
+- Memory tester						Stefan Eletzhofer
+- Diagnostics tool (diag)				Stefan Eletzhofer &
+							Erik Mouw
+- New SA-1110 memory setup code				Stefan Eletzhofer
+- PT system 3 port					Stefan Eletzhofer
+- Memory test functions					Stefan Eletzhofer
+- Enable UART1 if used as the console			Stefan Eletzhofer
+- Modular command line parser				Erik Mouw
+- Parameter block support				Russ Dill
+
+blob-2.0.4:
+- Fix RAMDISK_SIZE (should be in _kilo_ bytes instead
+  of bytes)						Erik Mouw
+- Add utils directory and populate it with some useful
+  scripts						Erik Mouw
+- Change asm into asm-arm so the kernel tree doesn't
+  need to be configured anymore				Erik Mouw
+- Documentation updates					Erik Mouw
+
+blob-2.0.3:
+- we moved to SourceForge!
+- run from RAM						Erik Mouw & Wookey
+- PLEB updates 						Adam Wiggins
+- NESA support						Russ Dill
+- SHANNON (aka TuxScreen) support 			Tim Riker
+- Initial CreditLART support				Erik Mouw
+- Resume from suspend					Erik Mouw
+- New "reboot" command					Erik Mouw
+- Download and flash blob without JTAG dongle		Erik Mouw
+- Memory tester						Erik Mouw
+- New "reblob" command					Erik Mouw
+- Kernel parameter passing				Erik Mouw & Russ Dill
+
+blob-1.0.8-pre2:
+- Assabet fixes 					Justin Seger
+- RTC fix						Mark Huang
+
+blob-1.0.8-pre1:
+- Assabet support					Jeff Sutherland &
+							Chester
+- Brutus support (without a Brutus)			Erik Mouw
+- PLEB support						Erik Mouw
+
+blob-1.07b:
+- Boots with linux-2.3.99-pre8-rmk1-np1			Erik Mouw
+
+blob-1.0.6:
+- Clock scaling support					Johan Pouwelse
+
+blob-1.0.5:
+- Fix flash write bug					Erik Mouw
+
+blob-1.0.0:
+- Initial release					Jan-Derk Bakker &
+							Erik Mouw

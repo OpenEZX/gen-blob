@@ -1,0 +1,4 @@
+make distclean
+source ./setenv
+./configure --with-board=lubbock --with-cpu=pxa262 --with-linux-prefix=/work/x86/a1200/a1200/linux-2.4.17 --enable-usb --enable-lcd
+make

@@ -1,0 +1,6 @@
+reboot.o: reboot.c ../../include/blob/config.h \
+  ../../include/blob/serial.h ../../include/blob/types.h
+reboot.c :
+../../include/blob/config.h :
+../../include/blob/serial.h :
+../../include/blob/types.h :

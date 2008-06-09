@@ -1,0 +1,32 @@
+#! /bin/sh
+#
+# utils/build/build_all: configure all blob architectures with a single
+#   script
+#
+# Copyright (C) 2001, Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+#
+# $Id: build_all,v 1.8 2002/01/07 13:30:48 erikm Exp $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+
+archs="assabet badge4 brutus creditlart h3600 idr jornada720 lart neponset nesa pleb shannon system3"
+linux_prefix=~/LART/build/linux/elinux
+blob_src=~/src/sourceforge/blob
+extra_flags="--enable-all-features"
+
+
+export CC=arm-linux-gcc
+
+for i in $archs ; do
+	rm -rf "$i"*
+	mkdir "$i" "$i"-debug
+	cd $i
+	$blob_src/configure --enable-maintainer-mode --with-board=$i --with-linux-prefix=$linux_prefix $extra_flags arm-unknown-linux-gnu
+	cd ../"$i"-debug
+	$blob_src/configure --enable-maintainer-mode --with-board=$i --with-linux-prefix=$linux_prefix $extra_flags --enable-blob-debug arm-unknown-linux-gnu
+	cd ..
+done
+

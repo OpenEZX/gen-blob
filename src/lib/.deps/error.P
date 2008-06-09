@@ -1,0 +1,9 @@
+error.o: error.c ../../include/blob/config.h ../../include/blob/errno.h \
+  ../../include/blob/error.h ../../include/blob/serial.h \
+  ../../include/blob/types.h
+error.c :
+../../include/blob/config.h :
+../../include/blob/errno.h :
+../../include/blob/error.h :
+../../include/blob/serial.h :
+../../include/blob/types.h :

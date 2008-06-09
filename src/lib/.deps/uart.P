@@ -1,0 +1,6 @@
+uart.o: uart.c ../../include/blob/config.h ../../include/blob/types.h \
+  ../../include/blob/pxa.h
+uart.c :
+../../include/blob/config.h :
+../../include/blob/types.h :
+../../include/blob/pxa.h :

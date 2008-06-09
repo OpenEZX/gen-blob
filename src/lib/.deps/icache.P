@@ -1,0 +1,6 @@
+icache.o: icache.c ../../include/blob/config.h \
+  ../../include/blob/icache.h ../../include/blob/types.h
+icache.c :
+../../include/blob/config.h :
+../../include/blob/icache.h :
+../../include/blob/types.h :

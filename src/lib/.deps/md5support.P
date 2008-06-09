@@ -1,0 +1,8 @@
+md5support.o: md5support.c ../../include/blob/config.h \
+  ../../include/blob/md5support.h ../../include/blob/types.h \
+  ../../include/blob/serial.h
+md5support.c :
+../../include/blob/config.h :
+../../include/blob/md5support.h :
+../../include/blob/types.h :
+../../include/blob/serial.h :

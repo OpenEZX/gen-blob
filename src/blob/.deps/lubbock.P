@@ -1,0 +1,17 @@
+lubbock.o: lubbock.c ../../include/blob/config.h \
+  ../../include/blob/arch.h ../../include/blob/arch/lubbock.h \
+  ../../include/blob/pxa.h ../../include/blob/flash.h \
+  ../../include/blob/types.h ../../include/blob/init.h \
+  ../../include/blob/serial.h ../../include/blob/command.h \
+  ../../include/blob/lcd_ezx.h
+lubbock.c :
+../../include/blob/config.h :
+../../include/blob/arch.h :
+../../include/blob/arch/lubbock.h :
+../../include/blob/pxa.h :
+../../include/blob/flash.h :
+../../include/blob/types.h :
+../../include/blob/init.h :
+../../include/blob/serial.h :
+../../include/blob/command.h :
+../../include/blob/lcd_ezx.h :

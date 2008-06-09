@@ -1,0 +1,6 @@
+strncpy.o: strncpy.c ../../include/blob/config.h \
+  ../../include/blob/util.h ../../include/blob/types.h
+strncpy.c :
+../../include/blob/config.h :
+../../include/blob/util.h :
+../../include/blob/types.h :

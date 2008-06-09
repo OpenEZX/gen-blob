@@ -1,0 +1,50 @@
+HW_init.o: HW_init.c ../../include/blob/config.h \
+  ../../include/blob/arch.h ../../include/blob/arch/lubbock.h \
+  ../../include/blob/pxa.h ../../include/blob/command.h \
+  ../../include/blob/types.h ../../include/blob/errno.h \
+  ../../include/blob/error.h ../../include/blob/init.h \
+  ../../include/blob/main.h ../../include/blob/serial.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/asm-arm/setup.h \
+  ../../include/blob/memory.h ../../include/blob/param_block.h \
+  ../../include/blob/time.h ../../include/blob/util.h \
+  ../../include/blob/lcd_ezx.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/string.h \
+  ../../include/blob/log.h usb_ctl_bvd.h pxa_usb.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/asm/byteorder.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/asm/types.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/little_endian.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/swab.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/generic.h \
+  pcap.h ../../include/blob/HW_init.h ../../include/blob/mmu.h \
+  ../../include/blob/handshake.h
+HW_init.c :
+../../include/blob/config.h :
+../../include/blob/arch.h :
+../../include/blob/arch/lubbock.h :
+../../include/blob/pxa.h :
+../../include/blob/command.h :
+../../include/blob/types.h :
+../../include/blob/errno.h :
+../../include/blob/error.h :
+../../include/blob/init.h :
+../../include/blob/main.h :
+../../include/blob/serial.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/asm-arm/setup.h :
+../../include/blob/memory.h :
+../../include/blob/param_block.h :
+../../include/blob/time.h :
+../../include/blob/util.h :
+../../include/blob/lcd_ezx.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/string.h :
+../../include/blob/log.h :
+usb_ctl_bvd.h :
+pxa_usb.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/asm/byteorder.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/asm/types.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/little_endian.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/swab.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/generic.h :
+pcap.h :
+../../include/blob/HW_init.h :
+../../include/blob/mmu.h :
+../../include/blob/handshake.h :

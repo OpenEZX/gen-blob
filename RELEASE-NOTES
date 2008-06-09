@@ -1,0 +1,145 @@
+$Id: RELEASE-NOTES,v 1.7 2002/01/07 20:16:49 erikm Exp $
+
+Release notes for blob-2.0.5-pre2
+=================================
+
+This is blob-2.0.5-pre2, a development snapshot. This is a work in
+progress, so expect it to break on some parts. Don't complain that we
+didn't warn you!
+
+We admit, we made a mess of it. There's lots of work going on in blob
+so we'd better release a development snapshot before we're going to
+make it an even bigger mess. The documentation is still not in sync
+with the code, but there is some new documentation in the doc/
+directory. See the ChangeLog file to see what's new.
+
+This snapshot is reported to work on:
+
+- Assabet
+- Assabet+Neponset
+- LART
+- Ipaq (only blob-chain)
+- System3
+
+It should work on:
+
+- Badge4
+- NESA
+- PLEB
+- Shannon (aka TuxScreen)
+- Vercel UD-1 (IDR)
+- Jornada 720
+
+But was never tested on:
+
+- Brutus
+- CreditLART
+
+If you meet any problems, don't hesitate to write to the LART mailing
+list (see http://www.lart.tudelft.nl/list/), or join the #blob IRC
+channel on irc.openprojects.net.
+
+
+
+
+Release notes for blob-2.0.5-pre1
+=================================
+
+This is blob-2.0.5-pre1, a development snapshot. This is a work in
+progress, so expect it to break on some parts. Don't complain that we
+didn't warn you!
+
+This version of blob is a major change from blob-2.0.4: lots of
+cleanups, a couple of new features, and a lot easier to port to new
+architectures. Note that the documentation is no longer in sync with
+the code, we need to clean that up as well.
+
+This snapshot is reported to work on:
+
+- Assabet
+- LART
+- Ipaq (only blob-chain)
+- Shannon (aka TuxScreen)
+- System3
+- Vercel UD-1 (IDR)
+
+It should work on:
+
+- NESA
+- PLEB
+
+But was never tested on:
+
+- Brutus
+- CreditLART
+
+If you meet any problems, don't hesitate to write to the LART mailing
+list (see http://www.lart.tudelft.nl/list/), or join the #blob IRC
+channel on irc.openprojects.net.
+
+
+
+
+Release notes for blob-2.0.4
+============================
+
+This is blob-2.0.4 a minor upgrade to blob-2.0.3 mainly meant as a
+bugfix release.
+
+What's new?
+-----------
+
+- Fix critical ramdisk size bug (size is in kilobytes, not in bytes).
+  This should allow LARTs to boot with a ramdisk again.
+- Fixed some include files.
+- Documentation updates.
+- Added some nice developer scripts in the utils directory.
+
+Platform specific notes
+-----------------------
+
+See platform specific notes for blob-2.0.3
+
+
+
+
+Release notes for blob-2.0.3
+============================
+
+This is blob-2.0.3, the successor to blob-1.0.8-pre2. There have been
+a couple of other versions between 1.0.8-pre2 and 2.0.3, but those
+were never "officially" released from the blob homepage:
+
+- 2.0.0: never released snapshot that implemented run-from-ram but was
+  never tested.
+- 2.0.1: released by Wookey. basically a cleaned version of 2.0.0.
+- 2.0.2: also released by Wookey. fixed a couple of bugs in 2.0.1.
+
+To avoid confusion, we decided to name this release blob-2.0.3.
+
+
+What's new?
+-----------
+
+- Support for NESA, SHANNON (aka TuxScreen), and CreditLART platforms
+- Updates for PLEB
+- Ability to write the flash (not on all platforms, read on)
+- Lots of cleanups
+- Automatic memory detection
+- Kernel parameter passing
+- Basic resume from suspend support (not yet tested, though)
+
+
+Platform specific notes
+-----------------------
+
+Because we didn't test on any SA1110 platform, support for Assabet and
+CreditLART are broken.
+
+- Assabet: Broken.
+- Brutus: Considered broken.
+- CreditLART: Broken. Only initial support is in to test the hardware.
+- LART: Fully supported.
+- NESA: Fully supported.
+- PLEB: Everything except writing to flash should work
+- Shannon: Fully supported.

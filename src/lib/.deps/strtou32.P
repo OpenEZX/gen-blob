@@ -1,0 +1,6 @@
+strtou32.o: strtou32.c ../../include/blob/config.h \
+  ../../include/blob/types.h ../../include/blob/util.h
+strtou32.c :
+../../include/blob/config.h :
+../../include/blob/types.h :
+../../include/blob/util.h :

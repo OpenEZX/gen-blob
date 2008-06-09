@@ -1,0 +1,79 @@
+diag.txt
+quickly hacked up by Stefan Eletzhofer
+<stefan.eletzhofer@eletztick.de>
+
+Copyright (C) 2001 Stefan Eletzhofer <stefan.eletzhofer@www.eletztrick.net>
+
+$Id: diag.txt,v 1.2 2002/01/07 19:58:14 seletz Exp $
+
+Disclaimer
+----------
+
+- This document is not yet complete.
+- English is not my native language, so...
+- send _any_ bug reports regarding _this_ _doc_ to the above email
+  address
+- Don't panic :)
+
+
+What is it?
+-----------
+
+Diag is a tool to be used mainly as a diagnostic tool, hence the name. It was
+written by Erik Mouw and the author for exactly this purpose.
+
+The intention the author had in mind when writing diag and using/adding features
+to diag was that:
+	- diag could be easy extended
+	- diag could be easy ported to other boards
+	- diag could be used to test the board hardware before actually
+	  start to write for ex. linux kernel drivers for that hardware
+	  to make sure that the hw itself works
+
+What does it already do?
+------------------------
+
+Diag can currently be used for/as:
+	- a general memory tester (several algorithms are implemented to
+	  detect different possible memory failures)
+	- as a test bed for trying out SA1110 LCD functionality
+	- to display and manipulate arbitary memory locations
+	- do dump register contents (UART, Memory, LCD etc.)
+	- to get a new board up and running in general
+
+Currently worked on:
+	- PCMCIA
+	- IDE Flash via PCMCIA
+	- loading a real kernel from IDE Flash stored in a real filesystem
+	  (ext2, msdos)
+
+How to use it?
+--------------
+
+Once support for your board is added (see below for that), diag compiles as a
+separate object file, which has to be download by some means on your board.
+Diag behaves much like the linux kernel, and thus can be uploaded and started
+like a kernel, if "blob" is used as bootloader a "download kernel" and "boot"
+is the comand to use.
+In other words: Diag mimics a linux kernel and has to be loaded and started
+like the linux kernel.
+
+How do I add support for my board, then?
+----------------------------------------
+
+First you need to port BLOB on your hardware. Thats not too hard, see
+"porting.txt" by Erik Mouw for a step-by-step doc on how to do that.
+
+Diag lives in blob/src/diag. For every supported platform there is a
+<platform>.c, like "system3.c" for the Pruftechnik Digital Board.
+
+You have to add one for your hardware. Take the h3600.c for example. Add the
+appropriate sections to configure.in, Makefile.am etc. This should be fairly
+simple.
+
+Build diag, load it onto your board and start it.
+
+Then begin to play around and write test/debug commands for your hardware.
+Read "commandlist.txt" for more infos on that. Read the source of the other
+arch support files.
+

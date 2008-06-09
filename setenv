@@ -1,0 +1,4 @@
+export CC=arm-linux-gcc
+export AR=arm-linux-ar
+export OBJCOPY=arm-linux-objcopy
+export RANLIB=arm-linux-ranlib

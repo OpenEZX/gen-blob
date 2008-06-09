@@ -1,0 +1,81 @@
+Add machine definition to configure.in:
+
+    h3600)
+	AC_MSG_RESULT(Ipaq H3600)
+	AC_DEFINE(H3600)
+	AC_DEFINE(USE_SERIAL3)
+	BLOB_PLATFORM_OBJ="h3600.o"
+	AC_MSG_WARN([Warning: untested platform!])
+	BLOB_FLASH_OBJS="nullflash.o"
+	use_cpu="sa1110"
+	use_lcd="no"
+	;;
+
+
+
+
+Add machine define to acconfig.h:
+
+/* Define for Ipaq H3600 */
+#undef H3600
+
+
+
+
+Add machine to include/blob/arch.h:
+
+#elif defined H3600
+# include <blob/arch/h3600.h>
+
+
+
+
+Add machine dependent architecture file:
+
+cd include/blob/arch/
+cp assabet.h h3600.h
+
+Edit h3600.h
+
+
+
+
+Add machine dependent architecture header file to Makefile.am
+
+    h3600.h
+
+
+
+
+Add machine to "arch" variable in utils/build/build_all and
+utils/build/build_Makefile.
+
+
+
+
+Add machine dependent source file to EXTRA_blob_rest_elf32_SOURCES in
+src/blob/Makefile.am
+
+
+
+
+Add machine dependent source file:
+
+cd src/blob
+cp assabet.c h3600.c
+
+Edit h3600.c
+
+
+
+
+Edit memsetup-sa1110.S and add correct memory setup
+
+
+
+
+Add architecture number to include/blob/linux.h:
+
+#elif defined H3600
+# define ARCH_NUMBER (22)
+

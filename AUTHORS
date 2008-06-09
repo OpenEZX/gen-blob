@@ -1,0 +1,79 @@
+* Main authors
+==============
+- Jan-Derk Bakker <J.D.Bakker@its.tudelft.nl>
+- Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+Snail mail address:
+  Information and Communication Theory Group
+  Faculty of Information Technology and Systems
+  Delft University of Technology
+  P.O. Box 5031
+  2600 GA  Delft
+  The Netherlands
+
+
+* Clock switching code
+======================
+- Johan Pouwelse <J.A.Pouwelse@its.tudelft.nl>
+
+
+* Assabet port
+==============
+- Jeff Sutherland <jsutherland@accelent.com>
+- Chester <chester@linux.org.tw>
+
+
+* PLEB port
+===========
+- Adam Wiggins <awiggins@cse.unsw.edu.au>
+
+
+* Brutus port
+=============
+- Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+
+
+* NESA port
+===========
+- Russ Dill <Russ.Dill@asu.edu>
+
+
+* Shannon (aka TuxScreen) port
+==============================
+- Tim Riker <Tim@Rikers.org>, <TimR@Debian.org>, <Tim@Lineo.com>
+
+
+* Various fixes
+===============
+- Mark Huang <mhuang@livetoy.com>, RTC fix
+- Justin M. Seger <justin.m.seger@intel.com>, Assabet fixes
+- Wookey <wookey@aleph1.co.uk>, run-from-RAM
+
+
+* PT system 3 port
+==================
+- Stefan Eletzhofer <stefan.eletzhofer@www.eletztrick.net>
+
+
+* Memory tester
+===============
+- Stefan Eletzhofer <stefan.eletzhofer@www.eletztrick.net>
+
+
+* Ipaq H3600 port
+=================
+- Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+
+
+* Vercel UD-1 port
+==================
+- Tim Riker <Tim@Rikers.org>, <TimR@Debian.org>, <Tim@Lineo.com>
+
+
+* Jornada 720 port
+==================
+- Christopher Hoover <ch@hpl.hp.com>
+
+
+* Badge4
+========
+- Christopher Hoover <ch@hpl.hp.com>

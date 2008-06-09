@@ -1,0 +1,23 @@
+#! /bin/sh
+#
+# rebuild: rebuild Makefile.in, configure, etc. using GNU automake, autoconf,
+# and libtool.
+#
+# $Id: rebuild,v 1.1.1.1 2001/06/27 19:47:42 erikm Exp $
+#
+
+echo '$Id: rebuild,v 1.1.1.1 2001/06/27 19:47:42 erikm Exp $'
+echo "Setting up for use with system supplied compilers"
+echo ""
+
+echo "Running automake ... "
+automake --add-missing --gnu --include-deps
+
+echo "Running aclocal ... "
+aclocal
+
+echo "Running autoconf ... "
+autoconf
+
+echo "Running autoheader ... "
+autoheader

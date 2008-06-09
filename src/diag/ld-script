@@ -1,0 +1,66 @@
+/*-------------------------------------------------------------------------
+ * Filename:      ld-script
+ * Version:       $Id: ld-script,v 1.2 2001/10/28 22:14:20 erikm Exp $
+ * Copyright:     Copyright (C) 1999, Erik Mouw
+ * Author:        Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+ * Description:   ld (linker) script to make diag.
+ *                Heavily inspired by the Linux kernel linker scripts.
+ * Created at:    Tue Aug 24 17:24:06 1999
+ * Modified by:   Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+ * Modified at:   Sun Aug 29 14:45:54 1999
+ *-----------------------------------------------------------------------*/
+/*OUTPUT_FORMAT("elf32-arm", "elf32-arm", "elf32-arm")*/
+OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
+OUTPUT_ARCH(arm)
+ENTRY(_start)
+SECTIONS
+{
+	. = 0xc0008000;
+
+	. = ALIGN(4);
+	.text : { *(.text) }
+
+	. = ALIGN(4);
+	.rodata : { *(.rodata) }
+
+	. = ALIGN(4);
+	.data : { *(.data) }
+
+	. = ALIGN(4);
+	.got : { *(.got) }
+
+	. = ALIGN(4);
+	.commandlist : {
+		__commandlist_start = .;
+		*(.commandlist)
+		__commandlist_end = .;
+	}
+
+	. = ALIGN(4);
+	.initlist : {
+		__initlist_start = .;
+		*(.initlist)
+		__initlist_end = .;
+	}
+
+	. = ALIGN(4);
+	.exitlist : {
+		__exitlist_start = .;
+		*(.exitlist)
+		__exitlist_end = .;
+	}
+
+	/* the BSS section should be the last section */
+	. = ALIGN(4);
+	.bss : {
+		__bss_start = .;
+		/* first the real BSS data */
+		*(.bss) 
+
+		/* and next the stack */
+		. = ALIGN(4);
+		*(.stack)
+		__stack_end = .;
+		__bss_end = .;
+	}
+}

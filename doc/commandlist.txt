@@ -1,0 +1,188 @@
+(emacs users can use -*- outline -*- mode for this file)
+
+	The blob commandlist
+		or
+	How to add new commands to blob
+
+
+Copyright (C) 2001  Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
+
+$Id: commandlist.txt,v 1.2 2002/01/05 20:24:07 erikm Exp $
+
+
+* Introduction
+==============
+
+All interactive programs have to deal with the problem of parsing the
+command line and calling the correct function to execute the
+command. Most programs use a simple if-then-else ladder for command
+parsing, which works well for a small and/or fixed number of
+commands. When the number of commands becomes either large or isn't
+fixed the if-then-else ladder solution becomes either too long, or
+becomes cluttered up with ugly #ifdef/#endif statements to selectively
+compile the wanted commands. Another problem is that the actual
+implementation of the command is not in the same compilation unit as
+the command line parser, leaving room for discrepancies between the
+caller and the actual command.
+
+To overcome those difficulties, a modular command parser was
+introduced in blob-2.0.5. This file documents that command parser.
+
+Note that although this document talks about "blob", the same command
+parser is also used in the "diag" diagnostics utility.
+
+
+
+
+* Advantages
+============
+
+The modular command parser has the following advantages:
+
+- Modular (doh!)
+- Supports command abbreviation
+- Simple to use
+- Easy to extend the number of commands without changing the command
+  parser itself
+- Integrated help functionality
+
+
+
+
+* How it works
+==============
+
+** The commandlist
+------------------
+
+The key concept in the command parser is the "commandlist", which is
+defined in src/lib/command.c as commandlist_t *commands. Early in the
+initialisation of blob this pointer is initialised with the contents
+of a special ELF section and transformed into a linked list of
+commands. The actual parser uses this linked list to compare the
+command on the command line with each of the individual commandlist
+entries.
+
+
+** Creating command list entries
+--------------------------------
+
+Command list entries are created with the __commandlist() macro as
+defined in include/blob/command.h:
+
+	#define __commandlist(fn, nm, hlp) \
+	static commandlist_t __command_##fn __command = { \
+		magic:    COMMAND_MAGIC, \
+		name:     nm, \
+		help:     hlp, \
+		callback: fn }
+
+In other words: it fills out a commandlist_t entry with the callback
+function, ASCII name, and help text. The __command attribute is again
+a macro:
+
+	#define __command __attribute__((unused, __section__(".commandlist")))
+
+This tells the compiler to put the commandlist_t entry in the
+.commandlist ELF section instead of the default .data section. The
+"unused" part tells the compiler not to discard the entry although it
+is unused in this compilation unit (remember the entry is declared as
+static to avoid name space clashes with other compilation units).
+
+
+** Fun with linker magic
+------------------------
+
+Without a proper linker script the linker would happily discard all
+ELF sections it doesn't know about, so the carefully crafted command
+list entries would be lost. To avoid this, blob uses a linker script
+which (among other things) describes how to deal with the command list
+entries:
+
+	. = ALIGN(4);
+	.commandlist : {
+		__commandlist_start = .;
+		*(.commandlist)
+		__commandlist_end = .;
+	}
+
+This tells the linker to start an output section called .commandlist
+at a 4 byte aligned address, defines the __commandlist_start symbol
+with that address, groups all .commandlist input sections (containing
+all commandlist_t entries) into the output section, and defines the
+__commandlist_end symbol with the current address.
+
+In this way we have created a list of commands nicely bounded by
+__commandlist_start and __commandlist_end. During the initialisation
+of blob those two addresses are used to find the correct number of
+commands. The advantage is clear: the command parser has been made
+independent on the number of commands.
+
+
+** Parsing and executing
+------------------------
+
+After all this linker magic, parsing the command list has been made
+very easy: take the command from the command line, and compare it with
+commandlist_t->name of all the commands in the command list. If the
+name matches, we have found our command and can start executing
+commandlist_t->callback().
+
+
+
+
+* Usage
+=======
+
+Using this all is very simple. First of all, all commands should be
+declared as static functions (to avoid name space pollution) and have
+this format:
+
+	static int command(int argc, char *argv[]);
+
+This looks pretty much like the main() function in normal C programs,
+and the argc and argv parameters have exactly the same meaning: argc
+contains the number of arguments to the function, argv is an array
+with pointers to each argument. The first pointer in argv points to
+the name of the called command. The command should return 0 in case of
+success, or a negative error number otherwise (see
+include/blob/errno.h for error number definitions).
+
+To get the function registered into the command list, simply write a
+line with a brief help text (again static) about the command, and use
+the __commandlist() macro to register it:
+
+	static char commandhelp[] = "help on command\n";
+	__commandlist(command, "command", commandhelp);
+
+That's all there is.
+
+It's good practice to put both the help text and the __commandlist()
+definition just below the function that implements the command, so
+there is less chance for them to get discrepancies.
+
+
+
+
+* Example
+=========
+
+Here is a longer example:
+
+static int example_command(int argc, char *argv[])
+{
+	int i;
+
+	for(i = 0; i < argc; i++) {
+		SerialOutputString("argv[");
+		SerialOutputDec(i);
+		SerialOutputString("] = \"");
+		SerialOutputString(argv[i]);
+		SerialOutputString("\"\n");
+	}
+
+	return 0;
+}
+
+static char examplehelp[] = "example command\n";
+__commandlist(example_command, "example", examplehelp);

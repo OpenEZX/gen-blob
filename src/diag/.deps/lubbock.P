@@ -1,0 +1,8 @@
+lubbock.o: lubbock.c ../../include/blob/config.h \
+  ../../include/blob/init.h ../../include/blob/types.h \
+  ../../include/blob/serial.h
+lubbock.c :
+../../include/blob/config.h :
+../../include/blob/init.h :
+../../include/blob/types.h :
+../../include/blob/serial.h :

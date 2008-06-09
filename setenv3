@@ -1,0 +1,4 @@
+export CC=arm-angstrom-linux-gnueabi-gcc
+export AR=arm-angstrom-linux-gnueabi-ar
+export OBJCOPY=arm-angstrom-linux-gnueabi-objcopy
+export RANLIB=arm-angstrom-linux-gnueabi-ranlib

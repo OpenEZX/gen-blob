@@ -1,0 +1,19 @@
+regs-sa11x0.o: regs-sa11x0.c ../../include/blob/config.h \
+  ../../include/blob/types.h ../../include/blob/errno.h \
+  ../../include/blob/util.h ../../include/blob/command.h \
+  ../../include/blob/init.h ../../include/blob/serial.h \
+  ../../include/blob/time.h ../../include/blob/sa1100.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/asm-arm/arch-sa1100/SA-1100.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/asm-arm/arch-sa1100/bitfield.h
+regs-sa11x0.c :
+../../include/blob/config.h :
+../../include/blob/types.h :
+../../include/blob/errno.h :
+../../include/blob/util.h :
+../../include/blob/command.h :
+../../include/blob/init.h :
+../../include/blob/serial.h :
+../../include/blob/time.h :
+../../include/blob/sa1100.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/asm-arm/arch-sa1100/SA-1100.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/asm-arm/arch-sa1100/bitfield.h :

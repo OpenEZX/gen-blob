@@ -1,0 +1,37 @@
+boot_modes.o: boot_modes.c ../../include/blob/config.h \
+  ../../include/blob/types.h ../../include/blob/pxa.h \
+  ../../include/blob/handshake.h ../../include/blob/flash.h \
+  ../../include/blob/arch/lubbock.h ../../include/blob/boot_modes.h \
+  usb_ctl_bvd.h pxa_usb.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/asm/byteorder.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/asm/types.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/little_endian.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/swab.h \
+  /home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/generic.h \
+  ../../include/blob/lcd_ezx.h ../../include/blob/mmu.h pcap.h \
+  ../../include/blob/log.h ../../include/blob/common.h \
+  ../../include/blob/part.h ../../include/blob/mmc.h \
+  ../../include/blob/menu.h
+boot_modes.c :
+../../include/blob/config.h :
+../../include/blob/types.h :
+../../include/blob/pxa.h :
+../../include/blob/handshake.h :
+../../include/blob/flash.h :
+../../include/blob/arch/lubbock.h :
+../../include/blob/boot_modes.h :
+usb_ctl_bvd.h :
+pxa_usb.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/asm/byteorder.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/asm/types.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/little_endian.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/swab.h :
+/home/wyrm/ezx/dev/originais/e680-linux/include/linux/byteorder/generic.h :
+../../include/blob/lcd_ezx.h :
+../../include/blob/mmu.h :
+pcap.h :
+../../include/blob/log.h :
+../../include/blob/common.h :
+../../include/blob/part.h :
+../../include/blob/mmc.h :
+../../include/blob/menu.h :

@@ -1,0 +1,12 @@
+README for the "tools" directory
+
+This directory is for holding the generated GNU autoconf/automake/libtool
+scripts. In order to generate those scripts in this directory, the file
+"configure.in" should contain the following line:
+
+AC_CONFIG_AUX_DIR(tools)
+
+It also contains the "rebuild" and "rebuild-gcc" scripts which
+automatically update configure, config.h.in and automatically update all
+Makefile.in files. The rebuild script is for use with non-GNU compilers,
+The rebuild-gcc script for GNU C/C++ compilers.

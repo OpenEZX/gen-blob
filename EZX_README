@@ -1,0 +1,19 @@
+-------build instruction------
+To clean the generated files:
+$make distclean
+
+To regenerate config files and make:
+$./configure --with-board=lubbock --with-cpu=pxa262 --with-linux-prefix=${HOME}/embedded/kernel/linux-2.4.17 --enable-usb
+$make
+
+
+The configure options:
+1) board selection is lubbock, don't change it
+2) kernel path, you can change it if you kernel path is another.
+Additionally, you must add xscale_le-gcc compiler's path in path varible.
+
+The image you build should be src/blob/blob
+
+Note:
+   Don't run automake, it will delete the configure and can't build for HAINAN product sucessfully.
+
