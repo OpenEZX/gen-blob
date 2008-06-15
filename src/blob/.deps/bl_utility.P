@@ -1,6 +1,0 @@
-bl_utility.o: bl_utility.c ../../include/blob/bl_utility.h \
-  ../../include/blob/types.h ../../include/blob/pxa.h
-bl_utility.c :
-../../include/blob/bl_utility.h :
-../../include/blob/types.h :
-../../include/blob/pxa.h :

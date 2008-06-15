@@ -1,8 +1,0 @@
-part_dos.o: part_dos.c ../../include/blob/common.h \
-  ../../include/blob/types.h ../../include/blob/part_dos.h \
-  ../../include/blob/part.h
-part_dos.c :
-../../include/blob/common.h :
-../../include/blob/types.h :
-../../include/blob/part_dos.h :
-../../include/blob/part.h :

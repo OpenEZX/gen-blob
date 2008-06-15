@@ -21,7 +21,7 @@
 #define BLOB_ARCH_LUBBOCK_H
 
 /* the base address were BLOB is loaded by the first stage loader */
-#define BLOB_ABS_BASE_ADDR		(0xA0200000)
+#define BLOB_ABS_BASE_ADDR		(0xA0201000)
 
 /* where do various parts live in RAM */
 #define BLOB_RAM_BASE		(0xA0200000)

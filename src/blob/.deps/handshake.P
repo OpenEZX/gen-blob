@@ -1,8 +1,0 @@
-handshake.o: handshake.c ../../include/blob/config.h \
-  ../../include/blob/types.h ../../include/blob/handshake.h \
-  ../../include/blob/pxa.h
-handshake.c :
-../../include/blob/config.h :
-../../include/blob/types.h :
-../../include/blob/handshake.h :
-../../include/blob/pxa.h :

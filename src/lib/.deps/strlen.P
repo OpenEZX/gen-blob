@@ -1,6 +1,0 @@
-strlen.o: strlen.c ../../include/blob/config.h ../../include/blob/util.h \
-  ../../include/blob/types.h
-strlen.c :
-../../include/blob/config.h :
-../../include/blob/util.h :
-../../include/blob/types.h :

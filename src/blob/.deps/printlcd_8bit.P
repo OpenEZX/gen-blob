@@ -1,8 +1,0 @@
-printlcd_8bit.o: printlcd_8bit.c ../../include/blob/pxa.h \
-  ../../include/blob/lcd_ezx.h ../../include/blob/serial.h \
-  ../../include/blob/types.h
-printlcd_8bit.c :
-../../include/blob/pxa.h :
-../../include/blob/lcd_ezx.h :
-../../include/blob/serial.h :
-../../include/blob/types.h :

@@ -1,7 +1,0 @@
-md5.o: md5.c ../../include/blob/config.h ../../include/blob/md5.h \
-  ../../include/blob/types.h ../../include/blob/util.h
-md5.c :
-../../include/blob/config.h :
-../../include/blob/md5.h :
-../../include/blob/types.h :
-../../include/blob/util.h :

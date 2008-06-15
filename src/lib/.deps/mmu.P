@@ -1,6 +1,0 @@
-mmu.o: mmu.c ../../include/blob/config.h ../../include/blob/mmu.h \
-  ../../include/blob/types.h
-mmu.c :
-../../include/blob/config.h :
-../../include/blob/mmu.h :
-../../include/blob/types.h :

@@ -1,6 +1,0 @@
-menu.o: menu.c ../../include/blob/common.h ../../include/blob/types.h \
-  ../../include/blob/menu.h
-menu.c :
-../../include/blob/common.h :
-../../include/blob/types.h :
-../../include/blob/menu.h :

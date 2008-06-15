@@ -1,6 +1,0 @@
-strncmp.o: strncmp.c ../../include/blob/config.h \
-  ../../include/blob/util.h ../../include/blob/types.h
-strncmp.c :
-../../include/blob/config.h :
-../../include/blob/util.h :
-../../include/blob/types.h :

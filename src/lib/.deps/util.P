@@ -1,7 +1,0 @@
-util.o: util.c ../../include/blob/config.h ../../include/blob/types.h \
-  ../../include/blob/util.h ../../include/blob/serial.h
-util.c :
-../../include/blob/config.h :
-../../include/blob/types.h :
-../../include/blob/util.h :
-../../include/blob/serial.h :

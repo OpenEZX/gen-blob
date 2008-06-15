@@ -1,6 +1,0 @@
-memcpy.o: memcpy.c ../../include/blob/config.h ../../include/blob/util.h \
-  ../../include/blob/types.h
-memcpy.c :
-../../include/blob/config.h :
-../../include/blob/util.h :
-../../include/blob/types.h :

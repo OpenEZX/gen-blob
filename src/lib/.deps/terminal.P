@@ -1,8 +1,0 @@
-terminal.o: terminal.c ../../include/blob/config.h \
-  ../../include/blob/serial.h ../../include/blob/types.h \
-  ../../include/blob/terminal.h
-terminal.c :
-../../include/blob/config.h :
-../../include/blob/serial.h :
-../../include/blob/types.h :
-../../include/blob/terminal.h :
