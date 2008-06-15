@@ -780,9 +780,11 @@ u32 SSP_PCAP_get_register_value_from_buffer(SSP_PCAP_SECONDARY_PROCESSOR_REGISTE
 /*==================================== ALEX =============================== */
 #define DEBUG printf
 
-#define VAP_MMC		0x00000B00
-//#define VAP_MMC		0x00000BEC
-#define VAP_MMC_MASK	0xFFFFF0FF
+#define VAP_TF		0x00000B00
+#define VAP_SD		0x00000060
+#define VAP_TF_MASK	0xFFFFF0FF
+#define VAP_SD_MASK	0xFFFFFF9F
+
 void pcap_mmc_power_on(int on)
 {
 	unsigned long ssp_pcap_register_val;
@@ -791,23 +793,20 @@ void pcap_mmc_power_on(int on)
 		ssp_pcap_init();
 	}
 
-	/* close VAP_MMC (PCAP_VAUX3) */
+	/* close VAP_MMC (PCAP_VAUX3 && PCAP_VAUX2) */
 	SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
-	SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
+	SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX2_EN);
 
 	Delay(10000);
 	if (on == 0) // Power off only
 		return;
 
-	/* open VAP_MMC (PCAP VAUX3) */
-	SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER, &ssp_pcap_register_val);	
-//	DEBUG("\nAUX_VREG=0x%x\n", ssp_pcap_register_val);
-	
-	ssp_pcap_register_val = (ssp_pcap_register_val & VAP_MMC_MASK) | VAP_MMC;
-	SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER, ssp_pcap_register_val);
+	/* open VAP_MMC (PCAP VAUX3 && VAUX2) */
+	SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER, &ssp_pcap_register_val);
+	ssp_pcap_register_val = (ssp_pcap_register_val & (VAP_TF_MASK | VAP_SD_MASK)) | (VAP_TF | VAP_SD);
 	SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER, ssp_pcap_register_val);
 	SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
-	SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
+	SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX2_EN);
 	
 	SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER, &ssp_pcap_register_val);	
 //	DEBUG("AUX_VREG=0x%x\n", ssp_pcap_register_val);

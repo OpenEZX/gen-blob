@@ -152,17 +152,17 @@ int boot_menu(menu_t *menu)
 	while (1) {
 		u8 key = read_key();
 		/* enter */
-		if (key==0x25 || key==0x21 || key==0x14 || key==0x13)
+		if (key == 0x14 || key == 0x21 || key == 0x23)
 			break;
 		/* up */
-		else if (key==0x42 || key==0x31 || key==0x04 || key==0x03) {
+		else if (key == 0x04 || key == 0x32 || key == 0x00) {
 			if (menu->curr_entry == 0)
 				menu->curr_entry = menu->num-1;
 			else
 				menu->curr_entry--;
 			show_menu(menu);
 		/* down */
-		} else if (key==0x02 || key==0x11 || key==0x43 || key==0x44) {
+		} else if (key == 0x44 || key == 0x11 || key == 0x10) {
 			menu->curr_entry++;
 			if (menu->curr_entry == menu->num)
 				menu->curr_entry = 0;
@@ -185,12 +185,18 @@ void enter_simple_pass_through_mode(void)
 	char *kernel = "/boot/default";
 
   keypad_init();
-//  EnableLCD_8bit_active();
+/*  EnableLCD_8bit_active();
+  while (1) {
+  	u8 key = read_key();
+	printf("key = %02x\n", key);
+  }*/
+
   USB_gpio_init();
   usbctl_init();
 
   if (is_key_press_down(0x04000031, 0) ||
-          is_key_press_down(0x04000003, 0)) {
+          is_key_press_down(0x04000003, 0) ||
+	  is_key_press_down(0x04000012, 0) ) {
   EnableLCD_8bit_active();
 
   GPCR(99) = GPIO_bit(99);  // USB_READY=low
@@ -220,7 +226,8 @@ void enter_simple_pass_through_mode(void)
 
   file_detectfs();
   if (is_key_press_down(0x04000002, 0) ||
-      is_key_press_down(0x04000043, 0)) {
+      is_key_press_down(0x04000043, 0) ||
+      is_key_press_down(0x04000013, 0) ) {
   EnableLCD_8bit_active();
   ret = boot_menu(&menu);
   if (ret < 0 || !go_menu_entry) {
