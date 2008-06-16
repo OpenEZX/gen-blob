@@ -63,13 +63,13 @@ _start:	b	reset
 .align	4
 reset:
 	/* get a clue where we are running, so we know what to copy */
-	ldr	r1, =0xffff0000
-	and	r0, pc, r1
+	ldr	r1, =0xffffff00
+	and	r0, pc, r1 
 	
 	/* relocate the second stage loader */
 	add	r2, r0, #(128 * 1024)	/* blob maximum size is 128kB */
 	add	r0, r0, #0x1000		/* skip first 4*1024 bytes */
-	ldr	r1, =0xa0200000
+	ldr	r1, =0xa1200000
 	add	r1, r1, #0x1000		/* skip over here as well */
 
 	cmp	r0, r1
@@ -87,7 +87,7 @@ copy_loop:
 
 stack:
 	/* set up the stack pointer */
-	ldr	r0, =0xa0200000
+	ldr	r0, =0xa1200000
 	add	r1, r0, #(1024 * 1024)
 	sub	sp, r1, #0x04
 	

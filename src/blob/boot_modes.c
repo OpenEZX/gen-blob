@@ -228,7 +228,7 @@ void enter_simple_pass_through_mode(void)
   file_detectfs();
   if (is_key_press_down(0x04000002, 0) ||
       is_key_press_down(0x04000043, 0) ||
-      is_key_press_down(0x04000013, 0) ||) {
+      is_key_press_down(0x04000013, 0) ) {
   EnableLCD_8bit_active();
   ret = boot_menu(&menu);
   if (ret < 0 || !go_menu_entry) {

@@ -30,7 +30,7 @@ extern int strlen(const char * s);
 //short pal_fg = 0x0000;      /* 12-bit foreground palette */
 //short pal_bg = 0x0FFF;      /* 12-bit background palette */
 static unsigned short pal_fg = 0;		/* pallet #0 = White */ /* 8-bit foreground palette for passive */
-static unsigned short pal_bg = 3;       	/* pallet #3 = Blue  */ /* 8-bit background palette for passive */
+static unsigned short pal_bg = 7;       	/* pallet #3 = Blue  */ /* 8-bit background palette for passive */
 
 static int lcd_row;
 static int lcd_col;
@@ -1427,9 +1427,8 @@ void EnableLCD_8bit_active()
 
         FrameBufferStart  = SDRAM_B0;		// put framebuffer here (random place in memory)
         FrameBufferLength = LCD_X * LCD_Y;		// LCD panel is 320 x 240 dual panel
-
         // Disable the LCD for now.
-        #ifdef LCD_72R89341N
+#ifdef LCD_72R89341N
 	LCDBS_p = (unsigned long *)0x48000054;
 	(unsigned long)(*LCDBS_p) = 0x00000005;
 
@@ -1489,7 +1488,7 @@ void EnableLCD_8bit_active()
         fb_8bit->palette[4] = 0x0FF4;
         fb_8bit->palette[5] = 0x04FF;
         fb_8bit->palette[6] = 0x0F4F;
-        fb_8bit->palette[7] = 0x0AAA;
+        fb_8bit->palette[7] = 0x0000;
         fb_8bit->palette[8] = 0x0444;
         fb_8bit->palette[9] = 0x048C;
         fb_8bit->palette[10] = 0x084C;
@@ -1618,7 +1617,7 @@ void EnableLCD_8bit_active()
                  (1   << LCD0_V_LDM)   |
                  (0   << LCD0_V_SDS)   |
                  (0   << LCD0_V_CMS)   |
-                 (1   << LCD0_V_ENB);
+                 (1   << LCD0_V_ENB); 
 
         Delay(5000);			// Delay (uSec) -- LCD panel requirment.
         LCCR0 |= (1 << LCD0_V_ENB);

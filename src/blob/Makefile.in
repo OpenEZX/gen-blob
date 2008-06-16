@@ -115,7 +115,9 @@ bin_PROGRAMS = \
 	blob-rest-elf32 \
 	blob-rest \
 	blob \
-	blob-chain
+	blob-chain \
+	blob-a780 \
+	blob-a1200
 
 
 INCLUDES =  \
@@ -575,10 +577,14 @@ blob-rest: blob-rest-elf32
 blob: blob-start blob-rest
 	rm -f $@
 	dd if=blob-start of=$@ bs=1k conv=sync
-#	dd if=blob-rest of=$@ bs=1k seek=2 conv=sync
 	dd if=blob-rest of=$@ bs=1k seek=4 conv=sync
-#	dd if=blob-rest of=$@ bs=1k conv=sync
 	chmod +x $@
+
+blob-a780: blob
+	cp blob blob-a780
+
+blob-a1200: blob
+	dd if=blob of=$@ bs=1k seek=2 conv=sync
 
 blob-chain: blob-start-chain blob-rest
 	rm -f $@
