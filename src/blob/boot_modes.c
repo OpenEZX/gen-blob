@@ -136,7 +136,7 @@ void show_menu(menu_t * menu)
 
 int boot_menu(menu_t * menu)
 {
-	menu->curr_entry = menu->default_entry;
+	menu->curr_entry = 0;
 	if (menu->num == 0)
 		return -1;
 	show_menu(menu);
@@ -164,6 +164,7 @@ int boot_menu(menu_t * menu)
 	return 0;
 }
 
+
 /* 
  * add enter_simple_pass_through_mode 
  * enter USB pass_through mode and do all initial work for emulator.
@@ -174,6 +175,7 @@ void enter_simple_pass_through_mode(void)
 	int ret;
 	menu_t menu;
 	char *kernel = "/boot/default";
+	int machid = 0;
 
 	keypad_init();
 /*  EnableLCD_8bit_active();
@@ -235,12 +237,15 @@ void enter_simple_pass_through_mode(void)
 			while (1) ;
 		}
 		kernel = go_menu_entry->kernel;
+		if (go_menu_entry->machid > 0)
+			machid = go_menu_entry->machid;
 	}
 	{
 		int size;
 #define KERNEL_RAM_BASE1 0xa0300000
 		char *buf = (char *)KERNEL_RAM_BASE1;
-		void (*theKernel) (void) = KERNEL_RAM_BASE1;
+		void (*theKernel) (int zero, int arch) =
+			(void (*)(int, int))KERNEL_RAM_BASE1;
 		printf("Loading %s...\n", kernel);
 		size = file_fat_read(kernel, buf, 0x200000);	// 2MB
 
@@ -252,7 +257,7 @@ void enter_simple_pass_through_mode(void)
 
 		if (size > 0) {
 			printf("read %d bytes\nbooting...\n", size);
-			theKernel();
+			theKernel(0, machid);
 		}
 		printf("Cannot load kernel from:\n   %s\n", kernel);
 		while (1) ;

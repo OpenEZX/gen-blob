@@ -208,13 +208,9 @@ cmd_t cmd_set[] = {
 	,
 	{TYPE_CMD_KERNEL, "kernel"}
 	,
-	{TYPE_CMD_INITRD, "initrd"}
-	,
 	{TYPE_CMD_PARAM, "param"}
 	,
-	{TYPE_CMD_DEFAULT, "default"}
-	,
-	{TYPE_CMD_TIMEOUT, "timeout"}
+	{TYPE_CMD_MACHID, "machid"}
 	,
 };
 
@@ -318,32 +314,18 @@ int parse_conf_file(char *name, menu_t * menu)
 			curr_entry->kernel =
 			    get_menu_entry_param(cmdline, &cmd);
 			break;
-		case TYPE_CMD_INITRD:
-			if (!curr_entry)
-				goto err;
-			curr_entry->initrd =
-			    get_menu_entry_param(cmdline, &cmd);
-			break;
 		case TYPE_CMD_PARAM:
 			if (!curr_entry)
 				goto err;
 			curr_entry->param = get_menu_entry_param(cmdline, &cmd);
 			break;
-		case TYPE_CMD_DEFAULT:
+		case TYPE_CMD_MACHID:
+			if (!curr_entry)
+				goto err;
 			p = get_menu_entry_param(cmdline, &cmd);
 			i = atoi(p);
 			grub_free(p);
-			if (i < 0)
-				goto err;
-			menu->default_entry = i;
-			break;
-		case TYPE_CMD_TIMEOUT:
-			p = get_menu_entry_param(cmdline, &cmd);
-			i = atoi(p);
-			grub_free(p);
-			if (i < 0)
-				goto err;
-			menu->timeout = i;
+			curr_entry->machid = i;
 			break;
 		case TYPE_CMD_UNKNOWN:
 			break;	// FIXME
