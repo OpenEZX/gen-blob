@@ -22,16 +22,15 @@ typedef struct __menu_entry {
 	int id;
 	char *title;
 	char *kernel;
-	char *initrd;
 	char *param;
+	int machid;
 	struct __menu_entry *next;
 } menu_entry_t;
 
 typedef struct __menu {
-	int default_entry;
-	int timeout;
 	int curr_entry;
 	int num;
+	int default_machid;
 	menu_entry_t *entry;
 } menu_t;
 
@@ -42,12 +41,10 @@ typedef struct __cmd_t {
 
 enum {
 	TYPE_CMD_UNKNOWN,
-    TYPE_CMD_TITLE,
+	TYPE_CMD_TITLE,
 	TYPE_CMD_KERNEL,
-	TYPE_CMD_INITRD,
 	TYPE_CMD_PARAM,
-	TYPE_CMD_DEFAULT,
-	TYPE_CMD_TIMEOUT,
+	TYPE_CMD_MACHID,
 };
 
 

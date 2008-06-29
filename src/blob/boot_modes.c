@@ -175,6 +175,7 @@ void enter_simple_pass_through_mode(void)
 	int ret;
 	menu_t menu;
 	char *kernel = "/boot/default";
+	char *cmdline = "";
 	int machid = 0;
 
 	keypad_init();
@@ -226,6 +227,8 @@ void enter_simple_pass_through_mode(void)
 		printlcd("Cannot parse config file\n");
 		while (1) ;
 	}
+	if (menu.default_machid > 0)
+		machid = menu.default_machid;
 
 	if (is_key_press_down(0x04000002, 0) ||
 	    is_key_press_down(0x04000043, 0) ||
@@ -239,13 +242,13 @@ void enter_simple_pass_through_mode(void)
 		kernel = go_menu_entry->kernel;
 		if (go_menu_entry->machid > 0)
 			machid = go_menu_entry->machid;
+		if (go_menu_entry->param)
+			cmdline = go_menu_entry->param;
 	}
 	{
 		int size;
-#define KERNEL_RAM_BASE1 0xa0300000
-		char *buf = (char *)KERNEL_RAM_BASE1;
-		void (*theKernel) (int zero, int arch) =
-			(void (*)(int, int))KERNEL_RAM_BASE1;
+		char *buf = (char *)KERNEL_RAM_BASE;
+
 		printf("Loading %s...\n", kernel);
 		size = file_fat_read(kernel, buf, 0x200000);	// 2MB
 
@@ -257,7 +260,7 @@ void enter_simple_pass_through_mode(void)
 
 		if (size > 0) {
 			printf("read %d bytes\nbooting...\n", size);
-			theKernel(0, machid);
+			boot_linux(cmdline, machid);
 		}
 		printf("Cannot load kernel from:\n   %s\n", kernel);
 		while (1) ;

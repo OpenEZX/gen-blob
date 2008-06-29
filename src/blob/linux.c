@@ -42,7 +42,7 @@
 
 static void setup_start_tag(void);
 static void setup_memory_tags(void);
-static void setup_commandline_tag(int argc, char *argv[]);
+static void setup_commandline_tag(char *);
 static void setup_ramdisk_tag(void);
 static void setup_initrd_tag(void);
 static void setup_end_tag(void);
@@ -52,37 +52,21 @@ static void setup_ezx_tag(void);
 static struct tag *params;
 extern int cmd_flag;
 
-int boot_linux(int argc, char *argv[])
+int boot_linux(char *cmdline, int machid)
 {
 	void (*theKernel) (int zero, int arch) =
 	    (void (*)(int, int))KERNEL_RAM_BASE;
 
 	setup_start_tag();
-	setup_memory_tags();
-	setup_commandline_tag(argc, argv);
-#if 0
-	setup_initrd_tag();
-	setup_ramdisk_tag();
-#endif
-#ifdef MBM			//mbm module
-	setup_ezx_tag();
-#endif //need to restore for all products 0311
+	setup_commandline_tag(cmdline);
 	setup_end_tag();
-
-	/* we assume that the kernel is in place */
-	SerialOutputString("\nStarting kernel ...\n\n");
-	serial_flush_output();
 
 	/* disable subsystems that want to be disabled before kernel boot */
 	exit_subsystems();
 
 	/* start kernel */
-	theKernel(0, ARCH_NUMBER);
-
-	SerialOutputString
-	    ("Hey, the kernel returned! This should not happen.\n");
-	printlcd("Hey, the kernel returned! This should not happen.\n");
-	while (1) ;
+	theKernel(0, machid);
+	while (1);
 	return 0;
 }
 
@@ -121,31 +105,8 @@ void setup_ezx_tag(void)
 
 }
 #endif //mbm module
-static void setup_memory_tags(void)
-{
-	int i;
 
-	for (i = 0; i < NUM_MEM_AREAS; i++) {
-		if (memory_map[i].used) {
-			params->hdr.tag = ATAG_MEM;
-			params->hdr.size = tag_size(tag_mem32);
-
-			params->u.mem.start = memory_map[i].start;
-			params->u.mem.size = memory_map[i].len;
-
-			params = tag_next(params);
-		}
-#if defined( NEPONSET )
-		// When neponset board is present dont report
-		// the 2nd ram area to the kernel. This area
-		// is on the neponset board and would require
-		// NUMA support in the kernel.
-		break;
-#endif
-	}
-}
-
-static void setup_commandline_tag(int argc, char *argv[])
+static void setup_commandline_tag(char *cmdline)
 {
 	char *p;
 	int i;
@@ -153,30 +114,7 @@ static void setup_commandline_tag(int argc, char *argv[])
 	/* initialise commandline */
 	params->u.cmdline.cmdline[0] = '\0';
 
-	/* copy default commandline from parameter block */
-	if (cmd_flag == 1)
-		strlcpy(params->u.cmdline.cmdline, blob_status.cmdline,
-			COMMAND_LINE_SIZE);
-
-	/* copy commandline */
-	if (argc >= 2) {
-		p = params->u.cmdline.cmdline;
-
-		for (i = 1; i < argc; i++) {
-			strlcpy(p, argv[i], COMMAND_LINE_SIZE);
-			p += strlen(p);
-			*p++ = ' ';
-		}
-
-		p--;
-		*p = '\0';
-
-		/* technically spoken we should limit the length of
-		 * the kernel command line to COMMAND_LINE_SIZE
-		 * characters, but the kernel won't copy longer
-		 * strings anyway, so we don't care over here.
-		 */
-	}
+	strlcpy(params->u.cmdline.cmdline, cmdline, COMMAND_LINE_SIZE);
 
 	if (strlen(params->u.cmdline.cmdline) > 0) {
 		params->hdr.tag = ATAG_CMDLINE;
