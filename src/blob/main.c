@@ -216,9 +216,9 @@ void save_reset_inf(void)
 	
 #endif
 
-
 blob_status_t blob_status;
 
+#if 0
 static int do_reload(char *what);
 
 static char *boot_params[] = { // ALEX
@@ -227,95 +227,21 @@ static char *boot_params[] = { // ALEX
 	"ip=off",
 	"paniclog=on",
 };
-
+#endif
 #define NR_BOOT_PARAMS 4 //(sizeof(boot_params) / sizeof(char *))
 
 int main(void)
 {
-	int retval = 0;
-
-    u32 sleepflag;
-#ifdef PARAM_START
-	u32 conf;
-#endif
-
-	/* do hw init for product */
-//	hw_init(0);  // ALEX don't need to initial hardware again
-
-	/* do sw init for product */
-//	sw_init(0);
-	/* parse the core tag, for critical things like terminal speed */
-
 #if 1 // ALEX test codes
 {
 	enter_simple_pass_through_mode();
 }
-#else
-EnableLCD_8bit_active();
 #endif // ALEX
-
-#if 0
-#ifdef PARAM_START
-	parse_ptag((void *) PARAM_START, &conf);
-#endif	
-#if 1 //ALEX
-  	printlcd("parse_blob_tag\n");      
-	parse_blob_tag();
-#endif
-
-        sleepflag = *(unsigned long *)(FLAG_ADDR);
-#ifndef HAINAN
-	if ( check_flash_flag() )
-	  enter_tcmd_flash_mode(0);
-#endif	
-  	printlcd("check_pass_through_flag\n");      
-	/* add decision to pass-through mode */
-	if(check_pass_through_flag())
-	  enter_pass_through_mode();
-
-#ifndef HAINAN
-        if ( !check_valid_code()|| check_manual_flash_mode() ) 
-	  enter_manual_flash_mode(0);
-#endif
-#endif
-  	printlcd("loading kernel\n");      
-#if 1 //ALEX
-	/* Load kernel and ramdisk from flash to RAM */
-	do_reload("kernel");
-//      logstr("\nezx_test: Now, boot linux!\n");
-      printlcd("ezx_test: Now, boot linux!\n");
-//void (*theKernel)(void) = KERNEL_RAM_BASE;
-//  	theKernel();
-#endif
-{
-	long *p = (long *)0xa0800;
-	int i;
-	for (i = 0; i < 1000000; i++) {
-		printf("%08x, %08x\n", *p++, *p++); 
-		Delay(50);
-	}
-
-	while (1);
-}
-
-	save_reset_inf();
-
-      printlcd("boot\n");
-	if(retval == 0) {
-#ifndef MBM
-	  parse_command("boot");
-#else
-	  boot_linux(0,0);
-//	  boot_linux(NR_BOOT_PARAMS+1, boot_params);
-#endif
-	}
-printlcd("what????\n");
-while(1);
 	return 0;
 } /* main */
 
 
-
+#if 0
 static int do_reload(char *what)
 {
 	u32 *dst = 0;
@@ -363,6 +289,6 @@ static int do_reload(char *what)
 	return 0;
 }
 
-
+#endif
 	
 
