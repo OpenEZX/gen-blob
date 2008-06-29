@@ -25,7 +25,6 @@
  * 
  */
 
-
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>
 #endif
@@ -36,54 +35,46 @@
 #include <blob/serial.h>
 #include <blob/command.h>
 #include <blob/lcd_ezx.h>
-extern int strtou32(const char* str, u32 * value);
+extern int strtou32(const char *str, u32 * value);
 #if  ( defined(CPU_pxa250) || defined(CPU_pxa260) )
 
 #define LUB_FLASH_DRIVER (&intel32_flash_driver)
-static flash_descriptor_t lubbock_flash_descriptors[] =
-{
+static flash_descriptor_t lubbock_flash_descriptors[] = {
 	{
-		size: 2 * 128 * 1024,
-		num: 128,
-		lockable: 1
-	},
+	      size:2 * 128 * 1024,
+	      num:128,
+      lockable:1},
 	{
-		/* NULL block */
-	},
+	 /* NULL block */
+	 },
 };
-
 
 #elif ( defined(CPU_pxa210) || defined(CPU_pxa261) )
 
 #define LUB_FLASH_DRIVER (&intel16_flash_driver)
-static flash_descriptor_t lubbock_flash_descriptors[] =
-{
+static flash_descriptor_t lubbock_flash_descriptors[] = {
 	{
-		size: 1 * 128 * 1024,
-		num: 128,
-		lockable: 1
-	},
+	      size:1 * 128 * 1024,
+	      num:128,
+      lockable:1},
 	{
-		/* NULL block */
-	},
+	 /* NULL block */
+	 },
 };
 
-#elif ( defined(CPU_pxa262) ) /* Dalhart B0 */
+#elif ( defined(CPU_pxa262) )	/* Dalhart B0 */
 
 #define LUB_FLASH_DRIVER (&intel16_flash_driver)
 
-static flash_descriptor_t lubbock_flash_descriptors[] =
-{
+static flash_descriptor_t lubbock_flash_descriptors[] = {
 	{
-		size: 1 * 128 * 1024,
-		num: 256,
-		lockable: 1
-	},
+	      size:1 * 128 * 1024,
+	      num:256,
+      lockable:1},
 	{
-		/* NULL block */
-	},
+	 /* NULL block */
+	 },
 };
-
 
 #endif
 
@@ -96,13 +87,11 @@ static void init_lubbock_flash_driver(void)
 
 __initlist(init_lubbock_flash_driver, INIT_LEVEL_DRIVER_SELECTION);
 
-
 static void lubbock_init_hardware(void)
 {
 	/* select serial driver */
 	serial_driver = &pxa_serial_driver;
 }
-
 
 __initlist(lubbock_init_hardware, INIT_LEVEL_DRIVER_SELECTION);
 
@@ -115,71 +104,70 @@ __initlist(lubbock_init_hardware, INIT_LEVEL_DRIVER_SELECTION);
  * Command wrapper for low-level flash write access
  *
  */
-static int cmd_flash_write( int argc, char *argv[] )
+static int cmd_flash_write(int argc, char *argv[])
 {
 	int ret = 0;
-	u32	src	= 0L;
-	u32	dest	= 0L;
-	u32	len	= 0L;
-	u32	tlen	= 0L;
+	u32 src = 0L;
+	u32 dest = 0L;
+	u32 len = 0L;
+	u32 tlen = 0L;
 
-	if ( argc < 4 ) {
+	if (argc < 4) {
 		ret = -1;
 		goto DONE;
 	}
 
-
-	ret = strtou32( argv[1], &src );
-	if ( ret < 0 ) {
+	ret = strtou32(argv[1], &src);
+	if (ret < 0) {
 		ret = -1;
 		goto DONE;
 	}
 
-	ret = strtou32( argv[2], &dest );
-	if ( ret < 0 )	{
+	ret = strtou32(argv[2], &dest);
+	if (ret < 0) {
 		ret = -1;
 		goto DONE;
 	}
 
-	ret = strtou32( argv[3], &len );
-	if ( ret < 0 ) {
+	ret = strtou32(argv[3], &len);
+	if (ret < 0) {
 		ret = -1;
 		goto DONE;
 	}
 
-	if ( len & (0x3) ) {
-		len = (len>>2)  + 1;
+	if (len & (0x3)) {
+		len = (len >> 2) + 1;
 	} else {
-		len = len>>2;
+		len = len >> 2;
 	}
 
 	// K3 flash 
-	flash_unlock_region((u32*)dest, len);
+	flash_unlock_region((u32 *) dest, len);
 
 	printlcd("start erase\n");
-	ret = flash_erase_region( (u32 *)dest, len );
-	if(ret)
+	ret = flash_erase_region((u32 *) dest, len);
+	if (ret)
 		printlcd("erase error!!!\n");
 	else
 		printlcd("erase done\n");
 
 	printlcd("start program\n");
-	tlen = (len<<2);
-	ret = flash_write_region( (u16 *)dest, (u16*)src, tlen );
-	if(ret)
+	tlen = (len << 2);
+	ret = flash_write_region((u16 *) dest, (u16 *) src, tlen);
+	if (ret)
 		printlcd("program error!!!\n");
 	else
 		printlcd("program done\n");
 
 	// K3 flash 
-	flash_lock_region((u32*)dest, len);
+	flash_lock_region((u32 *) dest, len);
 
-DONE:
+      DONE:
 	return ret;
 }
 static char flashwritehelp[] = "fwrite srcadr destadr size(bytes)\n"
-"flash a memory region\n";
-__commandlist( cmd_flash_write, "fwrite", flashwritehelp );
+    "flash a memory region\n";
+__commandlist(cmd_flash_write, "fwrite", flashwritehelp);
 
 /*********************************************************************
  * cmd_flash_erase
@@ -190,50 +178,47 @@ __commandlist( cmd_flash_write, "fwrite", flashwritehelp );
  * Command wrapper for low-level flash erasing
  *
  */
-static int cmd_flash_erase( int argc, char *argv[] )
+static int cmd_flash_erase(int argc, char *argv[])
 {
 	int ret = 0;
-	u32	dest	= 0L;
-	u32	len	= 0L;
+	u32 dest = 0L;
+	u32 len = 0L;
 
-	if ( argc < 3 ) {
+	if (argc < 3) {
 		ret = -1;
 		goto DONE;
 	}
 
-	ret = strtou32( argv[1], &dest );
-	if ( ret < 0 ) {
-		ret = -1;
-		goto DONE;
-	}	
-
-	ret = strtou32( argv[2], &len );
-	if ( ret < 0 ){
+	ret = strtou32(argv[1], &dest);
+	if (ret < 0) {
 		ret = -1;
 		goto DONE;
 	}
 
-	if ( len & (0x3) ) {
-		len = (len>>2)  + 1;
+	ret = strtou32(argv[2], &len);
+	if (ret < 0) {
+		ret = -1;
+		goto DONE;
+	}
+
+	if (len & (0x3)) {
+		len = (len >> 2) + 1;
 	} else {
-		len = len>>2;
+		len = len >> 2;
 	}
 
 	// K3 flash 
-	flash_unlock_region((u32*)dest, len);
+	flash_unlock_region((u32 *) dest, len);
 
-	ret = flash_erase_region( (u32 *)dest, len );
+	ret = flash_erase_region((u32 *) dest, len);
 
 	// K3 flash
-	flash_lock_region((u32*)dest, len);
+	flash_lock_region((u32 *) dest, len);
 
-DONE:
+      DONE:
 	return ret;
 }
 
 static char flasherasehelp[] = "ferase adr size(bytes)\n"
-"erase a flash region\n";
-__commandlist( cmd_flash_erase, "ferase", flasherasehelp );
-
-
-
+    "erase a flash region\n";
+__commandlist(cmd_flash_erase, "ferase", flasherasehelp);

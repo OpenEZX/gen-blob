@@ -41,8 +41,6 @@
 #include <blob/util.h>
 #include <blob/sa1100.h>
 
-
-
 /*
  *  Paramater Tag parsing.
  *
@@ -77,7 +75,7 @@ __ptagtable(PTAG_BOOTDELAY, parse_ptag_bootdelay);
 
 static int parse_ptag_cmdline(const struct ptag *ptag)
 {
-	strlcpy(blob_status.cmdline, ptag->u.cmdline.cmdline, 
+	strlcpy(blob_status.cmdline, ptag->u.cmdline.cmdline,
 		COMMAND_LINE_SIZE);
 
 	return 0;
@@ -96,9 +94,10 @@ __ptagtable(PTAG_BAUD, parse_ptag_baud);
 static int parse_ptag_gpio(const struct ptag *ptag)
 {
 	GPDR &= ~ptag->u.gpio.mask;
-	if ((GPSR & ptag->u.gpio.mask) == ptag->u.gpio.level) 
+	if ((GPSR & ptag->u.gpio.mask) == ptag->u.gpio.level)
 		return -1;
-	else return 0;
+	else
+		return 0;
 }
 
 __ptagtable(PTAG_GPIO, parse_ptag_gpio);
@@ -108,14 +107,14 @@ __ptagtable(PTAG_GPIO, parse_ptag_gpio);
  * The tag table is built by the linker from all the __ptagtable
  * declarations.
  */
-int parse_ptag(const struct ptag *ptag, u32 *conf)
+int parse_ptag(const struct ptag *ptag, u32 * conf)
 {
 	extern struct ptagtable __ptagtable_begin, __ptagtable_end;
 	struct ptagtable *t;
 
 	for (t = &__ptagtable_begin; t < &__ptagtable_end; t++)
 		if (ptag->hdr.ptag == t->ptag &&
-		   ((*conf & ptag->hdr.conf_mask) == ptag->hdr.conf)) {
+		    ((*conf & ptag->hdr.conf_mask) == ptag->hdr.conf)) {
 			if (t->parse(ptag) == -1) {
 				*conf |= ptag->hdr.fail_set_mask;
 				*conf &= ~ptag->hdr.fail_clear_mask;
@@ -129,23 +128,20 @@ int parse_ptag(const struct ptag *ptag, u32 *conf)
 /*
  * Parse all tags in the list
  */
-void parse_ptags(void *arg, u32 *conf)
+void parse_ptags(void *arg, u32 * conf)
 {
 #ifdef PARAM_START
-	struct ptag *t	= (struct ptag *) arg;
+	struct ptag *t = (struct ptag *)arg;
 	if (t->hdr.ptag == PTAG_CORE) {
 		for (; t->hdr.size; t = ptag_next(t)) {
-			if (t < (struct ptag *) PARAM_START || 
-			    t > (struct ptag *) (PARAM_START + PARAM_LEN) ||
+			if (t < (struct ptag *)PARAM_START ||
+			    t > (struct ptag *)(PARAM_START + PARAM_LEN) ||
 			    t->hdr.size > 0x7FFFFFFF) {
-				return; /* corrupt tags */
+				return;	/* corrupt tags */
 			}
-			if (!parse_ptag(t, conf)) { /* Ignoring unrecognised tag */ }
+			if (!parse_ptag(t, conf)) {	/* Ignoring unrecognised tag */
+			}
 		}
 	}
 #endif
 }
-
-
-
-

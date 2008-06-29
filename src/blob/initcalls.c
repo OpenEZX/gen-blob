@@ -46,25 +46,24 @@ static void serial_default_init(void)
 	serial_init(baud_9600);
 }
 
-
 #if 0
 /* init calls */
-__initlist(serial_default_init,	INIT_LEVEL_INITIAL_HARDWARE);
-__initlist(enable_icache,	INIT_LEVEL_INITIAL_HARDWARE);
-__initlist(led_init,		INIT_LEVEL_INITIAL_HARDWARE);
-__initlist(TimerInit,		INIT_LEVEL_OTHER_HARDWARE);
+__initlist(serial_default_init, INIT_LEVEL_INITIAL_HARDWARE);
+__initlist(enable_icache, INIT_LEVEL_INITIAL_HARDWARE);
+__initlist(led_init, INIT_LEVEL_INITIAL_HARDWARE);
+__initlist(TimerInit, INIT_LEVEL_OTHER_HARDWARE);
 
 /* exit calls */
-__exitlist(disable_icache,	INIT_LEVEL_INITIAL_HARDWARE);
+__exitlist(disable_icache, INIT_LEVEL_INITIAL_HARDWARE);
 #endif
 
 /* init calls */
 #ifndef MBM
-__initlist(mmu_init,		INIT_LEVEL_INITIAL_HARDWARE);
+__initlist(mmu_init, INIT_LEVEL_INITIAL_HARDWARE);
 #endif
-__initlist(led_init,		INIT_LEVEL_INITIAL_HARDWARE);
+__initlist(led_init, INIT_LEVEL_INITIAL_HARDWARE);
 
 /* exit calls */
 #ifndef MBM
-__exitlist(disable_mmu,		INIT_LEVEL_INITIAL_HARDWARE);
+__exitlist(disable_mmu, INIT_LEVEL_INITIAL_HARDWARE);
 #endif

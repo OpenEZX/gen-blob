@@ -25,7 +25,6 @@
 #include <blob/config.h>
 #endif
 
-
 #include <blob/types.h>
 #include <blob/pxa.h>
 #include <blob/handshake.h>
@@ -45,13 +44,12 @@
 #define bp_flag_not_set()	(*(unsigned long *)(BPSIG_ADDR) == NO_FLAG)
 #define bp_flag_is_set()	(*(unsigned long *)(BPSIG_ADDR) == WDI_FLAG)
 
-
 /* keypad macros */
 
 //for P2 board //if( KPAS == (0x280000f4) ) 
 //for 64MB dataflash P1 board 
 //for P1 work -- if( KPAS == (0x04000022) )
-#if defined(HAINAN) || defined(SUMATRA) 
+#if defined(HAINAN) || defined(SUMATRA)
 #define FLASH_KEY      0x04000025
 #define VOL_PLUS_KEY   0x04000042
 #define VOL_MINUS_KEY  0x04000002
@@ -63,11 +61,11 @@
 #define KEY_DEBOUNCE 40000	/* debounce 40ms */
 #endif
 
-static void naked_usb_flash(u32 data); /* a tool function just start usb flash loop */
-extern int is_key_press_down(u32 key_val,u32 Deb_val);
+static void naked_usb_flash(u32 data);	/* a tool function just start usb flash loop */
+extern int is_key_press_down(u32 key_val, u32 Deb_val);
 extern void Delay(int uSec);
 extern void udc_int_hndlr(int, void *);
-extern int usbctl_init( void );
+extern int usbctl_init(void);
 extern void USB_gpio_init(void);
 extern struct mem_area io_map[];
 /* structure note:
@@ -76,38 +74,37 @@ extern struct mem_area io_map[];
 
 BOOL check_flash_flag(void)
 {
-  return (*(unsigned long *)(FLAG_ADDR) == REFLASH_FLAG);
+	return (*(unsigned long *)(FLAG_ADDR) == REFLASH_FLAG);
 }
 
 BOOL check_valid_code(void)
 {
-  BOOL rev = TRUE;
+	BOOL rev = TRUE;
 
-#if 0	// wait for ZQ
-  u32* pbarkercode = BARKER_CODE_ADDRESS;
+#if 0				// wait for ZQ
+	u32 *pbarkercode = BARKER_CODE_ADDRESS;
 
-  if ( (*pbarkercode) != BARKER_CODE_VALID_VAL )
-    { 
-      rev = FALSE;
-    }
+	if ((*pbarkercode) != BARKER_CODE_VALID_VAL) {
+		rev = FALSE;
+	}
 #endif
-  return rev; 
-}	
+	return rev;
+}
 
 #include <menu.h>
 #define CONFIG_FILE "/boot/menu.lst"
-#define LINE_HEIGHT 14 
+#define LINE_HEIGHT 14
 
 static menu_entry_t *go_menu_entry = NULL;
-void show_menu(menu_t *menu)
+void show_menu(menu_t * menu)
 {
 	int i;
 	menu_entry_t *entry;
 	clrScreen();
 	printf("===============================\n");
-	int y = menu->curr_entry * (LINE_HEIGHT+4) + 20;
+	int y = menu->curr_entry * (LINE_HEIGHT + 4) + 20;
 	for (i = 0; i < LINE_HEIGHT; i++)
-		drawline(i+y, 0, i+y, 230);
+		drawline(i + y, 0, i + y, 230);
 
 	entry = menu->entry;
 	for (i = 0; i < menu->num; i++) {
@@ -119,8 +116,7 @@ void show_menu(menu_t *menu)
 			printlcd_rev(entry->title);
 			set_transparence(0);
 			go_menu_entry = entry;
-		}
-		else {
+		} else {
 			printlcd(entry->title);
 		}
 		printlcd("\n");
@@ -138,15 +134,10 @@ void show_menu(menu_t *menu)
 	printf("===============================\n");
 }
 
-int boot_menu(menu_t *menu)
+int boot_menu(menu_t * menu)
 {
-	int ret;
-
-	ret = parse_conf_file(CONFIG_FILE, menu);
-	printf("num=%d, default=%d, curr=%08x, \ntimeout=%d, entry=%08x\n", 
-	         menu->num, menu->default_entry, menu->curr_entry, menu->timeout, menu->entry);
 	menu->curr_entry = menu->default_entry;
-	if (menu->num == 0 || ret < 0)
+	if (menu->num == 0)
 		return -1;
 	show_menu(menu);
 	while (1) {
@@ -157,11 +148,11 @@ int boot_menu(menu_t *menu)
 		/* up */
 		else if (key == 0x04 || key == 0x32 || key == 0x00 || key == 31) {
 			if (menu->curr_entry == 0)
-				menu->curr_entry = menu->num-1;
+				menu->curr_entry = menu->num - 1;
 			else
 				menu->curr_entry--;
 			show_menu(menu);
-		/* down */
+			/* down */
 		} else if (key == 0x44 || key == 0x11 || key == 0x10) {
 			menu->curr_entry++;
 			if (menu->curr_entry == menu->num)
@@ -184,78 +175,86 @@ void enter_simple_pass_through_mode(void)
 	menu_t menu;
 	char *kernel = "/boot/default";
 
-  keypad_init();
+	keypad_init();
 /*  EnableLCD_8bit_active();
   while (1) {
   	u8 key = read_key();
 	printf("key = %02x\n", key);
   }
 */
-  USB_gpio_init();
-  usbctl_init();
+	USB_gpio_init();
+	usbctl_init();
 
-  if (is_key_press_down(0x04000031, 0) ||
-          is_key_press_down(0x04000003, 0) ||
-	  is_key_press_down(0x04000012, 0) ||
-	  is_key_press_down(0x04000042, 0) ) {
-  EnableLCD_8bit_active();
+	if (is_key_press_down(0x04000031, 0) ||
+	    is_key_press_down(0x04000003, 0) ||
+	    is_key_press_down(0x04000012, 0) ||
+	    is_key_press_down(0x04000042, 0)) {
+		EnableLCD_8bit_active();
 
-  GPCR(99) = GPIO_bit(99);  // USB_READY=low
-  {
-    int i=5000*4;
-    while(i--);
-  }
-  GPSR(99) = GPIO_bit(99);  // USB_READY =high
-  /* hwuart_init(230400); */
-  printlcd ("USB ready\n");
-  for(; ;) {
-    if(ICPR & 0x800) {
-      udc_int_hndlr(0x11, 0);
-    }
-  }
-  }
+		GPCR(99) = GPIO_bit(99);	// USB_READY=low
+		{
+			int i = 5000 * 4;
+			while (i--) ;
+		}
+		GPSR(99) = GPIO_bit(99);	// USB_READY =high
+		/* hwuart_init(230400); */
+		printlcd("USB ready\n");
+		for (;;) {
+			if (ICPR & 0x800) {
+				udc_int_hndlr(0x11, 0);
+			}
+		}
+	}
 
-  /* turn on the power */
-  pcap_mmc_power_on(1);
-  udelay(1000);
-  ret = mmc_init(0);
-  if (ret != 0) {
-        EnableLCD_8bit_active();
-  	printlcd("Cannot find MMC card\n");
-	while (1);
-  }
+	/* turn on the power */
+	pcap_mmc_power_on(1);
+	udelay(1000);
+	ret = mmc_init(0);
+	if (ret != 0) {
+		EnableLCD_8bit_active();
+		printlcd("Cannot find MMC card\n");
+		while (1) ;
+	}
 
-  file_detectfs();
-  if (is_key_press_down(0x04000002, 0) ||
-      is_key_press_down(0x04000043, 0) ||
-      is_key_press_down(0x04000013, 0) ) {
-  EnableLCD_8bit_active();
-  ret = boot_menu(&menu);
-  if (ret < 0 || !go_menu_entry) {
-  	printlcd("Config file not found!\n");
-	while (1);
-  }
-  kernel = go_menu_entry->kernel;
-  }
-  {
- int size;
+	file_detectfs();
+
+	ret = parse_conf_file(CONFIG_FILE, &menu);
+	if (ret < 0) {
+		EnableLCD_8bit_active();
+		printlcd("Cannot parse config file\n");
+		while (1) ;
+	}
+
+	if (is_key_press_down(0x04000002, 0) ||
+	    is_key_press_down(0x04000043, 0) ||
+	    is_key_press_down(0x04000013, 0)) {
+		EnableLCD_8bit_active();
+		ret = boot_menu(&menu);
+		if (ret < 0 || !go_menu_entry) {
+			printlcd("No suitable kernel entry\n");
+			while (1) ;
+		}
+		kernel = go_menu_entry->kernel;
+	}
+	{
+		int size;
 #define KERNEL_RAM_BASE1 0xa0300000
-  char *buf = (char *)KERNEL_RAM_BASE1;
-  void (*theKernel)(void) = KERNEL_RAM_BASE1;
-  printf("Loading %s...\n", kernel);
-  size = file_fat_read(kernel, buf, 0x200000);  // 2MB
+		char *buf = (char *)KERNEL_RAM_BASE1;
+		void (*theKernel) (void) = KERNEL_RAM_BASE1;
+		printf("Loading %s...\n", kernel);
+		size = file_fat_read(kernel, buf, 0x200000);	// 2MB
 
-  /* turn off mmc controler, otherwise 2.4 kernel freezes */
-  MMC_STRPCL = MMC_STRPCL_STOP_CLK;
-  MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
-  CKEN &= ~(CKEN12_MMC);
-  pcap_mmc_power_on(0);
+		/* turn off mmc controler, otherwise 2.4 kernel freezes */
+		MMC_STRPCL = MMC_STRPCL_STOP_CLK;
+		MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
+		CKEN &= ~(CKEN12_MMC);
+		pcap_mmc_power_on(0);
 
-  if (size > 0) {
-  	printf("read %d bytes\nbooting...\n", size);
-  	theKernel();
-  }
-	printf("Cannot load kernel from:\n   %s\n", kernel);
-	while (1);
-  }
+		if (size > 0) {
+			printf("read %d bytes\nbooting...\n", size);
+			theKernel();
+		}
+		printf("Cannot load kernel from:\n   %s\n", kernel);
+		while (1) ;
+	}
 }

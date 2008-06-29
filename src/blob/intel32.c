@@ -31,7 +31,6 @@
 #include <blob/util.h>
 #include <blob/serial.h>
 
-
 /* flash commands for two 16 bit intel flash chips */
 #define READ_ARRAY		0x00FF00FF
 #define ERASE_SETUP		0x00200020
@@ -50,11 +49,8 @@
 #define LOCK_STATUS_LOCKED	0x00010001
 #define LOCK_STATUS_LOCKEDDOWN	0x00020002
 
-
-
-
 /* erases a flash block at the given address */
-static int flash_erase_intel32(u32 *addr)
+static int flash_erase_intel32(u32 * addr)
 {
 	u32 result;
 
@@ -75,13 +71,13 @@ static int flash_erase_intel32(u32 *addr)
 		barrier();
 		result = data_from_flash(*addr);
 		barrier();
-	} while((~result & STATUS_BUSY) != 0);
+	} while ((~result & STATUS_BUSY) != 0);
 
 	/* put flash back into Read Array mode */
 	*addr = data_to_flash(READ_ARRAY);
 	barrier();
 
-	if((result & STATUS_ERASE_ERR) != 0) {
+	if ((result & STATUS_ERASE_ERR) != 0) {
 #ifdef BLOB_DEBUG
 		SerialOutputString(__FUNCTION__ " failed, result=0x");
 		SerialOutputHex(result);
@@ -95,10 +91,8 @@ static int flash_erase_intel32(u32 *addr)
 	return 0;
 }
 
-
-
 /* write a flash block at a given location */
-static int flash_write_intel32(u32 *dst, const u32* src)
+static int flash_write_intel32(u32 * dst, const u32 * src)
 {
 	u32 result;
 
@@ -120,13 +114,13 @@ static int flash_write_intel32(u32 *dst, const u32* src)
 
 		result = data_from_flash(*dst);
 		barrier();
-	} while((~result & STATUS_BUSY) != 0);
+	} while ((~result & STATUS_BUSY) != 0);
 
 	/* put flash back into Read Array mode */
 	*dst = data_to_flash(READ_ARRAY);
 	barrier();
 
-	if(((result & STATUS_PGM_ERR) != 0) || (*dst != *src)) {
+	if (((result & STATUS_PGM_ERR) != 0) || (*dst != *src)) {
 #ifdef BLOB_DEBUG
 		SerialOutputString(__FUNCTION__ "failed, result=0x");
 		SerialOutputHex(result);
@@ -136,14 +130,11 @@ static int flash_write_intel32(u32 *dst, const u32* src)
 #endif
 		return -EFLASHPGM;
 	}
-	
+
 	return 0;
 }
 
-
-
-
-static int flash_lock_block_intel32(u32 *blockStart)
+static int flash_lock_block_intel32(u32 * blockStart)
 {
 	u32 result;
 
@@ -182,10 +173,7 @@ static int flash_lock_block_intel32(u32 *blockStart)
 	return 0;
 }
 
-
-
-
-static int flash_unlock_block_intel32(u32 *blockStart)
+static int flash_unlock_block_intel32(u32 * blockStart)
 {
 	u32 result;
 
@@ -220,10 +208,7 @@ static int flash_unlock_block_intel32(u32 *blockStart)
 	return 0;
 }
 
-
-
-
-static int flash_query_block_lock_intel32(u32 *blockStart)
+static int flash_query_block_lock_intel32(u32 * blockStart)
 {
 	u32 result;
 
@@ -246,14 +231,11 @@ static int flash_query_block_lock_intel32(u32 *blockStart)
 	return result & (LOCK_STATUS_LOCKED | LOCK_STATUS_LOCKEDDOWN);
 }
 
-
-
-
 /* flash driver structure */
 flash_driver_t intel32_flash_driver = {
-	erase:			flash_erase_intel32,
-	write:			flash_write_intel32,
-	lock_block:		flash_lock_block_intel32,
-	unlock_block:		flash_unlock_block_intel32,
-	query_block_lock:	flash_query_block_lock_intel32
+      erase:flash_erase_intel32,
+      write:flash_write_intel32,
+      lock_block:flash_lock_block_intel32,
+      unlock_block:flash_unlock_block_intel32,
+      query_block_lock:flash_query_block_lock_intel32
 };

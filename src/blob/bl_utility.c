@@ -34,7 +34,6 @@ INCLUDE FILES
 LOCAL CONSTANTS
 ==============================================================================*/
 
-
 /*==============================================================================
 LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 ==============================================================================*/
@@ -43,31 +42,25 @@ LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
 LOCAL MACROS
 ==============================================================================*/
 
-
 /*==============================================================================
 LOCAL FUNCTION PROTOTYPES
 ==============================================================================*/
-
 
 /*==============================================================================
 LOCAL VARIABLES
 ==============================================================================*/
 
-
 /*==============================================================================
 GLOBAL VARIABLES
 ==============================================================================*/
-
 
 /*==============================================================================
 LOCAL POINTER DECLARATIONS
 ==============================================================================*/
 
-
 /*==============================================================================
 LOCAL FUNCTIONS
 ==============================================================================*/
-
 
 /*==============================================================================
 GLOBAL FUNCTIONS
@@ -97,22 +90,20 @@ SIDE EFFECTS:
 
 ==============================================================================*/
 
-u32 util_hexasc_to_u32(u8 *str_ptr, u8 size)
+u32 util_hexasc_to_u32(u8 * str_ptr, u8 size)
 {
-   u8 digit;
-   u32 val = 0L;
+	u8 digit;
+	u32 val = 0L;
 
-   while(size--)
-   {
-      digit = *str_ptr++;
+	while (size--) {
+		digit = *str_ptr++;
 
-      val <<= 4; /* Shift previous digit over */
-      val += (digit >= 'A') ? (digit - '7') : (digit - '0');
-   }
+		val <<= 4;	/* Shift previous digit over */
+		val += (digit >= 'A') ? (digit - '7') : (digit - '0');
+	}
 
-   return(val);
+	return (val);
 }
-
 
 /*==============================================================================
 
@@ -138,20 +129,17 @@ SIDE EFFECTS:
 
 ==============================================================================*/
 
-void util_u8_to_hexasc(u8 val,u8 *str_ptr)
-
+void util_u8_to_hexasc(u8 val, u8 * str_ptr)
 {
-   u8 i,digit;
+	u8 i, digit;
 
-   for (i=0 ; i<2 ; i++)
-   {
-      digit = (val >> 4) & 0x0f;
-      val <<= 4;
-      *str_ptr++ = (digit > 9) ? (digit + '7') : (digit + '0');
-   }
-   *str_ptr = NULL;
+	for (i = 0; i < 2; i++) {
+		digit = (val >> 4) & 0x0f;
+		val <<= 4;
+		*str_ptr++ = (digit > 9) ? (digit + '7') : (digit + '0');
+	}
+	*str_ptr = NULL;
 }
-
 
 /*==============================================================================
 
@@ -177,18 +165,16 @@ SIDE EFFECTS:
 
 ==============================================================================*/
 
-void util_u16_to_hexasc(u16 val,u8 *str_ptr)
-
+void util_u16_to_hexasc(u16 val, u8 * str_ptr)
 {
-   u8 i,digit;
+	u8 i, digit;
 
-   for (i=0 ; i<4 ; i++)
-   {
-      digit = (val >> 12) & 0x0f;
-      val <<= 4;
-      *str_ptr++ = (digit > 9) ? (digit + '7') : (digit + '0');
-   }
-   *str_ptr = NULL;
+	for (i = 0; i < 4; i++) {
+		digit = (val >> 12) & 0x0f;
+		val <<= 4;
+		*str_ptr++ = (digit > 9) ? (digit + '7') : (digit + '0');
+	}
+	*str_ptr = NULL;
 }
 
 /*==============================================================================
@@ -215,18 +201,16 @@ SIDE EFFECTS:
 
 ==============================================================================*/
 
-void util_u32_to_hexasc(u16 val,u8 *str_ptr)
-
+void util_u32_to_hexasc(u16 val, u8 * str_ptr)
 {
-   u8 i,digit;
+	u8 i, digit;
 
-   for (i=0 ; i<8 ; i++)
-   {
-      digit = (val >> 28) & 0x0f;
-      val <<= 4;
-      *str_ptr++ = (digit > 9) ? (digit + '7') : (digit + '0');
-   }
-   *str_ptr = NULL;
+	for (i = 0; i < 8; i++) {
+		digit = (val >> 28) & 0x0f;
+		val <<= 4;
+		*str_ptr++ = (digit > 9) ? (digit + '7') : (digit + '0');
+	}
+	*str_ptr = NULL;
 }
 
 /*==============================================================================
@@ -253,21 +237,20 @@ SIDE EFFECTS:
 
 ==============================================================================*/
 
-BOOL util_string_equal(u8 *str1_ptr,u8 *str2_ptr)
+BOOL util_string_equal(u8 * str1_ptr, u8 * str2_ptr)
 {
-   BOOLEAN match = FALSE;
+	BOOLEAN match = FALSE;
 
-   while (*str1_ptr && *str2_ptr && (*str1_ptr == *str2_ptr))
-   {
-      str1_ptr++; str2_ptr++;
-   }
+	while (*str1_ptr && *str2_ptr && (*str1_ptr == *str2_ptr)) {
+		str1_ptr++;
+		str2_ptr++;
+	}
 
-   if (*str1_ptr == *str2_ptr)
-   {
-      match = TRUE;
-   }
+	if (*str1_ptr == *str2_ptr) {
+		match = TRUE;
+	}
 
-   return(match);
+	return (match);
 }
 
 /*==============================================================================
@@ -294,67 +277,61 @@ SIDE EFFECTS:
 
 ==============================================================================*/
 
-void util_copy_str(u8 *dest_ptr,u8 *src_ptr)
-
+void util_copy_str(u8 * dest_ptr, u8 * src_ptr)
 {
-   do
-   {
-      *dest_ptr++ = *src_ptr;
-   }
-   while (*src_ptr++); /* do-while will copy null terminator! */
+	do {
+		*dest_ptr++ = *src_ptr;
+	}
+	while (*src_ptr++);	/* do-while will copy null terminator! */
 }
-
 
 /*============================================================================*/
-    
-void util_jump_to_ram( u32 ram_addr )
-{
-    void (*ramloader)(void) = (void (*)(void))ram_addr ;
 
-#ifdef ZQ_DEBUG    
-    PRINT_STR("Jump to the new address: ");
-    PRINT_HEX(ram_addr);
-    PRINT_STR("\n");
-    PRINT_STR("\nRuning ramloader ......\n");
+void util_jump_to_ram(u32 ram_addr)
+{
+	void (*ramloader) (void) = (void (*)(void))ram_addr;
+
+#ifdef ZQ_DEBUG
+	PRINT_STR("Jump to the new address: ");
+	PRINT_HEX(ram_addr);
+	PRINT_STR("\n");
+	PRINT_STR("\nRuning ramloader ......\n");
 #endif /* ZQ_DEBUG */
 
-    ramloader();
+	ramloader();
 }
 
-void util_power_down( void )
+void util_power_down(void)
 {
-    
+
 #ifdef ZQ_DEBUG
-    PRINT_STR("Power down the phone\n");
+	PRINT_STR("Power down the phone\n");
 #endif /* ZQ_DEBUG */
 
-    GAFR2_U &= 0xffff3fff;
-    GAFR2_U |= 0x00004000;
-    GPCR2 = 0x00800000;
-    GPDR2 &= 0xff7fffff;
-    while(1)
-    {
+	GAFR2_U &= 0xffff3fff;
+	GAFR2_U |= 0x00004000;
+	GPCR2 = 0x00800000;
+	GPDR2 &= 0xff7fffff;
+	while (1) {
 #ifdef ZQ_DEBUG
-        PRINT_STR("Power down infinite looping\n");
+		PRINT_STR("Power down infinite looping\n");
 #endif /* ZQ_DEBUG */
-    }
+	}
 }
 
-void util_restart ( void )
+void util_restart(void)
 {
 #ifdef ZQ_DEBUG
-    PRINT_STR("Restart the phone\n");
+	PRINT_STR("Restart the phone\n");
 #endif /* ZQ_DEBUG */
 
-    GAFR0_U = GAFR0_U & 0xffffcfff;
-    GPCR0 = 0x00400000;
-    GPDR0 = GPDR0 | 0x00400000;
-    while(1)
-    {
+	GAFR0_U = GAFR0_U & 0xffffcfff;
+	GPCR0 = 0x00400000;
+	GPDR0 = GPDR0 | 0x00400000;
+	while (1) {
 #ifdef ZQ_DEBUG
-        PRINT_STR("Re-Start infinite looping\n");
+		PRINT_STR("Re-Start infinite looping\n");
 #endif /* ZQ_DEBUG */
-    }
+	}
 
 }
-

@@ -37,7 +37,6 @@
  * 2005-May-18 - (Motorola) Changes to enable manual flash mode
  *
  */
- 
 
 #ident "$Id: main.c,v 1.23 2002/01/07 14:48:25 seletz Exp $"
 
@@ -67,153 +66,158 @@
 #include <blob/bt_uart.h>
 #include <linux/string.h>
 
-
 #include <blob/log.h>
 #include <blob/HW_init.h>
 #include <blob/SW_init.h>
 #include <blob/boot_modes.h>
 
 /* we need update to new config table design */
-#define KCT_FLASH_ADDR  	0x67000// new start address of KCT tabe         
-#define CMDL_TAG_ADDRESS        KCT_FLASH_ADDR //now, first tag is command line, and its addr is same as kct header       
-#define CMDL_TAG_VALUE   	0x8000    
-u32 cmd_flag=0;
+#define KCT_FLASH_ADDR  	0x67000	// new start address of KCT tabe
+#define CMDL_TAG_ADDRESS        KCT_FLASH_ADDR	//now, first tag is command line, and its addr is same as kct header
+#define CMDL_TAG_VALUE   	0x8000
+u32 cmd_flag = 0;
 /* ------------KCT tool functions------------ */
 //get KCT head address, possible to a flexible design later
-static u32 get_KCT_addr(void){
-  return KCT_FLASH_ADDR;
+static u32 get_KCT_addr(void)
+{
+	return KCT_FLASH_ADDR;
 
 }
+
 //get first tag address based on a offset, possible to a flexible design later
-static u32 get_cmdl_tag_addr(u32 offset){
-  return CMDL_TAG_ADDRESS;
+static u32 get_cmdl_tag_addr(u32 offset)
+{
+	return CMDL_TAG_ADDRESS;
 
 }
-static u16 get_tag_value(u32 tag_addr){
-  return *((u16 *)tag_addr);
+static u16 get_tag_value(u32 tag_addr)
+{
+	return *((u16 *) tag_addr);
 
 }
-static u16 get_tag_size(u32 tag_addr){
-  u16 * p=(u16 *)tag_addr;
-  p++;
-  return *p;
+static u16 get_tag_size(u32 tag_addr)
+{
+	u16 *p = (u16 *) tag_addr;
+	p++;
+	return *p;
 
 }
-static void* get_tag_content_addr(u32 tag_addr){
-  u16 * p=(u16 *)tag_addr;
-  p++;				/* skip tag value */
-  p++;				/* skip tag size */
-  return p;
+static void *get_tag_content_addr(u32 tag_addr)
+{
+	u16 *p = (u16 *) tag_addr;
+	p++;			/* skip tag value */
+	p++;			/* skip tag size */
+	return p;
 
 }
+
 //get and set blob tag in new kct design,
 static void parse_blob_tag(void)
 {
-  u16 tag_val=0, tag_size=0;
-  //get kct head addr
-  u32 kct_head_addr=get_KCT_addr();
+	u16 tag_val = 0, tag_size = 0;
+	//get kct head addr
+	u32 kct_head_addr = get_KCT_addr();
 
-  //get first (command line) tag address
-  u32 cmdl_tag_addr = get_cmdl_tag_addr(kct_head_addr);
+	//get first (command line) tag address
+	u32 cmdl_tag_addr = get_cmdl_tag_addr(kct_head_addr);
 
-  //get command_line_value and size
-  tag_val=get_tag_value(cmdl_tag_addr);
-  logvarhex("parse_blob_tag: tag_val=0x",tag_val);
-  tag_size=get_tag_size(cmdl_tag_addr);
-  logvarhex("parse_blob_tag: tag_size=0x",tag_size);
-  //set first tag if possible
+	//get command_line_value and size
+	tag_val = get_tag_value(cmdl_tag_addr);
+	logvarhex("parse_blob_tag: tag_val=0x", tag_val);
+	tag_size = get_tag_size(cmdl_tag_addr);
+	logvarhex("parse_blob_tag: tag_size=0x", tag_size);
+	//set first tag if possible
 
-  if (CMDL_TAG_VALUE ==tag_val){
-    char * cmdline=get_tag_content_addr(cmdl_tag_addr);
-    cmd_flag = 1;
-    memcpy(blob_status.cmdline, cmdline, tag_size);
-    logstr("parse_blob_tag:cmdl ok\n");
-  }else {
-    cmd_flag = 0;
-    blob_status.cmdline[0] = '\0';
-  }
+	if (CMDL_TAG_VALUE == tag_val) {
+		char *cmdline = get_tag_content_addr(cmdl_tag_addr);
+		cmd_flag = 1;
+		memcpy(blob_status.cmdline, cmdline, tag_size);
+		logstr("parse_blob_tag:cmdl ok\n");
+	} else {
+		cmd_flag = 0;
+		blob_status.cmdline[0] = '\0';
+	}
 
-  //go to next tag....
+	//go to next tag....
 
 }
 
 /* end of -------KCT tool functions----------- */
 #define FLASH_TOOL_TEST_VERSION
 #define BARBADOS_HANDSHAKE
-#ifdef BARBADOS_HANDSHAKE  //waiting for about 4s
+#ifdef BARBADOS_HANDSHAKE	//waiting for about 4s
 #define BARBADOS_BP_RDY_TIMEOUT  40000000
 #endif
 //#define OUTPUT_LOG_TO_STPORT
 
 #ifdef MBM
-extern int boot_linux(int,char*);
+extern int boot_linux(int, char *);
 
 #endif
 
 #ifdef FLASH_TOOL_TEST_VERSION
 
-char value_trans_to_char(u8 data )
+char value_trans_to_char(u8 data)
 {
-	char ret ='F';
+	char ret = 'F';
 
-        if(data>15)
+	if (data > 15)
 		return ret;
 
-        if( data <10) {
-		ret = '0'+data;
-        } else {
-		ret = 'a'+data-10;
-        }
+	if (data < 10) {
+		ret = '0' + data;
+	} else {
+		ret = 'a' + data - 10;
+	}
 
-        return ret;
+	return ret;
 }
 
-int translate_xnum_to_string( u8 * pStr,u32 num)
+int translate_xnum_to_string(u8 * pStr, u32 num)
 {
-        int i;
+	int i;
 
-        pStr[8]=0;
-        for(i=0;i<8;i++) {
-		pStr[7-i] = value_trans_to_char(num%16);
-		num = num/16;           
-        }
-        return 0;
+	pStr[8] = 0;
+	for (i = 0; i < 8; i++) {
+		pStr[7 - i] = value_trans_to_char(num % 16);
+		num = num / 16;
+	}
+	return 0;
 }
 
 /* output reset information for debug */
 void output_reset_inf(u32 sleepflag)
 {
-        u8 mystr[20];
+	u8 mystr[20];
 
-        printlcd("\nFLAG=0x");
-        translate_xnum_to_string( mystr,sleepflag);  
-        printlcd(mystr);
+	printlcd("\nFLAG=0x");
+	translate_xnum_to_string(mystr, sleepflag);
+	printlcd(mystr);
 
-        printlcd("\nRESET=0x");
-        translate_xnum_to_string( mystr,FFSPR);  
-        printlcd(mystr);
+	printlcd("\nRESET=0x");
+	translate_xnum_to_string(mystr, FFSPR);
+	printlcd(mystr);
 
-        printlcd("\nBRESET=0x");        
-        translate_xnum_to_string( mystr,PSPR);  
-        printlcd(mystr);
+	printlcd("\nBRESET=0x");
+	translate_xnum_to_string(mystr, PSPR);
+	printlcd(mystr);
 
-        printlcd("\nARESET=0x");        
-        translate_xnum_to_string( mystr,RCSR);  
-        printlcd(mystr);
+	printlcd("\nARESET=0x");
+	translate_xnum_to_string(mystr, RCSR);
+	printlcd(mystr);
 }
 
 /* save reset cause at previous time for debug */
 void save_reset_inf(void)
 {
-        PSPR = RCSR;
+	PSPR = RCSR;
 }
-
 
 #else
 
 #define output_reset_inf(sleepflag)
 #define save_reset_inf()
-	
+
 #endif
 
 blob_status_t blob_status;
@@ -221,25 +225,24 @@ blob_status_t blob_status;
 #if 0
 static int do_reload(char *what);
 
-static char *boot_params[] = { // ALEX
-	"root=3e00", 
+static char *boot_params[] = {	// ALEX
+	"root=3e00",
 	"rootfstype=cramfs",
 	"ip=off",
 	"paniclog=on",
 };
 #endif
-#define NR_BOOT_PARAMS 4 //(sizeof(boot_params) / sizeof(char *))
+#define NR_BOOT_PARAMS 4	//(sizeof(boot_params) / sizeof(char *))
 
 int main(void)
 {
-#if 1 // ALEX test codes
-{
-	enter_simple_pass_through_mode();
-}
+#if 1				// ALEX test codes
+	{
+		enter_simple_pass_through_mode();
+	}
 #endif // ALEX
 	return 0;
-} /* main */
-
+}				/* main */
 
 #if 0
 static int do_reload(char *what)
@@ -248,32 +251,32 @@ static int do_reload(char *what)
 	u32 *src = 0;
 	int numWords;
 
-	if(strncmp(what, "blob", 5) == 0) {
-		dst = (u32 *)BLOB_RAM_BASE;
-		src = (u32 *)BLOB_FLASH_BASE;
+	if (strncmp(what, "blob", 5) == 0) {
+		dst = (u32 *) BLOB_RAM_BASE;
+		src = (u32 *) BLOB_FLASH_BASE;
 		numWords = BLOB_FLASH_LEN / 4;
 		blob_status.blobSize = 0;
 		blob_status.blobType = fromFlash;
 		//SerialOutputString("Loading blob from flash ");
 #ifdef PARAM_START
-	} else if(strncmp(what, "param", 6) == 0) {
-		dst = (u32 *)PARAM_RAM_BASE;
-		src = (u32 *)PARAM_FLASH_BASE;
+	} else if (strncmp(what, "param", 6) == 0) {
+		dst = (u32 *) PARAM_RAM_BASE;
+		src = (u32 *) PARAM_FLASH_BASE;
 		numWords = PARAM_FLASH_LEN / 4;
 		blob_status.paramSize = 0;
 		blob_status.paramType = fromFlash;
 		//SerialOutputString("Loading paramater block from flash ");
 #endif
-	} else if(strncmp(what, "kernel", 7) == 0) {
-		dst = (u32 *)KERNEL_RAM_BASE;
-		src = (u32 *)KERNEL_FLASH_BASE;
+	} else if (strncmp(what, "kernel", 7) == 0) {
+		dst = (u32 *) KERNEL_RAM_BASE;
+		src = (u32 *) KERNEL_FLASH_BASE;
 		numWords = KERNEL_FLASH_LEN / 4;
 		blob_status.kernelSize = 0;
 		blob_status.kernelType = fromFlash;
 		//SerialOutputString("Loading kernel from flash ");
-	} else if(strncmp(what, "ramdisk", 8) == 0) {
-		dst = (u32 *)RAMDISK_RAM_BASE;
-		src = (u32 *)RAMDISK_FLASH_BASE;
+	} else if (strncmp(what, "ramdisk", 8) == 0) {
+		dst = (u32 *) RAMDISK_RAM_BASE;
+		src = (u32 *) RAMDISK_FLASH_BASE;
 		numWords = RAMDISK_FLASH_LEN / 4;
 		blob_status.ramdiskSize = 0;
 		blob_status.ramdiskType = fromFlash;
@@ -290,5 +293,3 @@ static int do_reload(char *what)
 }
 
 #endif
-	
-

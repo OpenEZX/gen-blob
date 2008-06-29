@@ -35,14 +35,12 @@
 #include <blob/main.h>
 #include <blob/serial.h>
 
-
-
 static int reblob(int argc, char *argv[])
 {
-	void (*blob)(void) = (void (*)(void))BLOB_RAM_BASE;
+	void (*blob) (void) = (void (*)(void))BLOB_RAM_BASE;
 
 	/* sanity check */
-	if(blob_status.blobType == fromFlash) {
+	if (blob_status.blobType == fromFlash) {
 		printerrprefix();
 		SerialOutputString("blob not downloaded\n");
 		return -EINVAL;
@@ -61,7 +59,6 @@ static int reblob(int argc, char *argv[])
 	return 0;
 }
 
-static char reblobhelp[] = "reblob\n"
-"Restart blob from RAM\n";
+static char reblobhelp[] = "reblob\n" "Restart blob from RAM\n";
 
 __commandlist(reblob, "reblob", reblobhelp);

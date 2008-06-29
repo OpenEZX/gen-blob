@@ -81,7 +81,6 @@
 #define CHKMEM_PUSHERR( ADR ) { chkmem_errlist[ chkmem_errs % CHKMEM_MAXERR ] = ADR; \
 							chkmem_errs++; }
 
-
 /*********************************************************************/
 /**  MODULE GLOBALS  *************************************************/
 /*********************************************************************/
@@ -89,38 +88,38 @@
 static u32 showevery;
 
 /* list of failed adresses */
-static u32 chkmem_errlist[ CHKMEM_MAXERR ];
+static u32 chkmem_errlist[CHKMEM_MAXERR];
 static int chkmem_errs;
 
 /*********************************************************************/
 /**  TYPES   *********************************************************/
 /*********************************************************************/
 
-typedef int (*memtestfunc_t)( u32, u32, u32, u32 *);
+typedef int (*memtestfunc_t) (u32, u32, u32, u32 *);
 
 /*********************************************************************/
 /**  FORWARDS  *******************************************************/
 /*********************************************************************/
 
-static int ChkMemErr( void );
-static int ChkMemMovInv( u32 start, u32 end, u32 pattern, u32 *badadr );
-static int ChkMemAdrTst( u32 start, u32 end, u32 pattern, u32 *badadr );
-static int ChkMemHardcore( u32 start, u32 end, u32 pattern, u32 *badadr );
+static int ChkMemErr(void);
+static int ChkMemMovInv(u32 start, u32 end, u32 pattern, u32 * badadr);
+static int ChkMemAdrTst(u32 start, u32 end, u32 pattern, u32 * badadr);
+static int ChkMemHardcore(u32 start, u32 end, u32 pattern, u32 * badadr);
 
-static void showrun( u32 run );
-static void showadr( volatile u32 *adr );
+static void showrun(u32 run);
+static void showadr(volatile u32 * adr);
 
 /* Charles Cazabon test methods */
-static int test_or_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_and_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_seqinc_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_checkerboard_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_solidbits_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_blockseq_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_walkbits_comparison (u32 *bp1, u32 *bp2, u32 count, int mode);
-static int test_bitspread_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_bitflip_comparison (u32 *bp1, u32 *bp2, u32 count);
-static int test_stuck_address (u32 *bp1, u32 *bp2, u32 count);
+static int test_or_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_and_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_seqinc_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_checkerboard_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_solidbits_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_blockseq_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_walkbits_comparison(u32 * bp1, u32 * bp2, u32 count, int mode);
+static int test_bitspread_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_bitflip_comparison(u32 * bp1, u32 * bp2, u32 count);
+static int test_stuck_address(u32 * bp1, u32 * bp2, u32 count);
 
 /*********************************************************************/
 /** EXPORTED FUNCTIONS ***********************************************/
@@ -135,17 +134,17 @@ static int test_stuck_address (u32 *bp1, u32 *bp2, u32 count);
  * Command entry, memory test method dispatcher
  *
  */
-int ChkMem( int argc, char *argv[] )
+int ChkMem(int argc, char *argv[])
 {
-	memtestfunc_t	method;
-	int				area;
-	u32				start		= 0L;
-	u32				end			= 0L;
-	u32				badaddr		= 0L;
-	u32				repcount	= 0L;
+	memtestfunc_t method;
+	int area;
+	u32 start = 0L;
+	u32 end = 0L;
+	u32 badaddr = 0L;
+	u32 repcount = 0L;
 
 	/* check args */
-	if ( argc < 2 ) {
+	if (argc < 2) {
 		SerialOutputString("*** not enough arguments\n");
 		return CHKMEM_ERR;
 	}
@@ -155,14 +154,14 @@ int ChkMem( int argc, char *argv[] )
 
 	/* get verbosity level */
 	showevery = CHKMEM_SHOWEVERY;
-	if ( argc > 2 ) {
-		if(strtou32(argv[2], &showevery) < 0) {
+	if (argc > 2) {
+		if (strtou32(argv[2], &showevery) < 0) {
 			SerialOutputString("*** not a value\n");
 			return CHKMEM_ERR;
 		}
 
-		if ( showevery > 0 ) {
-			showevery = 1<<showevery;
+		if (showevery > 0) {
+			showevery = 1 << showevery;
 		} else {
 			/* never show address */
 			showevery = 0xffffffff;
@@ -171,8 +170,8 @@ int ChkMem( int argc, char *argv[] )
 
 	/* get repeat count */
 	repcount = 1;
-	if ( argc > 3 ) {
-		if ( strtou32(argv[3], &repcount ) < 0 ) {
+	if (argc > 3) {
+		if (strtou32(argv[3], &repcount) < 0) {
 			SerialOutputString("*** not a value\n");
 			return CHKMEM_ERR;
 		}
@@ -184,37 +183,38 @@ int ChkMem( int argc, char *argv[] )
 	SerialOutputString(" bytes\n");
 
 	/* set memory test method */
-	switch ( *argv[1] ) {
-		case '0':
-			method = ChkMemMovInv;
-			break;
-		case '1':
-			method = ChkMemAdrTst;
-			break;
-		case '2':
-			method = ChkMemHardcore;
-			break;
-		default:
-			SerialOutputString("*** unknown method\n");
-			return CHKMEM_ERR;
-			break;
+	switch (*argv[1]) {
+	case '0':
+		method = ChkMemMovInv;
+		break;
+	case '1':
+		method = ChkMemAdrTst;
+		break;
+	case '2':
+		method = ChkMemHardcore;
+		break;
+	default:
+		SerialOutputString("*** unknown method\n");
+		return CHKMEM_ERR;
+		break;
 	}
 
-	while ( repcount-- ) {
+	while (repcount--) {
 		/* test all known memory areas */
 		for (area = 0; area < NUM_MEM_AREAS; area++) {
-			if(memory_map[area].used) {
+			if (memory_map[area].used) {
 				start = memory_map[area].start;
 				end = start + memory_map[area].len;
 
-				if ( method(start, end, 0x5555aaaa, &badaddr) != CHKMEM_OK ) {
-					CHKMEM_PUSHERR( badaddr );
+				if (method(start, end, 0x5555aaaa, &badaddr) !=
+				    CHKMEM_OK) {
+					CHKMEM_PUSHERR(badaddr);
 				}
 			}
 		}
 	}
 
-	if ( chkmem_errs == 0 ) {
+	if (chkmem_errs == 0) {
 		SerialOutputString("\n*** no error found\n");
 	} else {
 		ChkMemErr();
@@ -222,12 +222,11 @@ int ChkMem( int argc, char *argv[] )
 
 	return CHKMEM_OK;
 }
-static char chkmemhelp[] = "chkmem [method] {verbosity:1..F} {repeat-count}\nmethod=0: move-inverse test\n"
-"method=1: address test\n"
-"method=2: hardcore test\n"
-"verbosity: display every 2^n address during test\n";
+static char chkmemhelp[] =
+    "chkmem [method] {verbosity:1..F} {repeat-count}\nmethod=0: move-inverse test\n"
+    "method=1: address test\n" "method=2: hardcore test\n"
+    "verbosity: display every 2^n address during test\n";
 __commandlist(ChkMem, "chkmem", chkmemhelp);
-
 
 /*********************************************************************/
 /** STATIC FUNCTIONS  ************************************************/
@@ -242,13 +241,12 @@ __commandlist(ChkMem, "chkmem", chkmemhelp);
  * Shows current memory test run
  *
  */
-static void showrun( u32 run )
+static void showrun(u32 run)
 {
-	SerialOutputString( "\r\nrun " );
-	SerialOutputHex( run );
-	SerialOutputString( "\n" );
+	SerialOutputString("\r\nrun ");
+	SerialOutputHex(run);
+	SerialOutputString("\n");
 }
-
 
 /*********************************************************************
  * showadr
@@ -259,17 +257,14 @@ static void showrun( u32 run )
  * display <adr> every <showevery> bytes.
  *
  */
-static void showadr( volatile u32 *adr )
+static void showadr(volatile u32 * adr)
 {
-	if ( ((u32)adr) % showevery == 0 ) {
+	if (((u32) adr) % showevery == 0) {
 		SerialOutputString("\r");
-		SerialOutputHex( (u32)adr );
+		SerialOutputHex((u32) adr);
 	}
 
 }
-
-
-
 
 /*********************************************************************
  * ChkMemErr
@@ -280,14 +275,14 @@ static void showadr( volatile u32 *adr )
  * Reports memory check errors
  *
  */
-static int ChkMemErr( void )
+static int ChkMemErr(void)
 {
 	int i;
 
 	SerialOutputString("\n*** memory errors:\n");
 
-	for ( i=0; i< chkmem_errs % CHKMEM_MAXERR; i++ ) {
-		SerialOutputHex( i );
+	for (i = 0; i < chkmem_errs % CHKMEM_MAXERR; i++) {
+		SerialOutputHex(i);
 		SerialOutputString(": 0x");
 		SerialOutputHex(chkmem_errlist[i]);
 		SerialOutputString("\n");
@@ -321,15 +316,15 @@ static int ChkMemErr( void )
  * address in badadr
  *
  */
-static int ChkMemMovInv( u32 start, u32 end, u32 pattern, u32 *badadr )
+static int ChkMemMovInv(u32 start, u32 end, u32 pattern, u32 * badadr)
 {
-	int				ret		= 1;
-	register u32	p;
-	register u32	tst;
+	int ret = 1;
+	register u32 p;
+	register u32 tst;
 
 	SerialOutputString("\nchkmem: move-inverse method\n");
 
-	SKIPBLOBMEM( start );
+	SKIPBLOBMEM(start);
 
 #if CHKMEM_DEBUG
 	SerialOutputString("ChkMem: start(0x");
@@ -344,9 +339,9 @@ static int ChkMemMovInv( u32 start, u32 end, u32 pattern, u32 *badadr )
 #endif
 
 	/* fill mem with pattern */
-	p=start;
-	while ( p<end ) {
-		MEM( p ) = pattern;
+	p = start;
+	while (p < end) {
+		MEM(p) = pattern;
 		barrier();
 		p += 4;
 	}
@@ -356,14 +351,14 @@ static int ChkMemMovInv( u32 start, u32 end, u32 pattern, u32 *badadr )
 #endif
 
 	/* bottom-up test */
-	p=start;
-	while ( p<end ) {
-		showadr( (u32*)p );
-		tst = MEM( p );
-		if ( tst != pattern ) {
+	p = start;
+	while (p < end) {
+		showadr((u32 *) p);
+		tst = MEM(p);
+		if (tst != pattern) {
 			goto DONE;
 		}
-		MEM( p ) = ~pattern;
+		MEM(p) = ~pattern;
 		barrier();
 
 		p += 4;
@@ -376,14 +371,14 @@ static int ChkMemMovInv( u32 start, u32 end, u32 pattern, u32 *badadr )
 #endif
 
 	/* top-down test */
-	p=end-4;
-	while ( p>=start ) {
-		showadr( (u32*)p );
-		tst = MEM( p );
-		if ( tst != pattern ) {
+	p = end - 4;
+	while (p >= start) {
+		showadr((u32 *) p);
+		tst = MEM(p);
+		if (tst != pattern) {
 			goto DONE;
 		}
-		MEM( p ) = ~pattern;
+		MEM(p) = ~pattern;
 		barrier();
 
 		p -= 4;
@@ -391,8 +386,8 @@ static int ChkMemMovInv( u32 start, u32 end, u32 pattern, u32 *badadr )
 
 	/* no error if we reach this point */
 	ret = 0;
-DONE:
-	if ( ret != 0 && badadr ) {
+      DONE:
+	if (ret != 0 && badadr) {
 		*badadr = p;
 	}
 	return ret;
@@ -410,15 +405,15 @@ DONE:
  * address in badadr
  *
  */
-static int ChkMemAdrTst( u32 start, u32 end, u32 pattern, u32 *badadr )
+static int ChkMemAdrTst(u32 start, u32 end, u32 pattern, u32 * badadr)
 {
-	int				ret		= 1;
-	register u32	p;
-	register u32	tst;
+	int ret = 1;
+	register u32 p;
+	register u32 tst;
 
 	SerialOutputString("\nchkmem: address test method\n");
 
-	SKIPBLOBMEM( start );
+	SKIPBLOBMEM(start);
 
 #if CHKMEM_DEBUG
 	SerialOutputString("ChkMem: start(0x");
@@ -433,9 +428,9 @@ static int ChkMemAdrTst( u32 start, u32 end, u32 pattern, u32 *badadr )
 #endif
 
 	/* fill mem with pattern */
-	p=start;
-	while ( p<end ) {
-		MEM( p ) = p;
+	p = start;
+	while (p < end) {
+		MEM(p) = p;
 		barrier();
 
 		p += 4;
@@ -446,11 +441,11 @@ static int ChkMemAdrTst( u32 start, u32 end, u32 pattern, u32 *badadr )
 #endif
 
 	/* bottom-up test */
-	p=start;
-	while ( p<end ) {
-		showadr( (u32*)p );
-		tst = MEM( p );
-		if ( tst != p ) {
+	p = start;
+	while (p < end) {
+		showadr((u32 *) p);
+		tst = MEM(p);
+		if (tst != p) {
 			goto DONE;
 		}
 
@@ -459,8 +454,8 @@ static int ChkMemAdrTst( u32 start, u32 end, u32 pattern, u32 *badadr )
 
 	/* no error if we reach this point */
 	ret = 0;
-DONE:
-	if ( ret != 0 && badadr ) {
+      DONE:
+	if (ret != 0 && badadr) {
 		*badadr = p;
 	}
 	return ret;
@@ -479,13 +474,13 @@ DONE:
  * address in badadr
  *
  */
-static int ChkMemHardcore( u32 start, u32 end, u32 pattern, u32 *badadr )
+static int ChkMemHardcore(u32 start, u32 end, u32 pattern, u32 * badadr)
 {
-	register u32	count;
+	register u32 count;
 
 	SerialOutputString("\nchkmem: hardcore test method\n");
 
-	SKIPBLOBMEM( start );
+	SKIPBLOBMEM(start);
 
 #if CHKMEM_DEBUG
 	SerialOutputString("ChkMem: start(0x");
@@ -502,30 +497,38 @@ static int ChkMemHardcore( u32 start, u32 end, u32 pattern, u32 *badadr )
 	SerialOutputHex(count);
 	SerialOutputString("\n");
 
-	test_or_comparison((u32 *)start, (u32 *)(start+count), count>>2);
+	test_or_comparison((u32 *) start, (u32 *) (start + count), count >> 2);
 
-	test_and_comparison((u32 *)start, (u32 *)(start+count), count>>2);
+	test_and_comparison((u32 *) start, (u32 *) (start + count), count >> 2);
 
-	test_seqinc_comparison((u32 *)start, (u32 *)(start+count), count>>2);
+	test_seqinc_comparison((u32 *) start, (u32 *) (start + count),
+			       count >> 2);
 
-	test_checkerboard_comparison ((u32 *)start, (u32 *)(start+count), count>>2);
+	test_checkerboard_comparison((u32 *) start, (u32 *) (start + count),
+				     count >> 2);
 
-	test_solidbits_comparison((u32 *)start, (u32 *)(start+count), count>>2);
+	test_solidbits_comparison((u32 *) start, (u32 *) (start + count),
+				  count >> 2);
 
-	test_blockseq_comparison((u32 *)start, (u32 *)(start+count), count>>2);
+	test_blockseq_comparison((u32 *) start, (u32 *) (start + count),
+				 count >> 2);
 
-	test_walkbits_comparison((u32 *)start, (u32 *)(start+count), count>>2, 0);
+	test_walkbits_comparison((u32 *) start, (u32 *) (start + count),
+				 count >> 2, 0);
 
-	test_walkbits_comparison((u32 *)start, (u32 *)(start+count), count>>2, 1);
+	test_walkbits_comparison((u32 *) start, (u32 *) (start + count),
+				 count >> 2, 1);
 
-	test_bitspread_comparison((u32 *)start, (u32 *)(start+count), count>>2);
+	test_bitspread_comparison((u32 *) start, (u32 *) (start + count),
+				  count >> 2);
 
-	test_bitflip_comparison((u32 *)start, (u32 *)(start+count), count>>2);
+	test_bitflip_comparison((u32 *) start, (u32 *) (start + count),
+				count >> 2);
 
-	test_stuck_address((u32 *)start, (u32 *)(start+count), count>>2);
+	test_stuck_address((u32 *) start, (u32 *) (start + count), count >> 2);
 
 	/* no error if we reach this point */
-	if ( badadr ) {
+	if (badadr) {
 		*badadr = 0L;
 	}
 	return 0;
@@ -545,343 +548,293 @@ static int ChkMemHardcore( u32 start, u32 end, u32 pattern, u32 *badadr )
  *
  */
 
-int
-test_verify_success (u32 *bp1, u32 *bp2, u32 count)
+int test_verify_success(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i;
-	
-	for (i = 0; i < count; i++, p1++, p2++)
-	{
 
-		if ( MEM( p1 ) != MEM( p2 ) )
-		{
+	for (i = 0; i < count; i++, p1++, p2++) {
+
+		if (MEM(p1) != MEM(p2)) {
 
 			SerialOutputString("\nchkmem: contents differ:\n");
-			SerialOutputHex((u32)p1);
+			SerialOutputHex((u32) p1);
 			SerialOutputString("\n");
-			SerialOutputHex((u32)p2);
+			SerialOutputHex((u32) p2);
 			SerialOutputString("\n");
 
-			CHKMEM_PUSHERR( (u32)p1 );
-			CHKMEM_PUSHERR( (u32)p2 );
+			CHKMEM_PUSHERR((u32) p1);
+			CHKMEM_PUSHERR((u32) p2);
 		}
 	}
 	return (CHKMEM_OK);
 }
-int
 
-test_or_comparison (u32 *bp1, u32 *bp2, u32 count)
+int
+ test_or_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i;
 	u32 q = 0xdeadbeef;
 
 	SHOWFUNC();
-	
-	for (i = 0; i < count; i++)
-	{
-		showadr( p2 );
-		MEM( p1++ ) |= q;
+
+	for (i = 0; i < count; i++) {
+		showadr(p2);
+		MEM(p1++) |= q;
 		barrier();
-		MEM( p2++ ) |= q;
+		MEM(p2++) |= q;
 		barrier();
 	}
-	return (test_verify_success (bp1, bp2, count));
+	return (test_verify_success(bp1, bp2, count));
 }
 
-
-int
-test_and_comparison (u32 *bp1, u32 *bp2, u32 count)
+int test_and_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i;
 	u32 q = 0xdeadbeef;
-	
+
 	SHOWFUNC();
-	
-	for (i = 0; i < count; i++)
-	{
-		showadr( p1 );
-		MEM( p1++ ) &= q;
+
+	for (i = 0; i < count; i++) {
+		showadr(p1);
+		MEM(p1++) &= q;
 		barrier();
-		MEM( p2++ ) &= q;
+		MEM(p2++) &= q;
 		barrier();
 	}
-	return (test_verify_success (bp1, bp2, count));
+	return (test_verify_success(bp1, bp2, count));
 }
 
-
-int
-test_seqinc_comparison (u32 *bp1, u32 *bp2, u32 count)
+int test_seqinc_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i;
 	u32 q = 0xdeadbeef;
-	
+
 	SHOWFUNC();
-	
-	for (i = 0; i < count; i++)
-	{
-		showadr( p1 );
-		MEM( p1++ ) = MEM( p2++ ) = (i + q);
+
+	for (i = 0; i < count; i++) {
+		showadr(p1);
+		MEM(p1++) = MEM(p2++) = (i + q);
 		barrier();
 	}
-	return (test_verify_success (bp1, bp2, count));
+	return (test_verify_success(bp1, bp2, count));
 }
 
-
-int
-test_solidbits_comparison (u32 *bp1, u32 *bp2, u32 count)
+int test_solidbits_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 q, i, j;
 
 	SHOWFUNC();
-	
-	for (j = 0; j < 64; j++)
-	{
 
-		showrun( j );
+	for (j = 0; j < 64; j++) {
+
+		showrun(j);
 
 		q = (j % 2) == 0 ? 0xFFFFFFFF : 0x00000000;
-		p1 = (volatile u32 *) bp1;
-		p2 = (volatile u32 *) bp2;
-		for (i = 0; i < count; i++)
-		{
-			showadr( p1 );
-			MEM( p1++ ) = MEM( p2++ ) = (i % 2) == 0 ? q : ~q;
+		p1 = (volatile u32 *)bp1;
+		p2 = (volatile u32 *)bp2;
+		for (i = 0; i < count; i++) {
+			showadr(p1);
+			MEM(p1++) = MEM(p2++) = (i % 2) == 0 ? q : ~q;
 			barrier();
 		}
-	
 
-		if (test_verify_success (bp1, bp2, count) == CHKMEM_ERR)
-		{
+		if (test_verify_success(bp1, bp2, count) == CHKMEM_ERR) {
 			return (CHKMEM_ERR);
 		}
 	}
 	return (CHKMEM_OK);
 }
 
-
-int
-test_checkerboard_comparison (u32 *bp1, u32 *bp2, u32 count)
+int test_checkerboard_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 q, i, j;
 
 	SHOWFUNC();
-	
-	for (j = 0; j < 64; j++)
-	{
-		showrun( j );
+
+	for (j = 0; j < 64; j++) {
+		showrun(j);
 		q = (j % 2) == 0 ? 0x55555555 : 0xAAAAAAAA;
-		p1 = (volatile u32 *) bp1;
-		p2 = (volatile u32 *) bp2;
-		for (i = 0; i < count; i++)
-		{
-			showadr( p1 );
-			MEM( p1++ ) = MEM( p2++ ) = (i % 2) == 0 ? q : ~q;
+		p1 = (volatile u32 *)bp1;
+		p2 = (volatile u32 *)bp2;
+		for (i = 0; i < count; i++) {
+			showadr(p1);
+			MEM(p1++) = MEM(p2++) = (i % 2) == 0 ? q : ~q;
 			barrier();
 		}
-	
 
-		if (test_verify_success (bp1, bp2, count) == CHKMEM_ERR)
-		{
+		if (test_verify_success(bp1, bp2, count) == CHKMEM_ERR) {
 			return (CHKMEM_ERR);
 		}
 	}
 	return (CHKMEM_OK);
 }
 
-
-int
-test_blockseq_comparison (u32 *bp1, u32 *bp2, u32 count)
+int test_blockseq_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i, j;
-	
+
 	SHOWFUNC();
-	
-	for (j = 0; j < 256; j++)
-	{
-		showrun( j );
-		p1 = (volatile u32 *) bp1;
-		p2 = (volatile u32 *) bp2;
-		for (i = 0; i < count; i++)
-		{
-			showadr( p1 );
-			MEM( p1++ ) = MEM( p2++ ) = MAKE32FROM8 (j);
+
+	for (j = 0; j < 256; j++) {
+		showrun(j);
+		p1 = (volatile u32 *)bp1;
+		p2 = (volatile u32 *)bp2;
+		for (i = 0; i < count; i++) {
+			showadr(p1);
+			MEM(p1++) = MEM(p2++) = MAKE32FROM8(j);
 			barrier();
 		}
-	
 
-		if (test_verify_success (bp1, bp2, count) == CHKMEM_ERR)
-		{
+		if (test_verify_success(bp1, bp2, count) == CHKMEM_ERR) {
 			return (CHKMEM_ERR);
 		}
 	}
 	return (CHKMEM_OK);
 }
 
-
-int
-test_walkbits_comparison (u32 *bp1, u32 *bp2, u32 count, int m)
+int test_walkbits_comparison(u32 * bp1, u32 * bp2, u32 count, int m)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i, j;
 
 	SHOWFUNC();
-	
-	for (j = 0; j < 64; j++)
-	{
-		showrun( j );
-		p1 = (volatile u32 *) bp1;
-		p2 = (volatile u32 *) bp2;
-		for (i = 0; i < count; i++)
-		{
-			if (j < 32)	/* Walk it up. */
-			{
-				showadr( p1 );
-				MEM( p1++ ) = MEM( p2++ ) = (m == 0) ? 0x00000001 << j :
-										   0xFFFFFFFF ^ (0x00000001 << j);
+
+	for (j = 0; j < 64; j++) {
+		showrun(j);
+		p1 = (volatile u32 *)bp1;
+		p2 = (volatile u32 *)bp2;
+		for (i = 0; i < count; i++) {
+			if (j < 32) {	/* Walk it up. */
+				showadr(p1);
+				MEM(p1++) = MEM(p2++) =
+				    (m ==
+				     0) ? 0x00000001 << j : 0xFFFFFFFF ^
+				    (0x00000001 << j);
+				barrier();
+			} else {	/* Walk it back down. */
+
+				MEM(p1++) = MEM(p2++) = (m == 0)
+				    ? 0x00000001 << (64 - j - 1)
+				    : 0xFFFFFFFF ^ (0x00000001 << (64 - j - 1));
 				barrier();
 			}
-			else		/* Walk it back down. */
-			{
-				MEM( p1++ ) = MEM( p2++ ) = (m == 0)
-					? 0x00000001 << (64 - j - 1)
-					: 0xFFFFFFFF ^ (0x00000001 << (64 - j - 1));
-				barrier();
-			}				
 		}
 
-		if (test_verify_success (bp1, bp2, count) == CHKMEM_ERR)
-		{
+		if (test_verify_success(bp1, bp2, count) == CHKMEM_ERR) {
 			return (CHKMEM_ERR);
 		}
 	}
 	return (CHKMEM_OK);
 }
 
-
-int
-test_bitspread_comparison (u32 *bp1, u32 *bp2, u32 count)
+int test_bitspread_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i, j;
 
 	SHOWFUNC();
-	
-	for (j = 0; j < 64; j++)
-	{
-		showrun( j );
-		p1 = (volatile u32 *) bp1;
-		p2 = (volatile u32 *) bp2;
-		for (i = 0; i < count; i++)
-		{
-			showadr( p1 );
-			if (j < 32)	/* Walk it up. */
-			{
-				MEM( p1++ ) = MEM( p2++ ) = (i % 2 == 0)
-					? (0x00000001 << j) | (0x00000001 << (j + 2))
-					: 0xFFFFFFFF ^ ((0x00000001 << j)
-									| (0x00000001 << (j + 2)));
+
+	for (j = 0; j < 64; j++) {
+		showrun(j);
+		p1 = (volatile u32 *)bp1;
+		p2 = (volatile u32 *)bp2;
+		for (i = 0; i < count; i++) {
+			showadr(p1);
+			if (j < 32) {	/* Walk it up. */
+				MEM(p1++) = MEM(p2++) = (i % 2 == 0)
+				    ? (0x00000001 << j) | (0x00000001 <<
+							   (j + 2))
+				    : 0xFFFFFFFF ^ ((0x00000001 << j)
+						    | (0x00000001 << (j + 2)));
+				barrier();
+			} else {	/* Walk it back down. */
+
+				MEM(p1++) = MEM(p2++) = (i % 2 == 0)
+				    ? (0x00000001 << (63 - j)) | (0x00000001 <<
+								  (65 - j))
+				    : 0xFFFFFFFF ^ (0x00000001 << (63 - j)
+						    | (0x00000001 << (65 - j)));
 				barrier();
 			}
-			else		/* Walk it back down. */
-			{
-				MEM( p1++ ) = MEM( p2++ ) = (i % 2 == 0)
-					? (0x00000001 << (63 - j)) | (0x00000001 << (65 - j))
-					: 0xFFFFFFFF ^ (0x00000001 << (63 - j) 
-									| (0x00000001 << (65 - j)));
-				barrier();
-			}				
 		}
 
-		if (test_verify_success (bp1, bp2, count) == CHKMEM_ERR)
-		{
+		if (test_verify_success(bp1, bp2, count) == CHKMEM_ERR) {
 			return (CHKMEM_ERR);
 		}
 	}
 	return (CHKMEM_OK);
 }
 
-
-int
-test_bitflip_comparison (u32 *bp1, u32 *bp2, u32 count)
+int test_bitflip_comparison(u32 * bp1, u32 * bp2, u32 count)
 {
-	volatile u32 *p1 = (volatile u32 *) bp1;
-	volatile u32 *p2 = (volatile u32 *) bp2;
+	volatile u32 *p1 = (volatile u32 *)bp1;
+	volatile u32 *p2 = (volatile u32 *)bp2;
 	u32 i, j, k;
 	u32 q;
-		
+
 	SHOWFUNC();
-	
-	for (k = 0; k < 32; k++)
-	{
-		showrun( k*8 );
+
+	for (k = 0; k < 32; k++) {
+		showrun(k * 8);
 		q = 0x00000001 << k;
 
-		for (j = 0; j < 8; j++)
-		{
+		for (j = 0; j < 8; j++) {
 			q = ~q;
-			p1 = (volatile u32 *) bp1;
-			p2 = (volatile u32 *) bp2;
-			for (i = 0; i < count; i++)
-			{
-				showadr( p1 );
-				MEM( p1++ ) = MEM( p2++ ) = (i % 2) == 0 ? q : ~q;
+			p1 = (volatile u32 *)bp1;
+			p2 = (volatile u32 *)bp2;
+			for (i = 0; i < count; i++) {
+				showadr(p1);
+				MEM(p1++) = MEM(p2++) = (i % 2) == 0 ? q : ~q;
 				barrier();
 			}
-		
-	
-			if (test_verify_success (bp1, bp2, count) == CHKMEM_ERR)
-			{
+
+			if (test_verify_success(bp1, bp2, count) == CHKMEM_ERR) {
 				return (CHKMEM_ERR);
 			}
 		}
-		
+
 	}
 	return (CHKMEM_OK);
 }
 
-
-int
-test_stuck_address (u32 *bp1, u32 *bp2, u32 count)
+int test_stuck_address(u32 * bp1, u32 * bp2, u32 count)
 {
 	volatile u32 *p1;
 	/* second argument is not used; just gives it a compatible signature. */
 	u32 i, j;
 
 	SHOWFUNC();
-	
+
 	count <<= 1;
-	for (j = 0; j < 16; j++)
-	{
-		showrun( j );
-		p1 = (volatile u32 *) bp1;
-		for (i = 0; i < count; i++)
-		{
-			showadr( p1 );
-			MEM( p1++ ) = ((j + i) % 2) == 0 ? (u32) p1 : ~((u32) p1);
+	for (j = 0; j < 16; j++) {
+		showrun(j);
+		p1 = (volatile u32 *)bp1;
+		for (i = 0; i < count; i++) {
+			showadr(p1);
+			MEM(p1++) = ((j + i) % 2) == 0 ? (u32) p1 : ~((u32) p1);
 			barrier();
 		}
-		p1 = (volatile u32 *) bp1;
-		for (i = 0; i < count; i++, p1++)
-		{
-			showadr( p1 );
-			if (*p1 != (((j + i) % 2) == 0 ? (u32) p1 : ~((u32) p1)))
-			{
+		p1 = (volatile u32 *)bp1;
+		for (i = 0; i < count; i++, p1++) {
+			showadr(p1);
+			if (*p1 !=
+			    (((j + i) % 2) == 0 ? (u32) p1 : ~((u32) p1))) {
 				return (CHKMEM_ERR);
 			}
 		}

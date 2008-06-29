@@ -27,13 +27,9 @@
 # include <blob/config.h>
 #endif
 
-
 #include <blob/command.h>
 #include <blob/reboot.h>
 #include <blob/terminal.h>
-
-
-
 
 __commandlist(reset_terminal, "reset", resethelp);
 __commandlist(reboot, "reboot", reboothelp);

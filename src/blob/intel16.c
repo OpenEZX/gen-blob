@@ -31,7 +31,6 @@
 #include <blob/util.h>
 #include <blob/serial.h>
 
-
 /* flash commands for a single 16 bit intel flash chip */
 #define READ_ARRAY		0x000000FF
 #define ERASE_SETUP		0x00000020
@@ -50,10 +49,7 @@
 #define LOCK_STATUS_LOCKED	0x00000001
 #define LOCK_STATUS_LOCKEDDOWN	0x00000002
 
-
-
-
-static int do_erase(u16 *addr)
+static int do_erase(u16 * addr)
 {
 	u16 result;
 
@@ -74,13 +70,13 @@ static int do_erase(u16 *addr)
 		barrier();
 		result = *addr;
 		barrier();
-	} while((~result & STATUS_BUSY) != 0);
+	} while ((~result & STATUS_BUSY) != 0);
 
 	/* put flash back into Read Array mode */
 	*addr = READ_ARRAY;
 	barrier();
 
-	if((result & STATUS_ERASE_ERR) != 0) {
+	if ((result & STATUS_ERASE_ERR) != 0) {
 #ifdef BLOB_DEBUG
 		SerialOutputString(__FUNCTION__ " failed, result=0x");
 		SerialOutputHex(result);
@@ -94,10 +90,7 @@ static int do_erase(u16 *addr)
 	return 0;
 }
 
-
-
-
-static int do_write(u16 *dst, const u16* src)
+static int do_write(u16 * dst, const u16 * src)
 {
 	u16 result;
 
@@ -119,13 +112,13 @@ static int do_write(u16 *dst, const u16* src)
 
 		result = *dst;
 		barrier();
-	} while((~result & STATUS_BUSY) != 0);
+	} while ((~result & STATUS_BUSY) != 0);
 
 	/* put flash back into Read Array mode */
 	*dst = READ_ARRAY;
 	barrier();
 
-	if(((result & STATUS_PGM_ERR) != 0) || (*dst != *src)) {
+	if (((result & STATUS_PGM_ERR) != 0) || (*dst != *src)) {
 #ifdef BLOB_DEBUG
 		SerialOutputString(__FUNCTION__ " failed, result=0x");
 		SerialOutputHex(result);
@@ -139,67 +132,58 @@ static int do_write(u16 *dst, const u16* src)
 #endif
 		return -EFLASHPGM;
 	}
-	
+
 	return 0;
 }
-
-
-
 
 /* erases a flash block at the given address */
 /* we have to break this up in two erases at 16 bit aligned addresses
  * (if necessary)
  */
-static int flash_erase_intel16(u32 *addr)
+static int flash_erase_intel16(u32 * addr)
 {
 	int result;
-	u16 *addr16 = (u16*)addr;
+	u16 *addr16 = (u16 *) addr;
 
 	/* erase first block */
 	result = do_erase(addr16);
-	if(result != 0)
+	if (result != 0)
 		return result;
 
 	addr16++;
 	/* if the second address is not erased, also erase it */
-	if(*addr16 != 0xffff)
+	if (*addr16 != 0xffff)
 		result = do_erase(addr16);
 
-	if(result != 0)
+	if (result != 0)
 		return result;
-	
+
 	return 0;
 }
 
-
-
-
 /* write a flash block at a given location */
 /* this has to be broken up into two consectutive 16 bit writes */
-static int flash_write_intel16(u32 *dst, const u32* src)
+static int flash_write_intel16(u32 * dst, const u32 * src)
 {
-	u16 *dst16 = (u16 *)dst;
-	u16 *src16 = (u16 *)src;
+	u16 *dst16 = (u16 *) dst;
+	u16 *src16 = (u16 *) src;
 	int result;
-	
+
 	result = do_write(dst16, src16);
-	if(result != 0)
+	if (result != 0)
 		return result;
 
 	dst16++;
 	src16++;
-	
+
 	result = do_write(dst16, src16);
-	if(result != 0)
+	if (result != 0)
 		return result;
 
 	return 0;
 }
 
-
-
-
-static int flash_lock_block_intel16(u32 *blockStart)
+static int flash_lock_block_intel16(u32 * blockStart)
 {
 	u16 *p = (u16 *) blockStart;
 	u16 result;
@@ -236,10 +220,7 @@ static int flash_lock_block_intel16(u32 *blockStart)
 	return 0;
 }
 
-
-
-
-static int flash_unlock_block_intel16(u32 *blockStart)
+static int flash_unlock_block_intel16(u32 * blockStart)
 {
 	u16 *p = (u16 *) blockStart;
 	u16 result;
@@ -276,10 +257,7 @@ static int flash_unlock_block_intel16(u32 *blockStart)
 	return 0;
 }
 
-
-
-
-static int flash_query_block_lock_intel16(u32 *blockStart)
+static int flash_query_block_lock_intel16(u32 * blockStart)
 {
 	u16 *p = (u16 *) blockStart;
 	u16 result;
@@ -305,9 +283,9 @@ static int flash_query_block_lock_intel16(u32 *blockStart)
 
 /* flash driver structure */
 flash_driver_t intel16_flash_driver = {
-	erase:			flash_erase_intel16,
-	write:			flash_write_intel16,
-	lock_block:		flash_lock_block_intel16,
-	unlock_block:		flash_unlock_block_intel16,
-	query_block_lock:	flash_query_block_lock_intel16
+      erase:flash_erase_intel16,
+      write:flash_write_intel16,
+      lock_block:flash_lock_block_intel16,
+      unlock_block:flash_unlock_block_intel16,
+      query_block_lock:flash_query_block_lock_intel16
 };

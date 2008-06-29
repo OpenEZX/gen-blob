@@ -40,14 +40,13 @@
 
 #include <asm-arm/setup.h>
 
-
 static void setup_start_tag(void);
 static void setup_memory_tags(void);
 static void setup_commandline_tag(int argc, char *argv[]);
 static void setup_ramdisk_tag(void);
 static void setup_initrd_tag(void);
 static void setup_end_tag(void);
-#ifdef MBM   //mbm module
+#ifdef MBM			//mbm module
 static void setup_ezx_tag(void);
 #endif
 static struct tag *params;
@@ -55,20 +54,20 @@ extern int cmd_flag;
 
 int boot_linux(int argc, char *argv[])
 {
-	void (*theKernel)(int zero, int arch) = (void (*)(int, int))KERNEL_RAM_BASE;
+	void (*theKernel) (int zero, int arch) =
+	    (void (*)(int, int))KERNEL_RAM_BASE;
 
 	setup_start_tag();
 	setup_memory_tags();
 	setup_commandline_tag(argc, argv);
 #if 0
-  	setup_initrd_tag();
+	setup_initrd_tag();
 	setup_ramdisk_tag();
 #endif
-#ifdef MBM    //mbm module
+#ifdef MBM			//mbm module
 	setup_ezx_tag();
 #endif //need to restore for all products 0311
 	setup_end_tag();
-
 
 	/* we assume that the kernel is in place */
 	SerialOutputString("\nStarting kernel ...\n\n");
@@ -80,17 +79,17 @@ int boot_linux(int argc, char *argv[])
 	/* start kernel */
 	theKernel(0, ARCH_NUMBER);
 
-	SerialOutputString("Hey, the kernel returned! This should not happen.\n");
+	SerialOutputString
+	    ("Hey, the kernel returned! This should not happen.\n");
 	printlcd("Hey, the kernel returned! This should not happen.\n");
-	while (1);
+	while (1) ;
 	return 0;
 }
 
 static char boothelp[] = "boot [kernel options]\n"
-"Boot Linux with optional kernel options\n";
+    "Boot Linux with optional kernel options\n";
 
 __commandlist(boot_linux, "boot", boothelp);
-
 
 static void setup_start_tag(void)
 {
@@ -105,19 +104,20 @@ static void setup_start_tag(void)
 
 	params = tag_next(params);
 }
-#ifdef MBM //mbm module
+
+#ifdef MBM			//mbm module
 //???fix me: This address should be same as in start.S, potential 
 //confilicts may be happened if someone use this address in other places
 //it assert a0000000+12 now, see lubbock.h for other flags in this area
 
-#define POWERUP_REASON_ADDR 0xa000000c 
-u32 * powup_reason=(u32 *)POWERUP_REASON_ADDR;
-void setup_ezx_tag(void){
+#define POWERUP_REASON_ADDR 0xa000000c
+u32 *powup_reason = (u32 *) POWERUP_REASON_ADDR;
+void setup_ezx_tag(void)
+{
 //  params->hdr.tag = ATAG_EZX;
 //  params->hdr.size = tag_size(tag_ezx);
 //  params->u.ezx.pow_up_reason=*powup_reason;
 //  params = tag_next(params);
-
 
 }
 #endif //mbm module
@@ -125,14 +125,14 @@ static void setup_memory_tags(void)
 {
 	int i;
 
-	for(i = 0; i < NUM_MEM_AREAS; i++) {
-		if(memory_map[i].used) {
+	for (i = 0; i < NUM_MEM_AREAS; i++) {
+		if (memory_map[i].used) {
 			params->hdr.tag = ATAG_MEM;
 			params->hdr.size = tag_size(tag_mem32);
 
 			params->u.mem.start = memory_map[i].start;
 			params->u.mem.size = memory_map[i].len;
-			
+
 			params = tag_next(params);
 		}
 #if defined( NEPONSET )
@@ -154,20 +154,20 @@ static void setup_commandline_tag(int argc, char *argv[])
 	params->u.cmdline.cmdline[0] = '\0';
 
 	/* copy default commandline from parameter block */
-	if( cmd_flag == 1)
-		strlcpy(params->u.cmdline.cmdline, blob_status.cmdline, 
+	if (cmd_flag == 1)
+		strlcpy(params->u.cmdline.cmdline, blob_status.cmdline,
 			COMMAND_LINE_SIZE);
 
 	/* copy commandline */
-	if(argc >= 2) {
+	if (argc >= 2) {
 		p = params->u.cmdline.cmdline;
 
-		for(i = 1; i < argc; i++) {
+		for (i = 1; i < argc; i++) {
 			strlcpy(p, argv[i], COMMAND_LINE_SIZE);
 			p += strlen(p);
 			*p++ = ' ';
 		}
-	
+
 		p--;
 		*p = '\0';
 
@@ -178,49 +178,47 @@ static void setup_commandline_tag(int argc, char *argv[])
 		 */
 	}
 
-	if(strlen(params->u.cmdline.cmdline) > 0) {
+	if (strlen(params->u.cmdline.cmdline) > 0) {
 		params->hdr.tag = ATAG_CMDLINE;
-		params->hdr.size = (sizeof(struct tag_header) + 
-				    strlen(params->u.cmdline.cmdline) + 1 + 4) >> 2;
-		
+		params->hdr.size = (sizeof(struct tag_header) +
+				    strlen(params->u.cmdline.cmdline) + 1 +
+				    4) >> 2;
+
 		params = tag_next(params);
 	}
 }
 
-
 static void setup_initrd_tag(void)
 {
 	/* an ATAG_INITRD node tells the kernel where the compressed
-         * ramdisk can be found. ATAG_RDIMG is a better name, actually.
+	 * ramdisk can be found. ATAG_RDIMG is a better name, actually.
 	 */
 	params->hdr.tag = ATAG_INITRD;
 	params->hdr.size = tag_size(tag_initrd);
-	
+
 	params->u.initrd.start = RAMDISK_RAM_BASE;
 	params->u.initrd.size = RAMDISK_FLASH_LEN;
-	
+
 	params = tag_next(params);
 }
 
 static void setup_ramdisk_tag(void)
 {
 	/* an ATAG_RAMDISK node tells the kernel how large the
-         * decompressed ramdisk will become.
+	 * decompressed ramdisk will become.
 	 */
 	params->hdr.tag = ATAG_RAMDISK;
 	params->hdr.size = tag_size(tag_ramdisk);
-	
+
 	params->u.ramdisk.start = 0;
 	params->u.ramdisk.size = RAMDISK_SIZE;
 	params->u.ramdisk.flags = 1;	/* automatically load ramdisk */
-	
+
 	params = tag_next(params);
 }
-
 
 static void setup_end_tag(void)
 {
 	params->hdr.tag = ATAG_NONE;
 	params->hdr.size = 0;
 }
-

@@ -44,7 +44,6 @@
 #include <blob/time.h>
 #include <blob/util.h>
 
-
 /* Struct with the SA-1100 PLL + DRAM parameter registers */
 enum {
 	SA_PPCR,
@@ -54,45 +53,41 @@ enum {
 	SA_MDCAS2
 };
 
-
-
-
 int SetClock(int argc, char *argv[])
 {
 	int i;
 	u32 regs[5];
 	u32 startTime, currentTime;
-	
-	if(argc < 6)
+
+	if (argc < 6)
 		return -ENOPARAMS;
 
-	for(i = 0; i < 5; i++) {
-		if(strtou32(argv[i + 1], &regs[i]) < 0) {
+	for (i = 0; i < 5; i++) {
+		if (strtou32(argv[i + 1], &regs[i]) < 0) {
 			printerror(ENAN, argv[i + 1]);
 			return 0;
 		}
 	}
-			
+
 	/* we go slower, so first set PLL register */
 	PPCR = regs[SA_PPCR];
 	MDCNFG = regs[SA_MDCNFG];
 	MDCAS0 = regs[SA_MDCAS0];
 	MDCAS1 = regs[SA_MDCAS1];
 	MDCAS2 = regs[SA_MDCAS2];
-	
+
 	/* sleep for a second */
 	startTime = TimerGetTime();
-	
-	for(;;) {
+
+	for (;;) {
 		currentTime = TimerGetTime();
-		if((currentTime - startTime) > (u32)TICKS_PER_SECOND)
+		if ((currentTime - startTime) > (u32) TICKS_PER_SECOND)
 			return 0;
 	}
-} /* SetClock */
-
+}				/* SetClock */
 
 static char clockhelp[] = "clock PPCR MDCNFG MDCAS0 MDCAS1 MDCAS2\n"
-"Set the SA1100 core clock and DRAM timings\n"
-"WARNING: dangerous command!\n";
+    "Set the SA1100 core clock and DRAM timings\n"
+    "WARNING: dangerous command!\n";
 
 __commandlist(SetClock, "clock", clockhelp);

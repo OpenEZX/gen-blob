@@ -16,9 +16,9 @@
 #include <common.h>
 #include <types.h>
 
-unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
+unsigned long simple_strtoul(const char *cp, char **endp, unsigned int base)
 {
-	unsigned long result = 0,value;
+	unsigned long result = 0, value;
 
 	if (*cp == '0') {
 		cp++;
@@ -33,9 +33,11 @@ unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 	if (!base) {
 		base = 10;
 	}
-	while (isxdigit(*cp) && (value = isdigit(*cp) ? *cp-'0' : (islower(*cp)
-	    ? toupper(*cp) : *cp)-'A'+10) < base) {
-		result = result*base + value;
+	while (isxdigit(*cp)
+	       && (value = isdigit(*cp) ? *cp - '0' : (islower(*cp)
+						       ? toupper(*cp) : *cp) -
+		   'A' + 10) < base) {
+		result = result * base + value;
 		cp++;
 	}
 	if (endp)
@@ -43,21 +45,22 @@ unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
 	return result;
 }
 
-long simple_strtol(const char *cp,char **endp,unsigned int base)
+long simple_strtol(const char *cp, char **endp, unsigned int base)
 {
-	if(*cp=='-')
-		return -simple_strtoul(cp+1,endp,base);
-	return simple_strtoul(cp,endp,base);
+	if (*cp == '-')
+		return -simple_strtoul(cp + 1, endp, base);
+	return simple_strtoul(cp, endp, base);
 }
 
 #ifdef CFG_64BIT_STRTOUL
-unsigned long long simple_strtoull (const char *cp, char **endp, unsigned int base)
+unsigned long long simple_strtoull(const char *cp, char **endp,
+				   unsigned int base)
 {
 	unsigned long long result = 0, value;
 
 	if (*cp == '0') {
 		cp++;
-		if ((*cp == 'x') && isxdigit (cp[1])) {
+		if ((*cp == 'x') && isxdigit(cp[1])) {
 			base = 16;
 			cp++;
 		}
@@ -68,14 +71,15 @@ unsigned long long simple_strtoull (const char *cp, char **endp, unsigned int ba
 	if (!base) {
 		base = 10;
 	}
-	while (isxdigit (*cp) && (value = isdigit (*cp)
-				? *cp - '0'
-				: (islower (*cp) ? toupper (*cp) : *cp) - 'A' + 10) < base) {
+	while (isxdigit(*cp) && (value = isdigit(*cp)
+				 ? *cp - '0'
+				 : (islower(*cp) ? toupper(*cp) : *cp) - 'A' +
+				 10) < base) {
 		result = result * base + value;
 		cp++;
 	}
 	if (endp)
-		*endp = (char *) cp;
+		*endp = (char *)cp;
 	return result;
 }
 #endif /* CFG_64BIT_STRTOUL */
@@ -85,10 +89,10 @@ unsigned long long simple_strtoull (const char *cp, char **endp, unsigned int ba
 
 static int skip_atoi(const char **s)
 {
-	int i=0;
+	int i = 0;
 
 	while (is_digit(**s))
-		i = i*10 + *((*s)++) - '0';
+		i = i * 10 + *((*s)++) - '0';
 	return i;
 }
 
@@ -108,13 +112,15 @@ static int skip_atoi(const char **s)
 })
 
 #ifdef CFG_64BIT_VSPRINTF
-static char * number(char * str, long long num, int base, int size, int precision ,int type)
+static char *number(char *str, long long num, int base, int size, int precision,
+		    int type)
 #else
-static char * number(char * str, long num, int base, int size, int precision ,int type)
+static char *number(char *str, long num, int base, int size, int precision,
+		    int type)
 #endif
 {
-	char c,sign,tmp[66];
-	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
+	char c, sign, tmp[66];
+	const char *digits = "0123456789abcdefghijklmnopqrstuvwxyz";
 	int i;
 
 	if (type & LARGE)
@@ -146,21 +152,22 @@ static char * number(char * str, long num, int base, int size, int precision ,in
 	}
 	i = 0;
 	if (num == 0)
-		tmp[i++]='0';
-	else while (num != 0)
-		tmp[i++] = digits[do_div(num,base)];
+		tmp[i++] = '0';
+	else
+		while (num != 0)
+			tmp[i++] = digits[do_div(num, base)];
 	if (i > precision)
 		precision = i;
 	size -= precision;
-	if (!(type&(ZEROPAD+LEFT)))
-		while(size-->0)
+	if (!(type & (ZEROPAD + LEFT)))
+		while (size-- > 0)
 			*str++ = ' ';
 	if (sign)
 		*str++ = sign;
 	if (type & SPECIAL) {
-		if (base==8)
+		if (base == 8)
 			*str++ = '0';
-		else if (base==16) {
+		else if (base == 16) {
 			*str++ = '0';
 			*str++ = digits[33];
 		}
@@ -178,7 +185,7 @@ static char * number(char * str, long num, int base, int size, int precision ,in
 }
 
 /* Forward decl. needed for IP address printing stuff... */
-int sprintf(char * buf, const char *fmt, ...);
+int sprintf(char *buf, const char *fmt, ...);
 
 int vsprintf(char *buf, const char *fmt, va_list args)
 {
@@ -189,7 +196,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 	unsigned long num;
 #endif
 	int i, base;
-	char * str;
+	char *str;
 	const char *s;
 
 	int flags;		/* flags to number() */
@@ -199,7 +206,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				   number of chars for from string */
 	int qualifier;		/* 'h', 'l', or 'q' for integer fields */
 
-	for (str=buf ; *fmt ; ++fmt) {
+	for (str = buf; *fmt; ++fmt) {
 		if (*fmt != '%') {
 			*str++ = *fmt;
 			continue;
@@ -207,15 +214,25 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 
 		/* process flags */
 		flags = 0;
-		repeat:
-			++fmt;		/* this also skips first '%' */
-			switch (*fmt) {
-				case '-': flags |= LEFT; goto repeat;
-				case '+': flags |= PLUS; goto repeat;
-				case ' ': flags |= SPACE; goto repeat;
-				case '#': flags |= SPECIAL; goto repeat;
-				case '0': flags |= ZEROPAD; goto repeat;
-				}
+	      repeat:
+		++fmt;		/* this also skips first '%' */
+		switch (*fmt) {
+		case '-':
+			flags |= LEFT;
+			goto repeat;
+		case '+':
+			flags |= PLUS;
+			goto repeat;
+		case ' ':
+			flags |= SPACE;
+			goto repeat;
+		case '#':
+			flags |= SPECIAL;
+			goto repeat;
+		case '0':
+			flags |= ZEROPAD;
+			goto repeat;
+		}
 
 		/* get field width */
 		field_width = -1;
@@ -261,7 +278,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			if (!(flags & LEFT))
 				while (--field_width > 0)
 					*str++ = ' ';
-			*str++ = (unsigned char) va_arg(args, int);
+			*str++ = (unsigned char)va_arg(args, int);
 			while (--field_width > 0)
 				*str++ = ' ';
 			continue;
@@ -284,21 +301,20 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 
 		case 'p':
 			if (field_width == -1) {
-				field_width = 2*sizeof(void *);
+				field_width = 2 * sizeof(void *);
 				flags |= ZEROPAD;
 			}
 			str = number(str,
-				(unsigned long) va_arg(args, void *), 16,
-				field_width, precision, flags);
+				     (unsigned long)va_arg(args, void *), 16,
+				     field_width, precision, flags);
 			continue;
-
 
 		case 'n':
 			if (qualifier == 'l') {
-				long * ip = va_arg(args, long *);
+				long *ip = va_arg(args, long *);
 				*ip = (str - buf);
 			} else {
-				int * ip = va_arg(args, int *);
+				int *ip = va_arg(args, int *);
 				*ip = (str - buf);
 			}
 			continue;
@@ -307,7 +323,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			*str++ = '%';
 			continue;
 
-		/* integer number formats - set up the flags and "break" */
+			/* integer number formats - set up the flags and "break" */
 		case 'o':
 			base = 8;
 			break;
@@ -333,16 +349,16 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			continue;
 		}
 #ifdef CFG_64BIT_VSPRINTF
-		if (qualifier == 'q')  /* "quad" for 64 bit variables */
+		if (qualifier == 'q')	/* "quad" for 64 bit variables */
 			num = va_arg(args, unsigned long long);
 		else
 #endif
 		if (qualifier == 'l')
 			num = va_arg(args, unsigned long);
 		else if (qualifier == 'h') {
-			num = (unsigned short) va_arg(args, int);
+			num = (unsigned short)va_arg(args, int);
 			if (flags & SIGN)
-				num = (short) num;
+				num = (short)num;
 		} else if (flags & SIGN)
 			num = va_arg(args, int);
 		else
@@ -350,16 +366,16 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 		str = number(str, num, base, field_width, precision, flags);
 	}
 	*str = '\0';
-	return str-buf;
+	return str - buf;
 }
 
-int sprintf(char * buf, const char *fmt, ...)
+int sprintf(char *buf, const char *fmt, ...)
 {
 	va_list args;
 	int i;
 
 	va_start(args, fmt);
-	i=vsprintf(buf,fmt,args);
+	i = vsprintf(buf, fmt, args);
 	va_end(args);
 	return i;
 }
@@ -369,36 +385,36 @@ int printf(const char *fmt, ...)
 {
 	va_list args;
 	int i;
-	char * buf = dbg_buf;
+	char *buf = dbg_buf;
 
 	va_start(args, fmt);
-	i=vsprintf(buf,fmt,args);
+	i = vsprintf(buf, fmt, args);
 	va_end(args);
 	printlcd(buf);
 	return i;
 }
 
-size_t strnlen(const char * s, size_t count)
+size_t strnlen(const char *s, size_t count)
 {
 	const char *sc;
 
 	for (sc = s; count-- && *sc != '\0'; ++sc)
-		/* nothing */;
+		/* nothing */ ;
 	return sc - s;
 }
 
 void panic(const char *fmt, ...)
 {
-	va_list	args;
+	va_list args;
 	va_start(args, fmt);
-//	vprintf(fmt, args);
-//	putc('\n');
+//      vprintf(fmt, args);
+//      putc('\n');
 	va_end(args);
 #if defined (CONFIG_PANIC_HANG)
 	hang();
 #else
-	udelay (100000);	/* allow messages to go out */
-	while (1);
-//	do_reset (NULL, 0, 0, NULL);
+	udelay(100000);		/* allow messages to go out */
+	while (1) ;
+//      do_reset (NULL, 0, 0, NULL);
 #endif
 }

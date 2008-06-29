@@ -54,13 +54,11 @@ extern void printlcd(char *cntrl_string);
 /* this is enough for a 16MB flash with 128kB blocks */
 #define NUM_FLASH_BLOCKS	(128 * 3)
 
-
 typedef struct {
 	u32 start;
 	u32 size;
 	int lockable;
 } flash_block_t;
-
 
 static flash_block_t flash_blocks[NUM_FLASH_BLOCKS];
 static int num_flash_blocks;
@@ -68,15 +66,11 @@ static int num_flash_blocks;
 flash_descriptor_t *flash_descriptors;
 flash_driver_t *flash_driver;
 
-
 /* dummy function for enable_vpp and disable_vpp */
 int flash_dummy_ok(void)
 {
 	return 0;
 }
-
-
-
 
 /* initialise the flash blocks table */
 static void init_flash(void)
@@ -84,56 +78,56 @@ static void init_flash(void)
 	int i = 0;
 	int j;
 	u32 start = 0;
-	
+
 #ifdef BLOB_DEBUG
-	if(flash_descriptors == NULL) {
+	if (flash_descriptors == NULL) {
 		printerrprefix();
 		SerialOutputString("undefined flash_descriptors\n");
 		return;
 	}
 
-	if(flash_driver == NULL) {
+	if (flash_driver == NULL) {
 		printerrprefix();
 		SerialOutputString("undefined flash_driver\n");
 		return;
 	}
-#endif	
+#endif
 
 	/* fill out missing flash driver functions */
-	if(flash_driver->enable_vpp == NULL)
+	if (flash_driver->enable_vpp == NULL)
 		flash_driver->enable_vpp = flash_dummy_ok;
 
-	if(flash_driver->disable_vpp == NULL)
+	if (flash_driver->disable_vpp == NULL)
 		flash_driver->disable_vpp = flash_dummy_ok;
 
 	/* initialise flash blocks table */
 	num_flash_blocks = 0;
 
-	while(flash_descriptors[i].size != 0) {
+	while (flash_descriptors[i].size != 0) {
 #ifdef BLOB_DEBUG
 		SerialOutputDec(flash_descriptors[i].num);
 		SerialOutputString("x 0x");
 		SerialOutputHex(flash_descriptors[i].size);
 		SerialOutputString(", ");
 
-		if(!flash_descriptors[i].lockable)
+		if (!flash_descriptors[i].lockable)
 			SerialOutputString("not ");
 
 		SerialOutputString("lockable\n");
 #endif
 
-		for(j = 0; j < flash_descriptors[i].num; j++) {
+		for (j = 0; j < flash_descriptors[i].num; j++) {
 			flash_blocks[num_flash_blocks].start = start;
 			flash_blocks[num_flash_blocks].size =
-				flash_descriptors[i].size;
+			    flash_descriptors[i].size;
 			flash_blocks[num_flash_blocks].lockable =
-				flash_descriptors[i].lockable;
+			    flash_descriptors[i].lockable;
 
 			start += flash_descriptors[i].size;
 
 			num_flash_blocks++;
 
-			if(num_flash_blocks >= NUM_FLASH_BLOCKS) {
+			if (num_flash_blocks >= NUM_FLASH_BLOCKS) {
 				printerrprefix();
 				SerialOutputString("not enough flash_blocks\n");
 				break;
@@ -145,7 +139,7 @@ static void init_flash(void)
 
 #ifdef BLOB_DEBUG
 	SerialOutputString("Flash map:\n");
-	for(i = 0; i < num_flash_blocks; i++) {
+	for (i = 0; i < num_flash_blocks; i++) {
 		SerialOutputString("  0x");
 		SerialOutputHex(flash_blocks[i].size);
 		SerialOutputString(" @ 0x");
@@ -154,7 +148,7 @@ static void init_flash(void)
 		SerialOutputDec(flash_blocks[i].size / 1024);
 		SerialOutputString(" kB), ");
 
-		if(!flash_blocks[i].lockable)
+		if (!flash_blocks[i].lockable)
 			SerialOutputString("not ");
 
 		SerialOutputString("lockable\n");
@@ -162,11 +156,9 @@ static void init_flash(void)
 #endif
 }
 
-
 __initlist(init_flash, INIT_LEVEL_OTHER_STUFF + 1);
 
-
-int flash_erase_region(u32 *start, u32 nwords)
+int flash_erase_region(u32 * start, u32 nwords)
 {
 	u32 *cur;
 	u32 *end;
@@ -181,42 +173,40 @@ int flash_erase_region(u32 *start, u32 nwords)
 	SerialOutputString(" (");
 	SerialOutputDec(nwords);
 	SerialOutputString(") words at 0x");
-	SerialOutputHex((u32)start);
+	SerialOutputHex((u32) start);
 	serial_write('\n');
 #endif
 
 	flash_driver->enable_vpp();
-	i =0;
-	while(cur < end) {
-			SerialOutputString("erasing dirty block at 0x");
-			SerialOutputHex((u32)cur);
+	i = 0;
+	while (cur < end) {
+		SerialOutputString("erasing dirty block at 0x");
+		SerialOutputHex((u32) cur);
+		serial_write('\n');
+
+		/* dirty block */
+		rv = flash_driver->erase(cur);
+
+		if (rv < 0) {
+			printerrprefix();
+			SerialOutputString("flash erase error at 0x");
+			SerialOutputHex((u32) cur);
 			serial_write('\n');
+			flash_driver->disable_vpp();
+			return rv;
+		}
 
-			/* dirty block */
-			rv = flash_driver->erase(cur);
-
-			if(rv < 0) {
-				printerrprefix();
-				SerialOutputString("flash erase error at 0x");
-				SerialOutputHex((u32)cur);
-				serial_write('\n');
-				flash_driver->disable_vpp();
-				return rv;
-			}
-
-		cur += 0x20000/sizeof(*cur);
+		cur += 0x20000 / sizeof(*cur);
 		printlcd(".");
 		i++;
-		if((i%20)==0)
-		  printlcd("\n");
+		if ((i % 20) == 0)
+			printlcd("\n");
 	}
-        printlcd("\n");	
+	printlcd("\n");
 	flash_driver->disable_vpp();
 
 	return 0;
 }
-
-
 
 #if 0
 /* Write a flash region with a minimum number of erase operations.
@@ -230,7 +220,7 @@ int flash_erase_region(u32 *start, u32 nwords)
  * changed into anything else anymore because there are no '1' bits
  * left.
  */
-int flash_write_region(u32 *dst, const u32 *src, u32 nwords)
+int flash_write_region(u32 * dst, const u32 * src, u32 nwords)
 {
 	int rv;
 	u32 nerrors = 0;
@@ -247,17 +237,17 @@ int flash_write_region(u32 *dst, const u32 *src, u32 nwords)
 	SerialOutputString(" (");
 	SerialOutputDec(nwords);
 	SerialOutputString(") words from 0x");
-	SerialOutputHex((u32)src);
+	SerialOutputHex((u32) src);
 	SerialOutputString(" to 0x");
-	SerialOutputHex((u32)dst);
+	SerialOutputHex((u32) dst);
 	serial_write('\n');
 #endif
 
 	flash_driver->enable_vpp();
 
-	while(i < nwords) {
+	while (i < nwords) {
 		/* nothing to write */
-		if(dst[i] == src[i]) {
+		if (dst[i] == src[i]) {
 			i++;
 			nskip++;
 			continue;
@@ -266,47 +256,48 @@ int flash_write_region(u32 *dst, const u32 *src, u32 nwords)
 		/* different, so write to this location */
 		rv = flash_driver->write(&dst[i], &src[i]);
 		nwrite++;
-		
-		if(rv == 0) {
+
+		if (rv == 0) {
 			i++;
 		} else {
 			nerrors++;
-			
+
 			SerialOutputString("erasing at 0x");
-			SerialOutputHex((u32)&dst[i]);
+			SerialOutputHex((u32) & dst[i]);
 			SerialOutputString("...");
 
 			/* erase block at current location */
 			rv = flash_driver->erase(&dst[i]);
 			nerase++;
-			if(rv < 0) {
+			if (rv < 0) {
 				/* something is obviously wrong */
 				SerialOutputString(" error\n");
 				flash_driver->disable_vpp();
 
 				return rv;
 			}
-				
+
 			SerialOutputString(" scanning down...");
 
 			/* scan down until we find the first
-                           non-erased location and restart writing
-                           again from that location */
-			while((i > 0) &&
-			      ((dst[i] != src[i]) || (dst[i] == 0xffffffff))) {
+			   non-erased location and restart writing
+			   again from that location */
+			while ((i > 0) &&
+			       ((dst[i] != src[i]) || (dst[i] == 0xffffffff))) {
 				i--;
 				nscandown++;
 			}
 
 			SerialOutputString(" resume writing at 0x");
-			SerialOutputHex((u32)&dst[i]);
+			SerialOutputHex((u32) & dst[i]);
 			serial_write('\n');
 		}
-		
+
 		/* there is something seriously wrong if this is true */
-		if(nerrors > 2 * nwords) {
+		if (nerrors > 2 * nwords) {
 			printerrprefix();
-			SerialOutputString("too many flash errors, probably hardware error\n");
+			SerialOutputString
+			    ("too many flash errors, probably hardware error\n");
 			flash_driver->disable_vpp();
 
 			return -EFLASHPGM;
@@ -333,119 +324,107 @@ int flash_write_region(u32 *dst, const u32 *src, u32 nwords)
 }
 #endif
 
-unsigned short flash_program_buf(volatile u16* addr, volatile u16* data, volatile int len)
+unsigned short flash_program_buf(volatile u16 * addr, volatile u16 * data,
+				 volatile int len)
 {
-	
-    volatile unsigned short *ROM;
-    unsigned short stat = 0;
-    int timeout = 0x50000;
-    int i;
-    volatile int tlen;
-    volatile unsigned short *taddr,*tdata;
-    
-    tlen = len;
 
-    ROM = (volatile unsigned short *)((unsigned long)addr);
-    taddr=(volatile unsigned short *)((unsigned long)addr);
-    tdata=(volatile unsigned short *)((unsigned long)data);
+	volatile unsigned short *ROM;
+	unsigned short stat = 0;
+	int timeout = 0x50000;
+	int i;
+	volatile int tlen;
+	volatile unsigned short *taddr, *tdata;
 
-    // Clear any error conditions
-    ROM[0] = 0x0050;
+	tlen = len;
 
-while(len>0)
-{
-  timeout=0x50000;
-  ROM[0]=0x00E8;
-  
-  while(((stat=ROM[0])&0x0080)!=0x0080)
-   {
-     if(--timeout==0)
-     {
-      stat=*addr;
-	printlcd("\ntimeout1\n");
-      goto bad;
-     }
-   }
-   ROM[0]=31;
-   
-   for(i=0;i<32;i++)
-   {
-    *addr=*data;
-    addr++;
-    data++;
-   }
-   len=len-64;
-  ROM[0]=0x00D0;
-  timeout=0x50000;
-  while(((stat=ROM[0])&0x0080)!=0x0080)
-  {
-    if(--timeout==0)
-     {
-      stat=*addr;
-	printlcd("\ntimeout2\n");
-      goto bad;
-     }
-  }
-  ROM[0]=0x00ff;
+	ROM = (volatile unsigned short *)((unsigned long)addr);
+	taddr = (volatile unsigned short *)((unsigned long)addr);
+	tdata = (volatile unsigned short *)((unsigned long)data);
+
+	// Clear any error conditions
+	ROM[0] = 0x0050;
+
+	while (len > 0) {
+		timeout = 0x50000;
+		ROM[0] = 0x00E8;
+
+		while (((stat = ROM[0]) & 0x0080) != 0x0080) {
+			if (--timeout == 0) {
+				stat = *addr;
+				printlcd("\ntimeout1\n");
+				goto bad;
+			}
+		}
+		ROM[0] = 31;
+
+		for (i = 0; i < 32; i++) {
+			*addr = *data;
+			addr++;
+			data++;
+		}
+		len = len - 64;
+		ROM[0] = 0x00D0;
+		timeout = 0x50000;
+		while (((stat = ROM[0]) & 0x0080) != 0x0080) {
+			if (--timeout == 0) {
+				stat = *addr;
+				printlcd("\ntimeout2\n");
+				goto bad;
+			}
+		}
+		ROM[0] = 0x00ff;
+	}
+
+	// ROM[0]=FLASH_Reset;
+	stat = 0;
+	while (tlen > 0) {
+		if (*taddr != *tdata) {
+			printlcd("\ncheck error\n");
+			stat = tlen;
+			break;
+		}
+		tlen -= 2;
+		taddr++;
+		tdata++;
+	}
+
+	// Restore ROM to "normal" mode
+      bad:
+	ROM[0] = 0x00FF;
+	return stat;
 }
- 
- // ROM[0]=FLASH_Reset;
-  stat = 0;
-while(tlen>0)
-{
-   if(*taddr!=*tdata)
-    {
-        printlcd("\ncheck error\n");
-        stat=tlen;
-        break;
-    }
-   tlen-=2;
-   taddr ++;
-   tdata ++;
-}
-
-    // Restore ROM to "normal" mode
- bad:
-    ROM[0] = 0x00FF;            
-    return stat;
-}
-
 
 //
 // CAUTION!  This code must be copied to RAM before execution.  Therefore,
 // it must not contain any code which might be position dependent!
 //
-int flash_write_region(u16 *dst, u16 *src, u32 nwords)
+int flash_write_region(u16 * dst, u16 * src, u32 nwords)
 {
-    unsigned long size;
-    unsigned short stat=0;
-    int i;
+	unsigned long size;
+	unsigned short stat = 0;
+	int i;
 
-    i = 0;
-    while(nwords>0)
-    {
-	size = nwords;
-	if(size >= 0x20000)
-		size = 0x20000;
-	stat = flash_program_buf(dst, src, size);
-	if(stat)
-	{
-		printlcd("!!!\n");
-		return -EFLASHPGM;
+	i = 0;
+	while (nwords > 0) {
+		size = nwords;
+		if (size >= 0x20000)
+			size = 0x20000;
+		stat = flash_program_buf(dst, src, size);
+		if (stat) {
+			printlcd("!!!\n");
+			return -EFLASHPGM;
+		}
+		printlcd(".");
+		i++;
+		if ((i % 20) == 0)
+			printlcd("\n");
+		nwords -= size;
+		dst += size / sizeof(*dst);
+		src += size / sizeof(*src);
 	}
-	printlcd(".");
-	i++;
-	if((i%20)==0)
-		printlcd("\n");
-	nwords -= size;
-	dst += size/sizeof(*dst);
-	src += size/sizeof(*src);
-    }	
-    printlcd("\n");
-    return stat;
+	printlcd("\n");
+	return stat;
 }
-
-
 
 /* given an address, return the flash block index number (or negative
  * error number otherwise
@@ -466,13 +445,10 @@ static int find_block(u32 address)
 	return -ERANGE;
 }
 
-
-
-
 /* convert address range to range of flash blocks. returns 0 on
  * success or negative error number on failure.
  */
-static int address_range_to_block_range(u32 startAddress, int length, 
+static int address_range_to_block_range(u32 startAddress, int length,
 					int *startBlock, int *endInclBlock)
 {
 	int sb, eib;
@@ -488,10 +464,10 @@ static int address_range_to_block_range(u32 startAddress, int length,
 	sb = find_block(startAddress);
 	eib = find_block(startAddress + length - 1);
 
-	if(sb < 0)
+	if (sb < 0)
 		return sb;
 
-	if(eib < 0)
+	if (eib < 0)
 		return eib;
 
 #ifdef FLASH_DEBUG
@@ -511,10 +487,7 @@ static int address_range_to_block_range(u32 startAddress, int length,
 	return 0;
 }
 
-
-
-
-static int do_flash_lock(u32 *start, u32 nwords, int lock)
+static int do_flash_lock(u32 * start, u32 nwords, int lock)
 {
 	int sb, eib;
 	int rv;
@@ -523,11 +496,11 @@ static int do_flash_lock(u32 *start, u32 nwords, int lock)
 
 #ifdef BLOB_DEBUG
 	SerialOutputString(__FUNCTION__ "(): ");
-	if(lock == 0)
+	if (lock == 0)
 		SerialOutputString("un");
-	
+
 	SerialOutputString("lock at 0x");
-	SerialOutputHex((u32)start);
+	SerialOutputHex((u32) start);
 	SerialOutputString(", nwords = 0x");
 	SerialOutputHex(nwords);
 	serial_write('\n');
@@ -536,69 +509,61 @@ static int do_flash_lock(u32 *start, u32 nwords, int lock)
 	rv = address_range_to_block_range((u32) start, nwords * sizeof(u32),
 					  &sb, &eib);
 
-	if(rv < 0)
+	if (rv < 0)
 		return rv;
 
 	/* check if it is lockable at all */
-	for(i = sb; i <= eib; i++) {
-		if(!flash_blocks[i].lockable) {
+	for (i = sb; i <= eib; i++) {
+		if (!flash_blocks[i].lockable) {
 #ifdef BLOB_DEBUG
 			printerrprefix();
-			SerialOutputString("can't (un)lock unlockable blocks\n");
+			SerialOutputString
+			    ("can't (un)lock unlockable blocks\n");
 #endif
 			return -EFLASHPGM;
 		}
 	}
-	
+
 	flash_driver->enable_vpp();
 
-	for(i = sb; i <= eib; i++) {
-		addr = (u32 *)flash_blocks[i].start;
+	for (i = sb; i <= eib; i++) {
+		addr = (u32 *) flash_blocks[i].start;
 
-		if(lock)
+		if (lock)
 			rv = flash_driver->lock_block(addr);
 		else
 			rv = flash_driver->unlock_block(addr);
 
-		if(rv < 0) {
+		if (rv < 0) {
 			flash_driver->disable_vpp();
 #ifdef BLOB_DEBUG
 			printerrprefix();
 			SerialOutputString("can't (un)lock block at 0x");
-			SerialOutputHex((u32)addr);
+			SerialOutputHex((u32) addr);
 			serial_write('\n');
 #endif
 			return rv;
 		}
 	}
-	
+
 	flash_driver->disable_vpp();
 
 	return 0;
 }
 
-
-
-
-int flash_lock_region(u32 *start, u32 nwords)
+int flash_lock_region(u32 * start, u32 nwords)
 {
 	return do_flash_lock(start, nwords, 1);
 }
 
-
-
-
-int flash_unlock_region(u32 *start, u32 nwords)
+int flash_unlock_region(u32 * start, u32 nwords)
 {
 	return do_flash_lock(start, nwords, 0);
 }
 
-
-
-
 /* return number of blocks in the region locked, 0 if everything is
  * unlocked, or negative error number otherwise */
-int flash_query_region(u32 *start, u32 nwords)
+int flash_query_region(u32 * start, u32 nwords)
 {
 	int sb, eib, rv, i;
 	int cnt = 0;
@@ -607,19 +572,19 @@ int flash_query_region(u32 *start, u32 nwords)
 	rv = address_range_to_block_range((u32) start, nwords * sizeof(u32),
 					  &sb, &eib);
 
-	if(rv < 0)
+	if (rv < 0)
 		return rv;
 
-	for(i = sb; i <= eib; i++) {
-		addr = (u32 *)flash_blocks[i].start;
-		
-		if(flash_blocks[i].lockable) {
+	for (i = sb; i <= eib; i++) {
+		addr = (u32 *) flash_blocks[i].start;
+
+		if (flash_blocks[i].lockable) {
 			rv = flash_driver->query_block_lock(addr);
 
-			if(rv < 0) 
+			if (rv < 0)
 				return rv;
 
-			if(rv > 0)
+			if (rv > 0)
 				cnt++;
 		}
 	}

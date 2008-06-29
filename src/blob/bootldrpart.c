@@ -37,23 +37,18 @@
 #include <blob/errno.h>
 #include <blob/util.h>
 
-
-
 #define BOOTLDR_PARTITION_NAMELEN 32
 enum LFR_FLAGS {
 	LFR_SIZE_PREFIX = 1,	/* prefix data with 4-byte size */
 	LFR_PATCH_BOOTLDR = 2,	/* patch bootloader's 0th instruction */
 	LFR_KERNEL = 4,		/* add BOOTIMG_MAGIC, imgsize and
-                                   VKERNEL_BASE to head of programmed
-                                   region (see bootldr.c) */
-				/* LFR_KERNEL is actually never used
-				 * so it's safe to ignore -- Erik */
+				   VKERNEL_BASE to head of programmed
+				   region (see bootldr.c) */
+	/* LFR_KERNEL is actually never used
+	 * so it's safe to ignore -- Erik */
 	LFR_EXPAND = 8		/* expand partition size to fit rest
-                                   of flash */
+				   of flash */
 };
-
-
-
 
 typedef struct {
 	char name[BOOTLDR_PARTITION_NAMELEN];
@@ -62,12 +57,9 @@ typedef struct {
 	enum LFR_FLAGS flags;
 } FlashRegion;
 
-
-
-
 typedef struct {
-	int magic;	/* should be filled with 0x646c7470 (btlp)
-                           BOOTLDR_PARTITION_MAGIC */
+	int magic;		/* should be filled with 0x646c7470 (btlp)
+				   BOOTLDR_PARTITION_MAGIC */
 	int npartitions;
 
 	/* the kernel code uses FlashRegion partition[0] over here,
@@ -76,34 +68,26 @@ typedef struct {
 	FlashRegion partition[PART_MAX_PARTITIONS];
 } BootldrFlashPartitionTable;
 
+#define BOOTLDR_MAGIC		0x646c7462	/* btld: marks a valid
+						   bootldr image */
+#define BOOTLDR_PARTITION_MAGIC	0x646c7470	/* btlp: marks a valid
+						   bootldr partition table
+						   in params sector */
 
-
-
-#define BOOTLDR_MAGIC		0x646c7462 /* btld: marks a valid
-                                              bootldr image */
-#define BOOTLDR_PARTITION_MAGIC	0x646c7470 /* btlp: marks a valid
-                                              bootldr partition table
-                                              in params sector */
-
-#define BOOTLDR_MAGIC_OFFSET	0x20       /* offset 0x20 into the
-                                              bootldr */
-#define BOOTCAP_OFFSET		0X30       /* offset 0x30 into the
-                                              bootldr */
+#define BOOTLDR_MAGIC_OFFSET	0x20	/* offset 0x20 into the
+					   bootldr */
+#define BOOTCAP_OFFSET		0X30	/* offset 0x30 into the
+					   bootldr */
 
 #define BOOTCAP_WAKEUP	(1<<0)
-#define BOOTCAP_PARTITIONS (1<<1)          /* partition table stored
-                                              in params sector */
-#define BOOTCAP_PARAMS_AFTER_BOOTLDR (1<<2)/* params sector right
-                                              after bootldr sector(s),
-                                              else in last sector */
-
-
+#define BOOTCAP_PARTITIONS (1<<1)	/* partition table stored
+					   in params sector */
+#define BOOTCAP_PARAMS_AFTER_BOOTLDR (1<<2)	/* params sector right
+						   after bootldr sector(s),
+						   else in last sector */
 
 /* used for construct_bootldr_partition_table() */
 static BootldrFlashPartitionTable bootldr_ptable;
-
-
-
 
 static BootldrFlashPartitionTable *find_bootldr_partition_table(void)
 {
@@ -113,19 +97,16 @@ static BootldrFlashPartitionTable *find_bootldr_partition_table(void)
 	 * PARAMETER flash block, so we only check if there really is
 	 * a partition table. later on we can really search for it.
 	 */
-	table = (BootldrFlashPartitionTable *)PARAM_FLASH_BASE;
+	table = (BootldrFlashPartitionTable *) PARAM_FLASH_BASE;
 
-	if(table->magic == BOOTLDR_PARTITION_MAGIC)
+	if (table->magic == BOOTLDR_PARTITION_MAGIC)
 		return table;
 	else
 		return NULL;
 }
 
-
-
-
 /* returns number of partitions, or negative error number otherwise */
-int read_bootldr_partition_table(partition_table_t *ptable)
+int read_bootldr_partition_table(partition_table_t * ptable)
 {
 	BootldrFlashPartitionTable *bootldr;
 	int i;
@@ -134,38 +115,37 @@ int read_bootldr_partition_table(partition_table_t *ptable)
 	bootldr = find_bootldr_partition_table();
 
 	/* is it real? */
-	if(bootldr == NULL)
+	if (bootldr == NULL)
 		return -EMAGIC;
 
 	ptable->numpartitions = bootldr->npartitions;
-	
-	for(i = 0; i < bootldr->npartitions; i++) {
+
+	for (i = 0; i < bootldr->npartitions; i++) {
 		ptable->partition[i].flags = PART_VALID;
 
 		ptable->partition[i].offset = bootldr->partition[i].base;
 		ptable->partition[i].size = bootldr->partition[i].size;
 		ptable->partition[i].mem_base = 0;
 		ptable->partition[i].entry_point = 0;
-		
 
 		strlcpy(ptable->partition[i].name, bootldr->partition[i].name,
 			PART_PARTITION_NAMELEN);
 
 		/* the caller should figure out the real size */
-		if(bootldr->partition[i].flags & LFR_EXPAND)
+		if (bootldr->partition[i].flags & LFR_EXPAND)
 			ptable->partition[i].flags |= PART_EXPAND;
 
 		/* NOTE: this is a hack -- Erik */
-		if(strncmp(ptable->partition[i].name, "kernel", 
-			   PART_PARTITION_NAMELEN) == 0) {
+		if (strncmp(ptable->partition[i].name, "kernel",
+			    PART_PARTITION_NAMELEN) == 0) {
 			ptable->partition[i].mem_base = KERNEL_RAM_BASE;
 			ptable->partition[i].entry_point = KERNEL_RAM_BASE;
 			ptable->partition[i].flags |= PART_LOAD;
 		}
 
 		/* NOTE: and this is a hack as well -- Erik */
-		if(strncmp(ptable->partition[i].name, "ramdisk", 
-			   PART_PARTITION_NAMELEN) == 0) {
+		if (strncmp(ptable->partition[i].name, "ramdisk",
+			    PART_PARTITION_NAMELEN) == 0) {
 			ptable->partition[i].mem_base = RAMDISK_RAM_BASE;
 			ptable->partition[i].flags |= PART_LOAD;
 		}
@@ -174,26 +154,23 @@ int read_bootldr_partition_table(partition_table_t *ptable)
 	return ptable->numpartitions;
 }
 
-
-
-
-int construct_bootldr_partition_table(const partition_table_t *src, 
-				      void** dst, int *len)
+int construct_bootldr_partition_table(const partition_table_t * src,
+				      void **dst, int *len)
 {
 	int i;
-	
+
 	bootldr_ptable.magic = BOOTLDR_PARTITION_MAGIC;
 	bootldr_ptable.npartitions = src->numpartitions;
 
-	for(i = 0; i < src->numpartitions; i++) {
+	for (i = 0; i < src->numpartitions; i++) {
 		bootldr_ptable.partition[i].flags = 0;
 
-		strlcpy(bootldr_ptable.partition[i].name, 
+		strlcpy(bootldr_ptable.partition[i].name,
 			src->partition[i].name, BOOTLDR_PARTITION_NAMELEN);
 		bootldr_ptable.partition[i].base = src->partition[i].offset;
 		bootldr_ptable.partition[i].size = src->partition[i].size;
-		
-		if(src->partition[i].flags & PART_EXPAND)
+
+		if (src->partition[i].flags & PART_EXPAND)
 			bootldr_ptable.partition[i].flags |= LFR_EXPAND;
 	}
 

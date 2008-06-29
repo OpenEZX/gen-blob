@@ -31,12 +31,12 @@
 #if DEBUG
 static unsigned int usb_debug = DEBUG;
 #else
-#define usb_debug 0     /* gcc will remove all the debug code for us */
+#define usb_debug 0		/* gcc will remove all the debug code for us */
 #endif
 
 static char *ep2_buf;
-static int   ep2_len;
-static int   ep2_remain;
+static int ep2_len;
+static int ep2_remain;
 static usb_callback_t ep2_callback;
 static int rx_pktsize;
 
@@ -61,14 +61,14 @@ static void ep2_done(int flag)
 	}
 }
 
-void ep2_state_change_notify( int new_state )
+void ep2_state_change_notify(int new_state)
 {
 }
 
-void ep2_stall( void )
+void ep2_stall(void)
 {
 
-//	UDCCSRB |= UDCCSR_FST;
+//      UDCCSRB |= UDCCSR_FST;
 }
 
 int ep2_init(int chn)
@@ -84,7 +84,7 @@ void ep2_reset(void)
 	/* FIXME */
 	rx_pktsize = 64;
 
-//	UDCCSRB &= ~UDCCSR_FST;
+//      UDCCSRB &= ~UDCCSR_FST;
 	ep2_done(-EINTR);
 }
 
@@ -92,30 +92,27 @@ void ep2_int_hndlr(int udcsr)
 {
 	int status = UDCCSRB;
 
-	if( (status & (UDCCSR_PC | UDCCSR_SP)) == UDCCSR_SP)
-	{
+	if ((status & (UDCCSR_PC | UDCCSR_SP)) == UDCCSR_SP) {
 		/* zero-length packet */
 
 		UDCCSRB |= UDCCSR_PC;
 	}
 
-	if( status & UDCCSR_PC)
-	{
+	if (status & UDCCSR_PC) {
 		int len;
-		__u32 *buf = (__u32*)(ep2_buf + ep2_len - ep2_remain);
+		__u32 *buf = (__u32 *) (ep2_buf + ep2_len - ep2_remain);
 
 		/* bytes in FIFO */
-		len = UDCBCRB&0x3ff;
-		
-		if( len > ep2_remain)
-		{
+		len = UDCBCRB & 0x3ff;
+
+		if (len > ep2_remain) {
 			/* FIXME: if this happens, we need a temporary overflow buffer */
 			//printk("usb_recv: Buffer overwrite warning...\n");
 			len = ep2_remain;
 		}
 
 		/* read data out of fifo */
-		while ( (UDCCSRB&UDCCSR_BNEF)!=0 ) {
+		while ((UDCCSRB & UDCCSR_BNEF) != 0) {
 			*buf++ = UDCDRB;
 		}
 
@@ -142,4 +139,3 @@ int ep2_recv(char *buf, int len, usb_callback_t callback)
 
 	return 0;
 }
-

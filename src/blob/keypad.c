@@ -47,33 +47,33 @@
 /* initialize function */
 void keypad_init(void)
 {
-//	printf("keypad_init\n");
-  //currently, not touch CKEN- see start.S
+//      printf("keypad_init\n");
+	//currently, not touch CKEN- see start.S
 
-  //init gpio
-  set_GPIO_mode(97 |GPIO_ALT_FN_3_IN);
-  set_GPIO_mode(98 |GPIO_ALT_FN_3_IN);
- 
-  set_GPIO_mode(100 |GPIO_ALT_FN_1_IN);
-  set_GPIO_mode(101 |GPIO_ALT_FN_1_IN);
-  set_GPIO_mode(102 |GPIO_ALT_FN_1_IN);
-  set_GPIO_mode(103 |GPIO_ALT_FN_2_OUT);
-  set_GPIO_mode(104 |GPIO_ALT_FN_2_OUT);
-  set_GPIO_mode(105 |GPIO_ALT_FN_2_OUT);
-  set_GPIO_mode(106 |GPIO_ALT_FN_2_OUT);
-  set_GPIO_mode(107 |GPIO_ALT_FN_2_OUT);
-  set_GPIO_mode(108 |GPIO_ALT_FN_2_OUT);
-  //       for(i=0;i<100;i++);	
-  //init regs
-         
-  KPC = 0x32a7f202;
-  //currently keep KPKDI reset value, 100ms
-  KPKDI=0x64;
- /*
-  logvarhex("kpypad_init():KPC=0x",KPC);
-  logvarhex("kpypad_init():KPKDI=0x",KPKDI);
- */
-  return;
+	//init gpio
+	set_GPIO_mode(97 | GPIO_ALT_FN_3_IN);
+	set_GPIO_mode(98 | GPIO_ALT_FN_3_IN);
+
+	set_GPIO_mode(100 | GPIO_ALT_FN_1_IN);
+	set_GPIO_mode(101 | GPIO_ALT_FN_1_IN);
+	set_GPIO_mode(102 | GPIO_ALT_FN_1_IN);
+	set_GPIO_mode(103 | GPIO_ALT_FN_2_OUT);
+	set_GPIO_mode(104 | GPIO_ALT_FN_2_OUT);
+	set_GPIO_mode(105 | GPIO_ALT_FN_2_OUT);
+	set_GPIO_mode(106 | GPIO_ALT_FN_2_OUT);
+	set_GPIO_mode(107 | GPIO_ALT_FN_2_OUT);
+	set_GPIO_mode(108 | GPIO_ALT_FN_2_OUT);
+	//       for(i=0;i<100;i++);  
+	//init regs
+
+	KPC = 0x32a7f202;
+	//currently keep KPKDI reset value, 100ms
+	KPKDI = 0x64;
+	/*
+	   logvarhex("kpypad_init():KPC=0x",KPC);
+	   logvarhex("kpypad_init():KPKDI=0x",KPKDI);
+	 */
+	return;
 
 }
 
@@ -82,30 +82,30 @@ void keypad_init(void)
 /* key_val: value of KPAS to check, simple design, ???fix me: caller has to know KPAS value to check */
 /* Deb_val: Debounce value, if we use manual scan, just delay this period (uSec) */
 
-int is_key_press_down(u32 key_val,u32 Deb_val)
+int is_key_press_down(u32 key_val, u32 Deb_val)
 {
-//	printf("key = %08x\n", KPAS);
-  if(KPAS == key_val ){		/* a key down signal got */
-    Delay(Deb_val);		/* make debounce */
-    if(KPAS == key_val )
-      return 1;
-    else 
-      return 0;
-  }
-  else
-    return 0;
+//      printf("key = %08x\n", KPAS);
+	if (KPAS == key_val) {	/* a key down signal got */
+		Delay(Deb_val);	/* make debounce */
+		if (KPAS == key_val)
+			return 1;
+		else
+			return 0;
+	} else
+		return 0;
 }
 
 u8 read_key()
 {
-	while(!(0x04000000 & KPAS));
+	while (!(0x04000000 & KPAS)) ;
 	return (KPAS & 0xff);
 }
 
 /* exit list handler */
-void keypad_exit(void){
+void keypad_exit(void)
+{
 
 }
 
-__initlist(keypad_init,		INIT_LEVEL_INITIAL_HARDWARE);
-__exitlist(keypad_exit,		INIT_LEVEL_INITIAL_HARDWARE);
+__initlist(keypad_init, INIT_LEVEL_INITIAL_HARDWARE);
+__exitlist(keypad_exit, INIT_LEVEL_INITIAL_HARDWARE);

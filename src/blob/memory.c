@@ -40,61 +40,52 @@
 /* test in 1MB chunks */
 #define TEST_BLOCK_SIZE (1024 * 1024)
 
-
-
-
 /* from testmem2.S */
 extern int testram(u32 addr);
 
-
-
-
 memory_area_t memory_map[NUM_MEM_AREAS];
-
-
-
 
 void get_memory_map(void)
 {
 	int i;
 
 	/* init */
-	for(i = 0; i < NUM_MEM_AREAS; i++)
+	for (i = 0; i < NUM_MEM_AREAS; i++)
 		memory_map[i].used = 0;
 
 #ifdef TEST_MEM_MAP
 	/* first write a 0 to all memory locations */
-	for(addr = MEMORY_START; addr < MEMORY_END; addr += TEST_BLOCK_SIZE)
-		* (u32 *)addr = 0;
+	for (addr = MEMORY_START; addr < MEMORY_END; addr += TEST_BLOCK_SIZE)
+		*(u32 *) addr = 0;
 
 	/* scan memory in blocks */
 	i = 0;
-	for(addr = MEMORY_START; addr < MEMORY_END; addr += TEST_BLOCK_SIZE) {
-		if(testram(addr) == 0) {
+	for (addr = MEMORY_START; addr < MEMORY_END; addr += TEST_BLOCK_SIZE) {
+		if (testram(addr) == 0) {
 			/* yes, memory */
-			if(* (u32 *)addr != 0) { /* alias? */
+			if (*(u32 *) addr != 0) {	/* alias? */
 #ifdef BLOB_DEBUG
 				SerialOutputString("Detected alias at 0x");
 				SerialOutputHex(addr);
 				SerialOutputString(", aliased from 0x");
-				SerialOutputHex(* (u32 *)addr);
+				SerialOutputHex(*(u32 *) addr);
 				serial_write('\n');
 #endif
-				if(memory_map[i].used)
+				if (memory_map[i].used)
 					i++;
 
 				continue;
 			}
 
 			/* not an alias, write the current address */
-			* (u32 *)addr = addr;
-#ifdef BLOB_DEBUG			
+			*(u32 *) addr = addr;
+#ifdef BLOB_DEBUG
 			SerialOutputString("Detected memory at 0x");
 			SerialOutputHex(addr);
 			serial_write('\n');
 #endif
 			/* does this start a new block? */
-			if(memory_map[i].used == 0) {
+			if (memory_map[i].used == 0) {
 				memory_map[i].start = addr;
 				memory_map[i].len = TEST_BLOCK_SIZE;
 				memory_map[i].used = 1;
@@ -103,13 +94,13 @@ void get_memory_map(void)
 			}
 		} else {
 			/* no memory here */
-			if(memory_map[i].used == 1)
+			if (memory_map[i].used == 1)
 				i++;
 		}
 	}
 	SerialOutputString("Memory map:\n");
-	for(i = 0; i < NUM_MEM_AREAS; i++) {
-		if(memory_map[i].used) {
+	for (i = 0; i < NUM_MEM_AREAS; i++) {
+		if (memory_map[i].used) {
 			SerialOutputString("  0x");
 			SerialOutputHex(memory_map[i].len);
 			SerialOutputString(" @ 0x");
@@ -122,38 +113,36 @@ void get_memory_map(void)
 #else
 
 #if defined(SUMATRA) || defined(HAINAN) || defined(MARTINIQUE)
-		memory_map[0].used = 1;
-		memory_map[0].start = MEMORY_START;
-		memory_map[0].len = 0x1000000;
+	memory_map[0].used = 1;
+	memory_map[0].start = MEMORY_START;
+	memory_map[0].len = 0x1000000;
 
-		memory_map[1].used = 1;
-		memory_map[1].start = MEMORY_START + 0x1000000;
-		memory_map[1].len = 0x1000000;
+	memory_map[1].used = 1;
+	memory_map[1].start = MEMORY_START + 0x1000000;
+	memory_map[1].len = 0x1000000;
 
+	memory_map[2].used = 1;
+	memory_map[2].start = MEMORY_START + 0xc000000;
+	memory_map[2].len = 0x1000000;
+
+#else
+	memory_map[0].used = 1;
+	memory_map[0].start = MEMORY_START;
+	memory_map[0].len = 0x2000000;
+#endif
+
+#if (0)				//For Barbados, we only have 32MB one chip SDRAM
+	memory_map[1].used = 1;
+	memory_map[1].start = MEMORY_START + 0x1000000;
+	memory_map[1].len = 0x1000000;
+
+	addr = MEMORY_START + 0xc000000;
+	*(u32 *) addr = 0;
+	if (testram(addr) == 0) {
 		memory_map[2].used = 1;
 		memory_map[2].start = MEMORY_START + 0xc000000;
 		memory_map[2].len = 0x1000000;
-
-#else
-		memory_map[0].used = 1;
-		memory_map[0].start = MEMORY_START;
-		memory_map[0].len = 0x2000000;
-#endif
-
-#if (0)  //For Barbados, we only have 32MB one chip SDRAM
-		memory_map[1].used = 1;
-		memory_map[1].start = MEMORY_START + 0x1000000;
-		memory_map[1].len = 0x1000000;
-		
-		
-		
-		addr = MEMORY_START + 0xc000000;
-		*(u32 *)addr = 0;
-		if(testram(addr) == 0) {
-			memory_map[2].used = 1;
-			memory_map[2].start = MEMORY_START + 0xc000000;
-			memory_map[2].len = 0x1000000;
-		}
+	}
 #endif
 
 #endif

@@ -25,71 +25,74 @@
 # include <blob/config.h>
 #endif
 
-
 #include <blob/main.h>
 #include <blob/log.h>
 extern blob_status_t blob_status;
 
 #ifdef BARBADOS
-u32 barbados_sw_init(u32 x){
-  /* initialise status */
-  blob_status.paramType = fromFlash;
-  blob_status.kernelType = fromFlash;
-  blob_status.ramdiskType = fromFlash;
-  blob_status.downloadSpeed = baud_115200;
-  blob_status.terminalSpeed = baud_115200;
-  blob_status.load_ramdisk = 1;
-  blob_status.boot_delay = 10;
-  logstr("\nbarbados_sw_init()");
-  return 0;
+u32 barbados_sw_init(u32 x)
+{
+	/* initialise status */
+	blob_status.paramType = fromFlash;
+	blob_status.kernelType = fromFlash;
+	blob_status.ramdiskType = fromFlash;
+	blob_status.downloadSpeed = baud_115200;
+	blob_status.terminalSpeed = baud_115200;
+	blob_status.load_ramdisk = 1;
+	blob_status.boot_delay = 10;
+	logstr("\nbarbados_sw_init()");
+	return 0;
 }
 
 #endif
 
 #ifdef MARTINIQUE
-u32 martinique_sw_init(u32 x){
-  /* initialise status */
-  blob_status.paramType = fromFlash;
-  blob_status.kernelType = fromFlash;
-  blob_status.ramdiskType = fromFlash;
-  blob_status.downloadSpeed = baud_115200;
-  blob_status.terminalSpeed = baud_115200;
-  blob_status.load_ramdisk = 1;
-  blob_status.boot_delay = 10;
-  logstr("\nmartinique_sw_init()");
-  return 0;
+u32 martinique_sw_init(u32 x)
+{
+	/* initialise status */
+	blob_status.paramType = fromFlash;
+	blob_status.kernelType = fromFlash;
+	blob_status.ramdiskType = fromFlash;
+	blob_status.downloadSpeed = baud_115200;
+	blob_status.terminalSpeed = baud_115200;
+	blob_status.load_ramdisk = 1;
+	blob_status.boot_delay = 10;
+	logstr("\nmartinique_sw_init()");
+	return 0;
 }
 
 #endif
 
 #ifdef HAINAN
-u32 hainan_sw_init(u32 x){
-  /* initialise status */
-  blob_status.paramType = fromFlash;
-  blob_status.kernelType = fromFlash;
-  blob_status.ramdiskType = fromFlash;
-  blob_status.downloadSpeed = baud_115200;
-  blob_status.terminalSpeed = baud_115200;
-  blob_status.load_ramdisk = 1;
-  blob_status.boot_delay = 10;
-  logstr("\nhainan_sw_init()");
-  return 0;
+u32 hainan_sw_init(u32 x)
+{
+	/* initialise status */
+	blob_status.paramType = fromFlash;
+	blob_status.kernelType = fromFlash;
+	blob_status.ramdiskType = fromFlash;
+	blob_status.downloadSpeed = baud_115200;
+	blob_status.terminalSpeed = baud_115200;
+	blob_status.load_ramdisk = 1;
+	blob_status.boot_delay = 10;
+	logstr("\nhainan_sw_init()");
+	return 0;
 }
 
 #endif
 
 #ifdef SUMATRA
-u32 sumatra_sw_init(u32 x){
-  /* initialise status */
-  blob_status.paramType = fromFlash;
-  blob_status.kernelType = fromFlash;
-  blob_status.ramdiskType = fromFlash;
-  blob_status.downloadSpeed = baud_115200;
-  blob_status.terminalSpeed = baud_115200;
-  blob_status.load_ramdisk = 1;
-  blob_status.boot_delay = 10;
-  logstr("\nsumatra_sw_init()");
-  return 0;
+u32 sumatra_sw_init(u32 x)
+{
+	/* initialise status */
+	blob_status.paramType = fromFlash;
+	blob_status.kernelType = fromFlash;
+	blob_status.ramdiskType = fromFlash;
+	blob_status.downloadSpeed = baud_115200;
+	blob_status.terminalSpeed = baud_115200;
+	blob_status.load_ramdisk = 1;
+	blob_status.boot_delay = 10;
+	logstr("\nsumatra_sw_init()");
+	return 0;
 }
 
 #endif

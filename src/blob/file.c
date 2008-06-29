@@ -33,8 +33,9 @@
 
 /* Supported filesystems */
 static const struct filesystem filesystems[] = {
-	{ file_fat_detectfs,  file_fat_ls,  file_fat_read,  "FAT" },
+	{file_fat_detectfs, file_fat_ls, file_fat_read, "FAT"},
 };
+
 #define NUM_FILESYS	(sizeof(filesystems)/sizeof(struct filesystem))
 
 /* The filesystem which was last detected */
@@ -42,24 +43,22 @@ static int current_filesystem = FSTYPE_NONE;
 
 /* The current working directory */
 #define CWD_LEN		511
-char file_cwd[CWD_LEN+1] = "/";
+char file_cwd[CWD_LEN + 1] = "/";
 
-const char *
-file_getfsname(int idx)
+const char *file_getfsname(int idx)
 {
-	if (idx < 0 || idx >= NUM_FILESYS) return NULL;
+	if (idx < 0 || idx >= NUM_FILESYS)
+		return NULL;
 
 	return filesystems[idx].name;
 }
 
-
-static void
-pathcpy(char *dest, const char *src)
+static void pathcpy(char *dest, const char *src)
 {
 	char *origdest = dest;
 
 	do {
-		if (dest-file_cwd >= CWD_LEN) {
+		if (dest - file_cwd >= CWD_LEN) {
 			*dest = '\0';
 			return;
 		}
@@ -72,26 +71,27 @@ pathcpy(char *dest, const char *src)
 		}
 		++dest;
 		if (ISDIRDELIM(*src)) {
-			while (ISDIRDELIM(*src)) src++;
+			while (ISDIRDELIM(*src))
+				src++;
 		} else {
 			src++;
 		}
 	} while (1);
 }
 
-
-int
-file_cd(const char *path)
+int file_cd(const char *path)
 {
 	if (ISDIRDELIM(*path)) {
-		while (ISDIRDELIM(*path)) path++;
-		strncpy(file_cwd+1, path, CWD_LEN-1);
+		while (ISDIRDELIM(*path))
+			path++;
+		strncpy(file_cwd + 1, path, CWD_LEN - 1);
 	} else {
 		const char *origpath = path;
 		char *tmpstr = file_cwd;
 		int back = 0;
 
-		while (*tmpstr != '\0') tmpstr++;
+		while (*tmpstr != '\0')
+			tmpstr++;
 		do {
 			tmpstr--;
 		} while (ISDIRDELIM(*tmpstr));
@@ -107,7 +107,8 @@ file_cd(const char *path)
 				back = 0;
 				break;
 			}
-			while (ISDIRDELIM(*path)) path++;
+			while (ISDIRDELIM(*path))
+				path++;
 			origpath = path;
 		}
 
@@ -122,7 +123,8 @@ file_cd(const char *path)
 				break;
 			}
 			/* Skip delimiters */
-			while (ISDIRDELIM(*tmpstr)) tmpstr--;
+			while (ISDIRDELIM(*tmpstr))
+				tmpstr--;
 		}
 		tmpstr++;
 		if (*path == '\0') {
@@ -134,15 +136,13 @@ file_cd(const char *path)
 			return 0;
 		}
 		*tmpstr = '/';
-		pathcpy(tmpstr+1, path);
+		pathcpy(tmpstr + 1, path);
 	}
 
 	return 0;
 }
 
-
-int
-file_detectfs(void)
+int file_detectfs(void)
 {
 	int i;
 
@@ -159,9 +159,7 @@ file_detectfs(void)
 	return current_filesystem;
 }
 
-
-int
-file_ls(const char *dir)
+int file_ls(const char *dir)
 {
 	char fullpath[1024];
 	const char *arg;
@@ -180,9 +178,7 @@ file_ls(const char *dir)
 	return filesystems[current_filesystem].ls(arg);
 }
 
-
-long
-file_read(const char *filename, void *buffer, unsigned long maxsize)
+long file_read(const char *filename, void *buffer, unsigned long maxsize)
 {
 	char fullpath[1024];
 	const char *arg;
@@ -201,4 +197,3 @@ file_read(const char *filename, void *buffer, unsigned long maxsize)
 
 	return filesystems[current_filesystem].read(arg, buffer, maxsize);
 }
-
