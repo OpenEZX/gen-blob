@@ -320,12 +320,13 @@ int parse_conf_file(char *name, menu_t * menu)
 			curr_entry->param = get_menu_entry_param(cmdline, &cmd);
 			break;
 		case TYPE_CMD_MACHID:
-			if (!curr_entry)
-				goto err;
 			p = get_menu_entry_param(cmdline, &cmd);
 			i = atoi(p);
 			grub_free(p);
-			curr_entry->machid = i;
+			if (curr_entry)
+				curr_entry->machid = i;
+			else
+				menu->default_machid = i;
 			break;
 		case TYPE_CMD_UNKNOWN:
 			break;	// FIXME
