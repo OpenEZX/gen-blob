@@ -769,8 +769,7 @@ extern "C" {
 		}
 
 		/* close VAP_MMC (PCAP_VAUX3 && PCAP_VAUX2) */
-		SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
-		SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX2_EN);
+		SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER, 0);
 
 		Delay(10000);
 		if (on == 0)	// Power off only
