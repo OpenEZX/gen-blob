@@ -57,12 +57,11 @@ int boot_linux(char *cmdline, int machid)
 	void (*theKernel) (int zero, int arch) =
 	    (void (*)(int, int))KERNEL_RAM_BASE;
 
-	setup_start_tag();
-	setup_commandline_tag(cmdline);
-	setup_end_tag();
-
-	/* disable subsystems that want to be disabled before kernel boot */
-	exit_subsystems();
+	if (cmdline[0] != 0) {
+		setup_start_tag();
+		setup_commandline_tag(cmdline);
+		setup_end_tag();
+	}
 
 	/* start kernel */
 	theKernel(0, machid);
