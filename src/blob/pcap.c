@@ -768,6 +768,8 @@ u32 SSP_PCAP_get_register_value_from_buffer
 #define VAP_TF_MASK	0xFFFFF0FF
 #define VAP_SD_MASK	0xFFFFFF9F
 
+unsigned long vaux_backup;
+
 void pcap_mmc_power_on(int on)
 {
 	unsigned long ssp_pcap_register_val;
@@ -775,13 +777,14 @@ void pcap_mmc_power_on(int on)
 		pcap_is_init = 1;
 		ssp_pcap_init();
 	}
-
-	/* close VAP_MMC (PCAP_VAUX3 && PCAP_VAUX2) */
-	SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER, 0);
-
-	Delay(10000);
-	if (on == 0)		// Power off only
+	if (on)
+		SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
+				&vaux_backup);
+	else {
+		SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
+				vaux_backup);
 		return;
+	}
 
 	/* open VAP_MMC (PCAP VAUX3 && VAUX2) */
 	SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
