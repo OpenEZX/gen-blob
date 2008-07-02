@@ -177,6 +177,7 @@ void enter_simple_pass_through_mode(void)
 	char *kernel = "/boot/default";
 	char *cmdline = "";
 	int machid = 0;
+	int lcd = 0;
 
 	keypad_init();
 /*  EnableLCD_8bit_active();
@@ -244,12 +245,13 @@ void enter_simple_pass_through_mode(void)
 			machid = go_menu_entry->machid;
 		if (go_menu_entry->param)
 			cmdline = go_menu_entry->param;
+		lcd++;
 	}
 	{
 		int size;
 		char *buf = (char *)KERNEL_RAM_BASE;
 
-		printf("Loading %s...\n", kernel);
+		if (lcd) printf("Loading %s...\n", kernel);
 		size = file_fat_read(kernel, buf, 0x200000);	// 2MB
 
 		/* turn off mmc controler, otherwise 2.4 kernel freezes */
@@ -259,9 +261,11 @@ void enter_simple_pass_through_mode(void)
 		pcap_mmc_power_on(0);
 
 		if (size > 0) {
-			printf("read %d bytes\nbooting...\n", size);
+			if (lcd) printf("read %d bytes\nbooting...\n", size);
 			boot_linux(cmdline, machid);
 		}
+		if (!lcd)
+			EnableLCD_8bit_active();
 		printf("Cannot load kernel from:\n   %s\n", kernel);
 		while (1) ;
 	}
