@@ -768,11 +768,11 @@ u32 SSP_PCAP_get_register_value_from_buffer
 #define VAP_TF_MASK	0xFFFFF0FF
 #define VAP_SD_MASK	0xFFFFFF9F
 
-unsigned long vaux_backup;
+unsigned int vaux_backup;
 
 void pcap_mmc_power_on(int on)
 {
-	unsigned long ssp_pcap_register_val;
+	unsigned int ssp_pcap_register_val;
 	if (!pcap_is_init) {
 		pcap_is_init = 1;
 		ssp_pcap_init();
