@@ -16,7 +16,7 @@
 #include <asm/errno.h>
 #include <pxa.h>
 
-#if 1
+#if 0
 #define debug(fmt, arg...)
 #else
 #define debug printf
@@ -544,6 +544,7 @@ int
 mmc_init(int verbose)
 {
 	int ret;
+	unsigned int rate;
 
 #if 1				// GPIO
 	/* Setup GPIO for PXA27x MMC/SD controller */
@@ -557,8 +558,7 @@ mmc_init(int verbose)
 
 	CKEN |= CKEN12_MMC;	/* enable MMC unit clock */
 
-//      MMC_CLKRT  = MMC_CLKRT_0_3125MHZ;
-	MMC_CLKRT = MMC_CLKRT_5MHZ;
+	MMC_CLKRT  = MMC_CLKRT_0_3125MHZ;
 	MMC_RESTO = MMC_RES_TO_MAX;
 	MMC_SPI = MMC_SPI_DISABLE;
 
@@ -584,6 +584,18 @@ mmc_init(int verbose)
 	if (ret)
 		return ret;
 
+
+	MMC_STRPCL = MMC_STRPCL_STOP_CLK;
+	MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
+	while(!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF));
+	MMC_CLKRT = (mmci.csd.max_dtr >= 19500000 ? MMC_CLKRT_20MHZ :
+			mmci.csd.max_dtr >= 9750000  ? MMC_CLKRT_10MHZ :
+			mmci.csd.max_dtr >= 4880000  ? MMC_CLKRT_5MHZ :
+			mmci.csd.max_dtr >= 2440000  ? MMC_CLKRT_2_5MHZ :
+			mmci.csd.max_dtr >= 1220000  ? MMC_CLKRT_1_25MHZ :
+			mmci.csd.max_dtr >= 609000   ? MMC_CLKRT_0_625MHZ :
+			MMC_CLKRT_0_3125MHZ);
+
 	/* Initialize the blockdev structure */
 	sprintf(mmci.blkdev.vendor,
 		"Man %02x%04x Snr %08x",
@@ -608,6 +620,25 @@ mmc_init(int verbose)
 		print_part_dos(&mmci.blkdev);
 #endif
 	return 0;
+}
+
+int mmc_exit (void)
+{
+	MMC_STRPCL = MMC_STRPCL_STOP_CLK;
+	MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
+	while (!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF));
+	MMC_I_MASK = (MMC_I_MASK_TXFIFO_WR_REQ|MMC_I_MASK_RXFIFO_RD_REQ
+			|MMC_I_MASK_CLK_IS_OFF|MMC_I_MASK_STOP_CMD
+			|MMC_I_MASK_END_CMD_RES|MMC_I_MASK_PRG_DONE
+			|MMC_I_MASK_DATA_TRAN_DONE);
+	CKEN &= ~(CKEN12_MMC);
+	set_GPIO_mode(32 | GPIO_IN);
+	set_GPIO_mode(112 | GPIO_IN);
+	set_GPIO_mode(92 | GPIO_IN);
+	set_GPIO_mode(109 | GPIO_IN);
+	set_GPIO_mode(110 | GPIO_IN);
+	set_GPIO_mode(111 | GPIO_IN);
+
 }
 
 static unsigned long
@@ -642,7 +673,7 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 
 	for (i = 0; i < blkcnt; i++, start++) {
 		/* send read command */
-		MMC_STRPCL = MMC_STRPCL_STOP_CLK;
+//		MMC_STRPCL = MMC_STRPCL_STOP_CLK;
 		MMC_RDTO = 0xffff;
 		MMC_NOB = 1;
 		MMC_BLKLEN = mmc->blkdev.blksz;
@@ -655,6 +686,7 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 
 		ret = -EIO;
 		count = mmc->blkdev.blksz;
+
 		MMC_I_MASK = ~MMC_I_MASK_RXFIFO_RD_REQ;
 		do {
 			if (MMC_I_REG & MMC_I_REG_RXFIFO_RD_REQ) {
@@ -662,7 +694,7 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 				for (j = min(count, 32); j; j--) {
 					data = *((volatile uchar *)&MMC_RXFIFO);
 					*buffer++ = data;
-					//                      debug("%03d:%02x\n", count, data);
+//					debug("%03d:%02x\n", count, data);
 					count--;
 				}
 			}
@@ -671,11 +703,12 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 			if (status & MMC_STAT_ERRORS)
 				goto fail;
 		} while (count);
-
 		debug("mmc: read %u bytes, waiting for BLKE\n",
 		      mmc->blkdev.blksz - count);
+
 		MMC_I_MASK = ~MMC_I_MASK_DATA_TRAN_DONE;
 		while (!(MMC_I_REG & MMC_I_REG_DATA_TRAN_DONE)) ;
+
 		status = MMC_STAT;
 		if (status & MMC_STAT_ERRORS) {
 			printf("MMC_STAT error %lx\n", status);

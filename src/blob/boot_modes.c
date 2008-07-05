@@ -213,13 +213,13 @@ void enter_simple_pass_through_mode(void)
 	/* turn on the power */
 	pcap_mmc_power_on(1);
 	udelay(1000);
+//	EnableLCD_8bit_active();
 	ret = mmc_init(0);
 	if (ret != 0) {
 		EnableLCD_8bit_active();
 		printlcd("Cannot find MMC card\n");
 		while (1) ;
 	}
-
 	file_detectfs();
 
 	ret = parse_conf_file(CONFIG_FILE, &menu);
@@ -255,9 +255,7 @@ void enter_simple_pass_through_mode(void)
 		size = file_fat_read(kernel, buf, 0x200000);	// 2MB
 
 		/* turn off mmc controler, otherwise 2.4 kernel freezes */
-		MMC_STRPCL = MMC_STRPCL_STOP_CLK;
-		MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
-		CKEN &= ~(CKEN12_MMC);
+		mmc_exit();
 		pcap_mmc_power_on(0);
 
 		if (size > 0) {
