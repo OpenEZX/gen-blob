@@ -1137,6 +1137,7 @@ void handle_command_JUMP(u8 * data_ptr)
 		}
 
 #endif
+		pxa_usb_stop();
 		util_jump_to_ram(nJumpAddr);
 	} else {
 		/* send bad checksum error */

@@ -323,6 +323,8 @@ int pxa_usb_stop(void)
 
 	udc_disable();
 
+	msleep(1);
+
 	return 0;
 }
 
