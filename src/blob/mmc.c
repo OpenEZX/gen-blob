@@ -16,7 +16,7 @@
 #include <asm/errno.h>
 #include <pxa.h>
 
-#if 0
+#if 1
 #define debug(fmt, arg...)
 #else
 #define debug printf
@@ -31,7 +31,7 @@
 
 #define CONFIG_PXA27X
 
-ulong mmc_bread(int dev_num, ulong blknr, ulong blkcnt, uchar * dst);
+static ulong mmc_bread(int dev_num, ulong blknr, lbaint_t blkcnt, uchar *dst);
 struct mmci mmci = {
 	.blkdev = {
 		   .if_type = IF_TYPE_MMC,
@@ -39,123 +39,95 @@ struct mmci mmci = {
 		   },
 };
 
-#define NULL  0
-#define CFG_OP_COND (1 << 15)
-//#define CFG_OP_COND 0 //(1 << 18)
-
-#define MMC_RSP_PRESENT	(1 << 0)
-#define MMC_RSP_136	(1 << 1)	/* 136 bit response */
-#define MMC_RSP_CRC	(1 << 2)	/* expect valid crc */
-#define MMC_RSP_BUSY	(1 << 3)	/* card may send busy */
-#define MMC_RSP_OPCODE	(1 << 4)	/* response contains opcode */
-#define MMC_CMD_MASK	(3 << 5)	/* command type */
-#define MMC_CMD_AC	(0 << 5)
-#define MMC_CMD_ADTC	(1 << 5)
-#define MMC_CMD_BC	(2 << 5)
-#define MMC_CMD_BCR	(3 << 5)
-
-/*
- * These are the response types, and correspond to valid bit
- * patterns of the above flags.  One additional valid pattern
- * is all zeros, which means we don't expect a response.
- */
-#define MMC_RSP_NONE	(0)
-#define MMC_RSP_R1	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
-#define MMC_RSP_R1B	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE|MMC_RSP_BUSY)
-#define MMC_RSP_R2	(MMC_RSP_PRESENT|MMC_RSP_136|MMC_RSP_CRC)
-#define MMC_RSP_R3	(MMC_RSP_PRESENT)
-#define MMC_RSP_R6	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
-#define MMC_RSP_R7	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
-
-#define mmc_resp_type(flags)	(flags & (MMC_RSP_PRESENT|MMC_RSP_136|MMC_RSP_CRC|MMC_RSP_BUSY|MMC_RSP_OPCODE))
-
-#define CMDAT_DMAEN		(1 << 7)
-#define CMDAT_INIT		(1 << 6)
-#define CMDAT_BUSY		(1 << 5)
-#define CMDAT_STREAM		(1 << 4)	/* 1 = stream */
-#define CMDAT_WRITE		(1 << 3)	/* 1 = write */
-#define CMDAT_DATAEN		(1 << 2)
-#define CMDAT_RESP_NONE		(0 << 0)
-#define CMDAT_RESP_SHORT	(1 << 0)
-#define CMDAT_RESP_R2		(2 << 0)
-#define CMDAT_RESP_R3		(3 << 0)
-
-static int mmc_cmd(ushort cmd, ulong arg, ushort flags, ulong * resp)
+static int mmc_cmd(ushort cmd, ulong arg, ushort rtype, ulong * resp)
 {
 	ulong status, v;
 	int i;
 	ushort cmdat = 0;
 
-#if 0
-	if (flags & CMDAT_INIT == CMDAT_INIT)
-		cmdat = CMDAT_INIT;
-	else {
-
-		pxamci_setup_data(host, mrq->data);
-
-		cmdat &= ~CMDAT_BUSY;
-		cmdat |= CMDAT_DATAEN | CMDAT_DMAEN;
-		if (mrq->data->flags & MMC_DATA_WRITE)
-			cmdat |= CMDAT_WRITE;
-
-		if (mrq->data->flags & MMC_DATA_STREAM)
-			cmdat |= CMDAT_STREAM;
-
-		if (flags & MMC_RSP_BUSY)
-			cmdat |= CMDAT_BUSY;
-#define RSP_TYPE(x)	((x) & ~(MMC_RSP_BUSY|MMC_RSP_OPCODE))
-		switch (RSP_TYPE(mmc_resp_type(cmdat))) {
-		case RSP_TYPE(MMC_RSP_R1):	/* r1, r1b, r6, r7 */
-			cmdat |= CMDAT_RESP_SHORT;
-			break;
-		case RSP_TYPE(MMC_RSP_R3):
-			cmdat |= CMDAT_RESP_R3;
-			break;
-		case RSP_TYPE(MMC_RSP_R2):
-			cmdat |= CMDAT_RESP_R2;
-			break;
-		default:
-			break;
-		}
-#else
 	switch (cmd) {
-	case 0:
-		cmdat = 0x40;
+	case MMC_CMD_CIM_RESET:
+		cmdat |= MMC_CMDAT_INIT;
 		break;
-	case 2:
-		cmdat = 0x2;
+
+	case MMC_CMD_GO_IDLE_STATE:
+	case MMC_CMD_SET_DSR:
 		break;
-	case 3:
-		cmdat = 0x1;
+
+	case MMC_CMD_SEND_OP_COND:
+	case MMC_CMD_ALL_SEND_CID:
+//	case MMC_CMD_GO_IRQ_STATE:
 		break;
-	case 8:
-		cmdat = 0x1;
+
+	case MMC_CMD_READ_DAT_UNTIL_STOP:
+	case MMC_CMD_READ_SINGLE_BLOCK:
+	case MMC_CMD_READ_MULTIPLE_BLOCK:
+		cmdat |= MMC_CMDAT_DATA_EN | MMC_CMDAT_READ;
 		break;
-	case 41:
-		cmdat = 0x3;
+
+//	case SEND_SCR:
+//		cmdat |= MMC_CMDAT_DATA_EN | MMC_CMDAT_RD;
+//		break;
+
+	case MMC_CMD_WRITE_DAT_UNTIL_STOP:
+	case MMC_CMD_WRITE_BLOCK:
+	case MMC_CMD_WRITE_MULTIPLE_BLOCK:
+//	case MMC_CMD_PROGRAM_CID:
+//	case MMC_CMD_PROGRAM_CSD:
+//	case MMC_CMD_SEND_WRITE_PROT:
+//	case MMC_CMD_GEN_CMD:
+		cmdat |= MMC_CMDAT_DATA_EN | MMC_CMDAT_WRITE;
 		break;
-	case 55:
-		cmdat = 0x1;
+
+//	case MMC_CMD_LOCK_UNLOCK:
+//		cmdat |= MMC_CMDAT_DATA_EN | MMC_CMDAT_WR;
+//		break;
+
+	case MMC_CMD_STOP_TRANSMISSION:
+		cmdat |= MMC_CMDAT_STOP_TRAN;
 		break;
-	case 9:
-		cmdat = 0x2;
+
+	default:
+		break;
+	}
+
+	switch (rtype) {
+	case RESPONSE_NONE:
+		cmdat |= MMC_CMDAT_NORESP;
+		break;
+	case RESPONSE_R1B:
+		cmdat |= MMC_CMDAT_BUSY;
+	case RESPONSE_R1:
+	case RESPONSE_R4:
+	case RESPONSE_R5:
+	case RESPONSE_R6:
+		cmdat |= MMC_CMDAT_R1;
+		break;
+	case RESPONSE_R3:
+		cmdat |= MMC_CMDAT_R3;
+		break;
+	case RESPONSE_R2_CID:
+	case RESPONSE_R2_CSD:
+		cmdat |= MMC_CMDAT_R2;
 		break;
 	default:
-		cmdat = flags;
+		break;
 	}
-#endif
-	debug("CMD%d: %x %x %x\n", cmd, arg, cmdat, flags);
+
+	debug("CMD%d: %x %x\n", cmd, arg, cmdat);
 
 	MMC_STRPCL = MMC_STRPCL_STOP_CLK;
 	MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
-	while (!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF)) ;
+	while (!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF));
 	MMC_CMD = cmd;
 	MMC_ARGH = (ushort) (arg >> 16);
 	MMC_ARGL = (ushort) (arg >> 0);
 	MMC_CMDAT = cmdat;
+	MMC_NOB = 1;
+
 	MMC_I_MASK = ~MMC_I_MASK_END_CMD_RES;
 	MMC_STRPCL = MMC_STRPCL_START_CLK;
-	while (!(MMC_I_REG & MMC_I_REG_END_CMD_RES)) ;
+	while (!(MMC_I_REG & MMC_I_REG_END_CMD_RES));
 
 	status = MMC_STAT;
 	debug("MMC status %x\n", status);
@@ -174,27 +146,9 @@ static int mmc_cmd(ushort cmd, ulong arg, ushort flags, ulong * resp)
 		resp[i] = v << 24 | w1 << 8 | w2 >> 8;
 		v = w2;
 	}
-#ifdef MMC_DEBUG
 	debug("R%02d: %08X %08X\n     %08X %08X\n", cmd, resp[0], resp[1],
 	      resp[2], resp[3]);
-#endif // MMC_DEBUG
 	return 0;
-}
-
-static int mmc_idle_cards(void)
-{
-	/* Reset and initialize all cards */
-	mmc_cmd(0, 0, 0x40, NULL);
-	udelay(10000);		/* Keep the bus idle for 74 clock cycles */
-	mmc_cmd(8, 0x01aa, 0x75, NULL);
-	return 0;
-}
-
-static int mmc_acmd(ushort cmd, ulong arg, ushort flags, ulong * resp)
-{
-	mmc_cmd(55, 0, 0x15, resp);
-	udelay(1000);
-	return mmc_cmd(cmd, arg, flags, resp);
 }
 
 int mmc_card_sd(void)
@@ -250,7 +204,7 @@ static const unsigned int tacc_mant[] = {
 static void mmc_decode_cid(struct mmci *mmc)
 {
 	struct mmc_cid *cid = &mmc->cid;
-	ulong *resp = &mmc->raw_cid;
+	ulong *resp = (ulong *) &mmc->raw_cid;
 	memset(cid, 0, sizeof(struct mmc_cid));
 
 	if (mmc_card_sd()) {
@@ -314,11 +268,9 @@ static void mmc_decode_cid(struct mmci *mmc)
 		default:
 			printf("MMC: card has unknown MMCA version %d\n",
 			       mmc->csd.mmca_vsn);
-//                      mmc_card_set_bad(card);
 			break;
 		}
 	}
-//      printf("ALEX::::::mid=%02lX, oemid=%04lX, SN=%lu\n", cid->manfid, cid->oemid, cid->serial);
 }
 
 /*
@@ -327,7 +279,7 @@ static void mmc_decode_cid(struct mmci *mmc)
 static void mmc_decode_csd(struct mmci *mmc)
 {
 	struct mmc_csd *csd = &mmc->csd;
-	ulong *resp = &mmc->raw_csd;
+	ulong *resp = (ulong *)&mmc->raw_csd;
 	unsigned int e, m, csd_struct;
 
 	if (mmc_card_sd()) {
@@ -459,19 +411,6 @@ static void mmc_dump_csd(const struct mmc_csd *csd)
 		info("NO\n");
 	info("Capacity: %uKiB\n", (csd->capacity) >> 1);
 
-#if 0
-	if (csd->wp_grp_enable)
-		debug("Group WP: %u\n", csd->wp_grp_size + 1);
-	else
-		debug("Group WP:NO\n");
-	debug("File format: %u/%u\n", csd->file_format_grp, csd->file_format);
-	debug("WP:");		/* Write Protection */
-	if (csd->perm_write_protect)
-		debug(" permanent");
-	if (csd->tmp_write_protect)
-		debug(" temporary");
-	debug('\n');
-#endif
 }
 
 static int sd_init_card(struct mmci *mmc, int verbose)
@@ -481,12 +420,14 @@ static int sd_init_card(struct mmci *mmc, int verbose)
 	int ret;
 	ulong resp[4];
 
-      reset:
-	mmc_idle_cards();
+	mmc_cmd(MMC_CMD_GO_IDLE_STATE, 0, RESPONSE_NONE, 0);
+//	udelay(10000);
 	for (i = 0; i < retries; i++) {
-		ret = mmc_acmd(41, 0x00010000, 0x61, &resp);
+		ret = mmc_cmd(MMC_CMD_APP_CMD, 0, RESPONSE_NONE, 0);
+		udelay(1000);
+		ret = mmc_cmd(MMC_CMD_SD_SEND_OP_COND, 0x00010000, RESPONSE_R3,
+									&resp);
 		if (resp[0] & 0x80000000) {	/* POWER UP of clear BUSY BIT */
-			debug("YEAHHHHH, SD initialized\n");
 			break;
 		}
 		udelay(200000);
@@ -495,14 +436,13 @@ static int sd_init_card(struct mmci *mmc, int verbose)
 		printf("CMD41 Timeout\n");
 		return -1;
 	}
-	udelay(10000);
 
-	ret = mmc_cmd(2, 0, 0x67, &mmc->raw_cid);
+	ret = mmc_cmd(MMC_CMD_ALL_SEND_CID, 0, RESPONSE_R2_CID,
+						(ulong *)&mmc->raw_cid);
 	if (ret < 0)
 		return ret;
-
 	/* Get RCA of the card that responded */
-	ret = mmc_cmd(3, 0, 0x75, &resp);
+	ret = mmc_cmd(MMC_CMD_SET_RELATIVE_ADDR, 0, RESPONSE_R1, &resp);
 	if (ret < 0)
 		return ret;
 	mmc->rca = resp[0] >> 16;
@@ -512,24 +452,6 @@ static int sd_init_card(struct mmci *mmc, int verbose)
 }
 
 /* MMC interface */
-
-#define GPIO_MMC_CLK            32
-#define GPIO_MMC_DATA0          92
-//#define GPIO_MMC_WP           107
-#define GPIO_MMC_DATA1          109
-#define GPIO_MMC_DATA2          110
-#define GPIO_MMC_DATA3          111
-#define GPIO_MMC_CMD            112
-#define GPIO_MMC_DETECT         GPIO_MMC_DATA3
-
-/* interface function */
-#define GPIO_MMC_CLK_MD         (GPIO_MMC_CLK | GPIO_ALT_FN_2_OUT)
-#define GPIO_MMC_DATA0_MD       (GPIO_MMC_DATA0 | GPIO_ALT_FN_1_IN | GPIO_ALT_FN_1_OUT)
-#define GPIO_MMC_DATA1_MD       (GPIO_MMC_DATA1 | GPIO_ALT_FN_1_IN | GPIO_ALT_FN_1_OUT)
-#define GPIO_MMC_DATA2_MD       (GPIO_MMC_DATA2 | GPIO_ALT_FN_1_IN | GPIO_ALT_FN_1_OUT)
-#define GPIO_MMC_DATA3_MD       (GPIO_MMC_DATA3 | GPIO_ALT_FN_1_IN | GPIO_ALT_FN_1_OUT)
-
-#define GPIO_MMC_CMD_MD         (GPIO_MMC_CMD | GPIO_ALT_FN_1_IN | GPIO_ALT_FN_1_OUT)
 
 ////////////
 #define GPIO32_MMCCLK_MD		( 32 | GPIO_ALT_FN_2_OUT)
@@ -544,7 +466,6 @@ int
 mmc_init(int verbose)
 {
 	int ret;
-	unsigned int rate;
 
 #if 1				// GPIO
 	/* Setup GPIO for PXA27x MMC/SD controller */
@@ -563,18 +484,14 @@ mmc_init(int verbose)
 	MMC_SPI = MMC_SPI_DISABLE;
 
 	ret = sd_init_card(&mmci, verbose);
-#if 0
-	if (ret) {
-		mmci.rca = MMC_DEFAULT_RCA;
-		ret = mmc_init_card(&mmci, &cid, verbose);
-	}
-#endif
 	if (ret)
-		return ret;
+		return -1;
+	
 	/* Get CSD from the card CMD9 */
-	ret = mmc_cmd(MMC_CMD_SEND_CSD, mmci.rca << 16, 0x0007, &mmci.raw_csd);
+	ret = mmc_cmd(MMC_CMD_SEND_CSD, mmci.rca << 16, RESPONSE_R2_CSD,
+						(ulong *)&mmci.raw_csd);
 	if (ret)
-		return ret;
+		return -2;
 	mmc_decode_csd(&mmci);
 	mmc_decode_cid(&mmci);
 	if (verbose) {
@@ -582,9 +499,7 @@ mmc_init(int verbose)
 		mmc_dump_cid(&mmci.cid);
 	}
 	if (ret)
-		return ret;
-
-
+		return -3;
 	MMC_STRPCL = MMC_STRPCL_STOP_CLK;
 	MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
 	while(!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF));
@@ -624,6 +539,7 @@ mmc_init(int verbose)
 
 int mmc_exit (void)
 {
+	mmc_cmd(MMC_CMD_GO_IDLE_STATE, 0, RESPONSE_NONE, 0);
 	MMC_STRPCL = MMC_STRPCL_STOP_CLK;
 	MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
 	while (!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF));
@@ -639,14 +555,14 @@ int mmc_exit (void)
 	set_GPIO_mode(110 | GPIO_IN);
 	set_GPIO_mode(111 | GPIO_IN);
 
+	return 0;
 }
 
-static unsigned long
-mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
+static ulong mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 {
 	int ret, i = 0;
 	unsigned long resp[4];
-	unsigned long card_status, status;
+	unsigned long card_status, status = 0;
 	char data;
 	int count;
 	struct mmci *mmc = &mmci;
@@ -658,7 +574,8 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 	      blkcnt);
 
 	/* Put the device into Transfer state */
-	ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmci.rca << 16, MMC_CMDAT_R1, &resp);
+	ret = mmc_cmd(MMC_CMD_SELECT_CARD, mmci.rca << 16, RESPONSE_R1B,
+							(ulong *)&resp);
 	if (ret)
 		goto fail;
 
@@ -666,21 +583,22 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 	/* 512 regardless of what the card reports, for compatibility */
 	mmc->blkdev.blksz = 512;
 	ret =
-	    mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc->blkdev.blksz, MMC_CMDAT_R1,
-		    &resp);
+	    mmc_cmd(MMC_CMD_SET_BLOCKLEN, mmc->blkdev.blksz, RESPONSE_R1,
+		    (ulong *)&resp);
 	if (ret)
 		goto fail;
 
 	for (i = 0; i < blkcnt; i++, start++) {
 		/* send read command */
-//		MMC_STRPCL = MMC_STRPCL_STOP_CLK;
+		MMC_STRPCL = MMC_STRPCL_STOP_CLK;
+		MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
+		while (!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF));
 		MMC_RDTO = 0xffff;
 		MMC_NOB = 1;
 		MMC_BLKLEN = mmc->blkdev.blksz;
 		ret = mmc_cmd(MMC_CMD_READ_SINGLE_BLOCK,
-			      start * mmc->blkdev.blksz,
-			      (MMC_CMDAT_R1 | MMC_CMDAT_DATA_EN | MMC_CMDAT_READ
-			       | MMC_CMDAT_BLOCK), &resp);
+			      start * mmc->blkdev.blksz, RESPONSE_R1,
+			      (ulong *)&resp);
 		if (ret)
 			goto fail;
 
@@ -707,8 +625,7 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 		      mmc->blkdev.blksz - count);
 
 		MMC_I_MASK = ~MMC_I_MASK_DATA_TRAN_DONE;
-		while (!(MMC_I_REG & MMC_I_REG_DATA_TRAN_DONE)) ;
-
+		while (!(MMC_I_REG & MMC_I_REG_DATA_TRAN_DONE));
 		status = MMC_STAT;
 		if (status & MMC_STAT_ERRORS) {
 			printf("MMC_STAT error %lx\n", status);
@@ -718,13 +635,12 @@ mmc_bread(int dev, unsigned long start, lbaint_t blkcnt, unsigned char *buffer)
 
       out:
 	/* Put the device back into Standby state */
-	mmc_cmd(MMC_CMD_SELECT_CARD, 0, MMC_CMDAT_R1, &resp);
+	mmc_cmd(MMC_CMD_SELECT_CARD, 0, RESPONSE_R1B, (ulong *)&resp);
 	return i;
 
       fail:
-	printf("mmc: bread failed, SR = %08lx", status);
-	mmc_cmd(MMC_CMD_SEND_STATUS, mmc->rca << 16, &card_status,
-		MMC_CMDAT_R1);
+	printf("mmc: bread failed,\nSR = %08lx\n", status);
+	mmc_cmd(MMC_CMD_SEND_STATUS, mmc->rca << 16, RESPONSE_R1, &card_status);
 	printf(", card status = %08lx\n", card_status);
 	i = -1;
 	goto out;

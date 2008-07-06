@@ -215,6 +215,7 @@ void enter_simple_pass_through_mode(void)
 	udelay(1000);
 //	EnableLCD_8bit_active();
 	ret = mmc_init(0);
+//	printlcd("mmc ok\n"); while(1);
 	if (ret != 0) {
 		EnableLCD_8bit_active();
 		printlcd("Cannot find MMC card\n");

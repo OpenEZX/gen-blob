@@ -55,6 +55,7 @@
 
 #if 1
 /* MMC_CMDAT */
+#define	MMC_CMDAT_STOP_TRAN		(0x0001UL << 10)
 #define MMC_CMDAT_MMC_DMA_EN		(0x0001UL << 7)
 #define MMC_CMDAT_INIT	  		(0x0001UL << 6)
 #define MMC_CMDAT_BUSY	  		(0x0001UL << 5)
@@ -63,6 +64,7 @@
 #define MMC_CMDAT_WRITE	 		(0x0001UL << 3)
 #define MMC_CMDAT_READ	  		(0x0000UL << 3)
 #define MMC_CMDAT_DATA_EN       	(0x0001UL << 2)
+#define MMC_CMDAT_NORESP		0
 #define MMC_CMDAT_R1	    		(0x0001UL)
 #define MMC_CMDAT_R2	    		(0x0002UL)
 #define MMC_CMDAT_R3	    		(0x0003UL)
@@ -110,18 +112,27 @@
 #define MMC_DEFAULT_RCA			1
 
 #define MMC_BLOCK_SIZE			512
-#define MMC_CMD_RESET			0
+#define MMC_CMD_CIM_RESET		-1
+#define	MMC_CMD_GO_IDLE_STATE		0
 #define MMC_CMD_SEND_OP_COND		1
 #define MMC_CMD_ALL_SEND_CID 		2
-#define MMC_CMD_SET_RCA			3
+#define MMC_CMD_SET_RELATIVE_ADDR	3
+#define MMC_CMD_SET_DSR			4
+#define	MMC_CMD_SELECT_CARD		7
 #define MMC_CMD_SEND_CSD 		9
 #define MMC_CMD_SEND_CID 		10
+#define	MMC_CMD_READ_DAT_UNTIL_STOP	11
+#define	MMC_CMD_STOP_TRANSMISSION	12
 #define MMC_CMD_SEND_STATUS		13
+#define	MMC_CMD_GO_INACTIVE_STATE	15
 #define MMC_CMD_SET_BLOCKLEN		16
-#define MMC_CMD_READ_BLOCK		17
-#define MMC_CMD_RD_BLK_MULTI		18
+#define MMC_CMD_READ_SINGLE_BLOCK	17
+#define MMC_CMD_READ_MULTIPLE_BLOCK	18
+#define	MMC_CMD_WRITE_DAT_UNTIL_STOP	20
+#define	MMC_CMD_SET_BLOCK_COUNT		23
 #define MMC_CMD_WRITE_BLOCK		24
-
+#define MMC_CMD_WRITE_MULTIPLE_BLOCK	25
+#define MMC_CMD_SD_SEND_OP_COND		41
 #define MMC_MAX_BLOCK_SIZE		512
 
 #define MMC_R1_IDLE_STATE		0x01
@@ -168,6 +179,17 @@
 
 #define R1_ILLEGAL_COMMAND		(1 << 22)
 #define R1_APP_CMD			(1 << 5)
+
+#define RESPONSE_NONE	0
+#define RESPONSE_R1	1
+#define RESPONSE_R1B	2
+#define RESPONSE_R2_CID	3
+#define RESPONSE_R2_CSD	4
+#define RESPONSE_R3	5
+#define RESPONSE_R4	6
+#define RESPONSE_R5	7
+#define RESPONSE_R6	8
+
 
 struct mmc_cid {
 	unsigned int		manfid;
