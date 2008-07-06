@@ -51,7 +51,7 @@ int usbctl_next_state_on_event(int event);
 void udc_int_hndlr(int, void *);
 static void initialize_descriptors(void);
 static void soft_connect_hook(int enable);
-static void udc_disable(void);
+void udc_disable(void);
 static void udc_enable(void);
 extern void usb_mot_open(int flag);
 extern void memset(void *start, unsigned char val, unsigned long size);
@@ -323,8 +323,6 @@ int pxa_usb_stop(void)
 
 	udc_disable();
 
-	msleep(1);
-
 	return 0;
 }
 
@@ -516,7 +514,7 @@ static void soft_connect_hook(int enable)
 }
 
 /* disable the UDC at the source */
-static void udc_disable(void)
+void udc_disable(void)
 {
 	soft_connect_hook(0);
 	/* clear UDC-enable */

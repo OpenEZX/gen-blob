@@ -66,6 +66,7 @@ extern int is_key_press_down(u32 key_val, u32 Deb_val);
 extern void Delay(int uSec);
 extern void udc_int_hndlr(int, void *);
 extern int usbctl_init(void);
+extern void udc_disable(void);
 extern void USB_gpio_init(void);
 extern struct mem_area io_map[];
 /* structure note:
@@ -179,6 +180,7 @@ void enter_simple_pass_through_mode(void)
 	int machid = 0;
 	int lcd = 0;
 
+	udc_disable();
 	keypad_init();
 /*  EnableLCD_8bit_active();
   while (1) {
@@ -186,6 +188,7 @@ void enter_simple_pass_through_mode(void)
 	printf("key = %02x\n", key);
   }
 */
+
 
 	if (is_key_press_down(0x04000031, 0) ||
 	    is_key_press_down(0x04000003, 0) ||
