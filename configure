@@ -946,7 +946,7 @@ echo "$ac_t""$host" 1>&6
 
 
 
-for ac_prog in arm-linux-gnu-gcc gcc
+for ac_prog in arm-angstrom-linux-gnueabi-gcc gcc
 do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -981,7 +981,7 @@ test -n "$CC" && break
 done
 test -n "$CC" || CC="echo"
 
-for ac_prog in arm-linux-gnu-objcopy objcopy
+for ac_prog in arm-angstrom-linux-gnueabi-objcopy objcopy
 do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -1016,7 +1016,7 @@ test -n "$OBJCOPY" && break
 done
 test -n "$OBJCOPY" || OBJCOPY="echo"
 
-for ac_prog in arm-linux-gnu-ranlib ranlib
+for ac_prog in arm-angstrom-linux-gnueabi-ranlib ranlib
 do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -1051,7 +1051,7 @@ test -n "$RANLIB" && break
 done
 test -n "$RANLIB" || RANLIB="echo"
 
-for ac_prog in arm-linux-gnu-ar ar
+for ac_prog in arm-angstrom-linux-gnueabi-ar ar
 do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -1977,7 +1977,7 @@ CCASFLAGS=`echo $CFLAGS -D__ASSEMBLY__ `
 
 CFLAGS=`echo $CFLAGS | sed 's/-O2/-Os/'`
 
-CFLAGS=`echo $CFLAGS -march=armv4 -mtune=strongarm1100 -fomit-frame-pointer -fno-builtin -mapcs-32 -nostdinc -DCPU_$use_cpu -DMBM -DHAINAN`
+CFLAGS=`echo $CFLAGS -march=armv4 -mtune=strongarm1100 -mno-thumb-interwork -fomit-frame-pointer -fno-builtin -nostdinc -DCPU_$use_cpu -DMBM -DHAINAN`
 LDFLAGS=`echo $LDFLAGS -static -nostdlib`
 OCFLAGS="-O binary -R .note -R .comment -S"
 

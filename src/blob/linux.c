@@ -46,9 +46,6 @@ static void setup_commandline_tag(char *);
 static void setup_ramdisk_tag(void);
 static void setup_initrd_tag(void);
 static void setup_end_tag(void);
-#ifdef MBM			//mbm module
-static void setup_ezx_tag(void);
-#endif
 static struct tag *params;
 extern int cmd_flag;
 
@@ -88,28 +85,8 @@ static void setup_start_tag(void)
 	params = tag_next(params);
 }
 
-#ifdef MBM			//mbm module
-//???fix me: This address should be same as in start.S, potential 
-//confilicts may be happened if someone use this address in other places
-//it assert a0000000+12 now, see lubbock.h for other flags in this area
-
-#define POWERUP_REASON_ADDR 0xa000000c
-u32 *powup_reason = (u32 *) POWERUP_REASON_ADDR;
-void setup_ezx_tag(void)
-{
-//  params->hdr.tag = ATAG_EZX;
-//  params->hdr.size = tag_size(tag_ezx);
-//  params->u.ezx.pow_up_reason=*powup_reason;
-//  params = tag_next(params);
-
-}
-#endif //mbm module
-
 static void setup_commandline_tag(char *cmdline)
 {
-	char *p;
-	int i;
-
 	/* initialise commandline */
 	params->u.cmdline.cmdline[0] = '\0';
 

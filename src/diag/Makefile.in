@@ -155,7 +155,7 @@ diag_elf32_LDADD =  \
 	@LCD@ \
 	@DIAG_PLATFORM_OBJ@ \
 	-L${top_builddir}/src/lib -lblob \
-	-lgcc
+	-lgcc -lc
 
 
 diag_SOURCES = 

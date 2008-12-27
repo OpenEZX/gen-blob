@@ -446,13 +446,6 @@ typedef enum pcapADJBit_SetType
 	SSP_PCAP_ADJ_BIT_SYS_RST_MODE1              = 0x6c000004
 }SSP_PCAP_SECONDARY_PROCESSOR_REGISTER_BIT_TYPE;
 
-
-#define GPDR(x)   (x>63?(x>95?GPDR3:GPDR2):(x>31?GPDR1:GPDR0))
-#define GPLR(x)   (x>63?(x>95?GPLR3:GPLR2):(x>31?GPLR1:GPLR0))
-#define GPSR(x)   (x>63?(x>95?GPSR3:GPSR2):(x>31?GPSR1:GPSR0))
-#define GPCR(x)   (x>63?(x>95?GPCR3:GPCR2):(x>31?GPCR1:GPCR0))
-#define GAFR(x)   (x>63?(x>95?(x>111?GAFR3_U:GAFR3_L):(x>79?GAFR2_U:GAFR2_L)):(x>31?(x>47?GAFR1_U:GAFR1_L):(x>15?GAFR0_U:GAFR0_L)))
-
 #ifdef E680_P3_AND_EARLY
 
 /* control PCAP direct PIN */

@@ -186,6 +186,7 @@ static char *number(char *str, long num, int base, int size, int precision,
 
 /* Forward decl. needed for IP address printing stuff... */
 int sprintf(char *buf, const char *fmt, ...);
+size_t strnlen(const char *s, size_t count);
 
 int vsprintf(char *buf, const char *fmt, va_list args)
 {

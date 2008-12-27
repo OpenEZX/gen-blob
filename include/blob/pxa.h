@@ -26,11 +26,12 @@
  */
 
 #ifndef __ASSEMBLY__
-#define __REG(x)	(*(volatile unsigned long*)(x))
+#define __REG(x)	(*(volatile unsigned long *)(x))
 #else
 #define __REG(x)	x
 #endif
 
+#define __REG2(x,y)	(*(volatile unsigned long *)((unsigned long)&__REG(x) + (y)))
 
 #define PXA_CS0_PHYS	0x00000000
 #define PXA_CS1_PHYS	0x04000000
@@ -953,7 +954,6 @@
 /* More handy macros.  The argument is a literal GPIO number. */
 
 #define GPIO_bit(x)	(1 << ((x) & 0x1f))
-#if 0
 #define GPLR(x)		__REG2(0x40E00000, ((x) & 0x60) >> 3)
 #define GPDR(x)		__REG2(0x40E0000C, ((x) & 0x60) >> 3)
 #define GPSR(x)		__REG2(0x40E00018, ((x) & 0x60) >> 3)
@@ -962,18 +962,6 @@
 #define GFER(x)		__REG2(0x40E0003C, ((x) & 0x60) >> 3)
 #define GEDR(x)		__REG2(0x40E00048, ((x) & 0x60) >> 3)
 #define GAFR(x)		__REG2(0x40E00054, ((x) & 0x70) >> 2)
-
-#endif
-
-#define GPDR(x)   (x>63?(x>95?GPDR3:GPDR2):(x>31?GPDR1:GPDR0))
-#define GPLR(x)   (x>63?(x>95?GPLR3:GPLR2):(x>31?GPLR1:GPLR0))
-#define GPSR(x)   (x>63?(x>95?GPSR3:GPSR2):(x>31?GPSR1:GPSR0))
-#define GPCR(x)   (x>63?(x>95?GPCR3:GPCR2):(x>31?GPCR1:GPCR0))
-#define GRER(x)   (x>63?(x>95?GRER3:GRER2):(x>31?GRER1:GRER0))
-#define GFER(x)	  (x>63?(x>95?GFER3:GFER2):(x>31?GREF1:GREF0))
-#define GEDR(x)   (x>63?(x>95?GEDR3:GEDR2):(x>31?GEDR1:GEDR0))
-
-#define GAFR(x)   (x>63?(x>95?(x>111?GAFR3_U:GAFR3_L):(x>79?GAFR2_U:GAFR2_L)):(x>31?(x>47?GAFR1_U:GAFR1_L):(x>15?GAFR0_U:GAFR0_L)))
 
 /* GPIO alternate function assignments */
 

@@ -147,7 +147,7 @@ blob_start_elf32_LDFLAGS =  \
 
 
 blob_start_elf32_LDADD =  \
-	-lgcc
+	-lgcc -lc
 
 
 blob_start_SOURCES = 
@@ -170,7 +170,7 @@ blob_start_chain_elf32_LDFLAGS =  \
 
 
 blob_start_chain_elf32_LDADD =  \
-	-lgcc
+	-lgcc -lc
 
 
 blob_start_chain_SOURCES = 
@@ -255,7 +255,7 @@ blob_rest_elf32_LDADD =  \
 	@DEBUG@ \
 	@CLOCK@ \
 	-L${top_builddir}/src/lib -lblob\
-	-lgcc
+	-lgcc -lc
 
 
 blob_rest_SOURCES = 

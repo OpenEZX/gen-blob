@@ -188,22 +188,22 @@ int translate_xnum_to_string(u8 * pStr, u32 num)
 /* output reset information for debug */
 void output_reset_inf(u32 sleepflag)
 {
-	u8 mystr[20];
+	char mystr[20];
 
 	printlcd("\nFLAG=0x");
-	translate_xnum_to_string(mystr, sleepflag);
+	translate_xnum_to_string((char *)mystr, sleepflag);
 	printlcd(mystr);
 
 	printlcd("\nRESET=0x");
-	translate_xnum_to_string(mystr, FFSPR);
+	translate_xnum_to_string((char *)mystr, FFSPR);
 	printlcd(mystr);
 
 	printlcd("\nBRESET=0x");
-	translate_xnum_to_string(mystr, PSPR);
+	translate_xnum_to_string((char *)mystr, PSPR);
 	printlcd(mystr);
 
 	printlcd("\nARESET=0x");
-	translate_xnum_to_string(mystr, RCSR);
+	translate_xnum_to_string((char *)mystr, RCSR);
 	printlcd(mystr);
 }
 

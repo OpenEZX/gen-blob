@@ -177,7 +177,7 @@ blob_rest_elf32_LDADD	+= \
 	@DEBUG@ \
 	@CLOCK@ \
 	-L${top_builddir}/src/lib -lblob\
-	-lgcc
+	-lgcc -lc
 
 
 blob_rest_SOURCES	=
