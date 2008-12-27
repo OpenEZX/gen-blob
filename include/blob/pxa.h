@@ -954,14 +954,26 @@
 /* More handy macros.  The argument is a literal GPIO number. */
 
 #define GPIO_bit(x)	(1 << ((x) & 0x1f))
-#define GPLR(x)		__REG2(0x40E00000, ((x) & 0x60) >> 3)
-#define GPDR(x)		__REG2(0x40E0000C, ((x) & 0x60) >> 3)
-#define GPSR(x)		__REG2(0x40E00018, ((x) & 0x60) >> 3)
-#define GPCR(x)		__REG2(0x40E00024, ((x) & 0x60) >> 3)
-#define GRER(x)		__REG2(0x40E00030, ((x) & 0x60) >> 3)
-#define GFER(x)		__REG2(0x40E0003C, ((x) & 0x60) >> 3)
-#define GEDR(x)		__REG2(0x40E00048, ((x) & 0x60) >> 3)
-#define GAFR(x)		__REG2(0x40E00054, ((x) & 0x70) >> 2)
+
+#define _GPLR(x)	__REG2(0x40E00000, ((x) & 0x60) >> 3)
+#define _GPDR(x)	__REG2(0x40E0000C, ((x) & 0x60) >> 3)
+#define _GPSR(x)	__REG2(0x40E00018, ((x) & 0x60) >> 3)
+#define _GPCR(x)	__REG2(0x40E00024, ((x) & 0x60) >> 3)
+#define _GRER(x)	__REG2(0x40E00030, ((x) & 0x60) >> 3)
+#define _GFER(x)	__REG2(0x40E0003C, ((x) & 0x60) >> 3)
+#define _GEDR(x)	__REG2(0x40E00048, ((x) & 0x60) >> 3)
+#define _GAFR(x)	__REG2(0x40E00054, ((x) & 0x70) >> 2)
+
+#define GPLR(x)         (*((((x) & 0x7f) < 96) ? &_GPLR(x) : &GPLR3))
+#define GPDR(x)         (*((((x) & 0x7f) < 96) ? &_GPDR(x) : &GPDR3))
+#define GPSR(x)         (*((((x) & 0x7f) < 96) ? &_GPSR(x) : &GPSR3))
+#define GPCR(x)         (*((((x) & 0x7f) < 96) ? &_GPCR(x) : &GPCR3))
+#define GRER(x)         (*((((x) & 0x7f) < 96) ? &_GRER(x) : &GRER3))
+#define GFER(x)         (*((((x) & 0x7f) < 96) ? &_GFER(x) : &GFER3))
+#define GEDR(x)         (*((((x) & 0x7f) < 96) ? &_GEDR(x) : &GEDR3))
+#define GAFR(x)         (*((((x) & 0x7f) < 96) ? &_GAFR(x) : \
+                         ((((x) & 0x7f) < 112) ? &GAFR3_L : &GAFR3_U)))
+
 
 /* GPIO alternate function assignments */
 
