@@ -117,7 +117,7 @@ CONSTANTS
 #define BLOADER_ERR_UPGRADE_CMD_FAILED     (BLOADER_ALWAYS_SET_BIT | 0x22)
 #define BLOADER_ERR_FLASH_SIZE_INVALID     (BLOADER_ALWAYS_SET_BIT | 0x24)
 
-#define BUFSZ   1024
+#define BUFSZ   5000
 
 /*==============================================================================
 GLOBAL MACROS DECLARATION
@@ -165,6 +165,7 @@ typedef enum
    BLOADER_COMMAND_RBRK,
    BLOADER_COMMAND_UPGRADE,
    BLOADER_COMMAND_RESTART,
+   BLOADER_COMMAND_RBIN,
    BLOADER_UNKNOWN_COMMAND
 } BLOADER_COMMANDS;
 
@@ -212,7 +213,7 @@ extern "C" {
 extern void parse_data(void);
 
 extern void parse_err_response (u8 error_code);
-extern BOOL parse_send_packet(u8 *command_ptr, u8 *data_ptr);
+extern BOOL parse_send_packet(u8 *command_ptr, u8 *data_ptr, u16 data_size);
 extern void parse_ack_response(u8 *data);
 extern struct mybuf * get_buf(int io);
 void mybuf_reset(void);

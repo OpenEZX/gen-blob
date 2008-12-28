@@ -698,6 +698,47 @@ util_calc_csum(BLOADER_SECTIONS section, u8 * number_of_codegroup,
 GLOBAL FUNCTIONS
 ==============================================================================*/
 
+void handle_command_RBIN(u8 *data_ptr)
+{
+	u16 size;
+	u32 addr;
+	u8 rx_csum = 0;
+	u8 calc_csum = 0;
+	u8 response[8192];
+	u16 i;			/* address bytes counter */
+
+	if (data_ptr == NULL) {
+		parse_err_response(BLOADER_ERR_DATA_INVALID);
+		return;
+	}
+
+	/* Calculate the checksum based on received data */
+	for (i = 0; i < 12; i++) {
+		calc_csum += data_ptr[i];
+	}
+
+	/* Converted the received address from ASCII string to number */
+	addr = util_hexasc_to_u32(&data_ptr[0], 8);
+	size = util_hexasc_to_u32(&data_ptr[8], 4);
+
+	/* Converted the received checksum from ASCII string to number */
+	rx_csum = (u8) util_hexasc_to_u32(&data_ptr[12], 2);
+
+	/* Validate the checksum */
+	if (rx_csum != calc_csum) {
+		/* Bad checksum, return error */
+		parse_err_response(BLOADER_ERR_BAD_CHECKSUM);
+	} else {
+		calc_csum = 0;
+		for (i = 0; i < size; i++) {
+	                response[i] = ((u8 *)addr)[i];
+			calc_csum += response[i];
+	        }
+		response[i] = calc_csum;
+		parse_send_packet("RBIN", (u8 *) response, size + 1);
+	}
+}
+
 /*==============================================================================
 
 FUNCTION: handle_command_ADDR
@@ -753,7 +794,6 @@ void handle_command_ADDR(u8 * data_ptr)
 
 	/* Converted the received address from ASCII string to number */
 	addr = util_hexasc_to_u32(&data_ptr[0], ADDR_CMD_ADDR_SIZE);
-
 	/* Converted the received checksum from ASCII string to number */
 	rx_csum = (u8) util_hexasc_to_u32(&data_ptr[ADDR_CMD_CHKSUM_INDEX],
 					  ADDR_CMD_CHKSUM_SIZE);
@@ -858,7 +898,7 @@ void handle_command_RQRC(u8 * data_ptr)
 	}
 	/* Add ASCII equivalent of csum to response */
 	util_u16_to_hexasc(csum, response_ptr);
-	parse_send_packet(RQRC_RESPONSE_KEYWORD_STRING, response);
+	parse_send_packet(RQRC_RESPONSE_KEYWORD_STRING, response, strlen(response));
 }
 
 /*==============================================================================
@@ -917,7 +957,7 @@ void handle_command_RQHW(u8 * data_ptr)
 	//response_byte_count = 
 	add_bin_ascii_response(source_ptr, &response[0], HW_DESCR_BLOCK_LENGTH);
 
-	parse_send_packet((u8 *) RQHW_RESPONSE_KEYWORD_STRING, response);
+	parse_send_packet((u8 *) RQHW_RESPONSE_KEYWORD_STRING, response, strlen(response));
 }
 
 /*==============================================================================
@@ -1058,7 +1098,7 @@ void handle_command_RQVN(u8 * data_ptr)
 	}
 
 	parse_send_packet((u8 *) RQVN_RESPONSE_KEYWORD_STRING,
-			  hardcode_response);
+			  "gen-blob", 8);
 }
 
 /*==============================================================================
@@ -1365,7 +1405,7 @@ void handle_command_RQCS(u8 * data_ptr)
 
 	*response_ptr = NULL;	/* Terminate string */
 
-	parse_send_packet(RQCS_RESPONSE_KEYWORD_STRING, response);
+	parse_send_packet(RQCS_RESPONSE_KEYWORD_STRING, response, strlen(response));
 }
 
 /*==============================================================================

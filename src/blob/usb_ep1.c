@@ -75,7 +75,6 @@ static void ep1_send_packet(void)
 	/* We may access an unallocated area. */
 	//      for( i=0; i<OutSize; i+=4)
 	for (i = 0; i < whole_4_cnt; i += 4) {
-
 		UDCDRA = *pData++;
 	}
 
@@ -114,7 +113,6 @@ static void ep1_start(void)
 {
 	if (!ep1_len)
 		return;
-
 	UDCICR0 = 0x3f;
 	ep1_send_packet();
 }
@@ -149,7 +147,6 @@ void ep1_reset(void)
 void ep1_int_hndlr(int usir0)
 {
 	int status = UDCCSRA;
-
 	if (ep1_remain != 0) {
 		/* more data to go */
 		ep1_start();
@@ -170,7 +167,6 @@ int ep1_send(char *buf, int len, usb_callback_t callback)
 	}
 
 	if (ep1_len) {
-
 		return -EBUSY;
 	}
 

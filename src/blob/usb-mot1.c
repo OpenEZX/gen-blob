@@ -110,7 +110,6 @@ BOOL ezx_usb_xmit(struct mybuf *out)
 #ifdef ZQ_DEBUG
 	PRINT_STR("ezx_usb_xmit is called \n");
 #endif
-
 	if (cur_tx_buf) {
 		if (next_tx_buf) {	/* the buf is overflow */
 			return FALSE;
@@ -127,7 +126,6 @@ BOOL ezx_usb_xmit(struct mybuf *out)
 		else
 			return FALSE;
 	}
-
 }
 
 static void tx_callback(int flag, int size)
@@ -142,7 +140,6 @@ static void tx_callback(int flag, int size)
 	if (next_tx_buf) {
 		cur_tx_buf = next_tx_buf;
 		next_tx_buf = 0;
-
 		ep1_send(cur_tx_buf->buf, cur_tx_buf->len, tx_callback);
 	}
 }

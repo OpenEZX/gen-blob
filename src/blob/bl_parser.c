@@ -49,7 +49,7 @@ LOCAL CONSTANTS
 #define MAX_RESPONSE_HEADER_SIZE 10	/* STX + keyword eq. "RSVN" + RS + margin. */
 /* Max size RQVN response. */
 #define MAX_RESPONSE_DATA_SIZE    ((3+MAX_NR_OF_CODE_GROUPS)*17 + 10)
-#define MAX_RESPONSE_SIZE    (MAX_RESPONSE_HEADER_SIZE + MAX_RESPONSE_DATA_SIZE)
+#define MAX_RESPONSE_SIZE    5000 //(MAX_RESPONSE_HEADER_SIZE + MAX_RESPONSE_DATA_SIZE)
 
 /* ASCII values */
 #define NUL  0x00
@@ -95,7 +95,8 @@ static BLOADER_COMMAND_TBL command_tbl[] = {
 	{(u8 *) "RUPID", BLOADER_COMMAND_RUPID},
 	{(u8 *) "UPGRADE", BLOADER_COMMAND_UPGRADE},
 	{(u8 *) "RESTART", BLOADER_COMMAND_RESTART},
-	{(u8 *) "RBRK", BLOADER_COMMAND_RBRK}
+	{(u8 *) "RBRK", BLOADER_COMMAND_RBRK},
+	{(u8 *) "RBIN", BLOADER_COMMAND_RBIN},
 };
 
 static const u8 ackStr[] = "ACK";
@@ -114,9 +115,7 @@ static u8 separator_clear = 0;	/* if the separator has been processed */
 static u8 BIN_cmd_flag = 0;
 static u16 BIN_bytes_to_read = 0;	/* number of bytes to read in BIN cmd */
 
-static struct mybuf in = { "", 0 }, out1 = {
-"", 0}, out2 = {
-"", 0};
+static struct mybuf in = { "", 0 }, out1 = { "", 0 }, out2 = { "", 0 };
 
 /*==============================================================================
 GLOBAL VARIABLES
@@ -246,58 +245,35 @@ static void handle_command(u8 * command_ptr, u8 * data_ptr)
 	switch (map_command
 		(&command_tbl[0], num_elements(command_tbl), command_ptr)) {
 	case BLOADER_COMMAND_ADDR:
-		{
-			handle_command_ADDR(data_ptr);
-		}
+		handle_command_ADDR(data_ptr);
 		break;
-
 	case BLOADER_COMMAND_BIN:
-		{
-			handle_command_BIN(data_ptr);
-		}
+		handle_command_BIN(data_ptr);
 		break;
-
 	case BLOADER_COMMAND_POWER_DOWN:
-		{
-			handle_command_PWR_DOWN(data_ptr);
-		}
+		handle_command_PWR_DOWN(data_ptr);
 		break;
-
 	case BLOADER_COMMAND_RQCS:
-		{
-			handle_command_RQCS(data_ptr);
-		}
+		handle_command_RQCS(data_ptr);
 		break;
-
 	case BLOADER_COMMAND_RQHW:
-		{
-			handle_command_RQHW(data_ptr);
-		}
+		handle_command_RQHW(data_ptr);
 		break;
-
 	case BLOADER_COMMAND_RQRC:
-		{
-			handle_command_RQRC(data_ptr);
-		}
+		handle_command_RQRC(data_ptr);
 		break;
-
 	case BLOADER_COMMAND_RQVN:
-		{
-			handle_command_RQVN(data_ptr);
-		}
+		handle_command_RQVN(data_ptr);
 		break;
-
 	case BLOADER_COMMAND_JUMP:
-		{
-			handle_command_JUMP(data_ptr);
-		}
+		handle_command_JUMP(data_ptr);
 		break;
-
+	case BLOADER_COMMAND_RBIN:
+		handle_command_RBIN(data_ptr);
+		break;
 	default:
-		{
-			/* bad command */
-			parse_err_response(BLOADER_ERR_UNKNOWN_COMMAND);
-		}
+		/* bad command */
+		parse_err_response(BLOADER_ERR_UNKNOWN_COMMAND);
 		break;
 	}
 }
@@ -334,9 +310,10 @@ IMPORTANT NOTES:
    Never exits
 
 ==============================================================================*/
-BOOL parse_send_packet(u8 * command_ptr, u8 * data_ptr)
+BOOL parse_send_packet(u8 * command_ptr, u8 * data_ptr, u16 data_size)
 {
 	u16 i = 0;
+	u16 count = data_size;
 	/* u8 empty_packet[] = {0x00, 0x00}; */
 	struct mybuf *out;
 	u8 *temp_ptr;
@@ -358,14 +335,14 @@ BOOL parse_send_packet(u8 * command_ptr, u8 * data_ptr)
 	while ((*temp_ptr != NUL) && (i < MAX_RESPONSE_SIZE)) {
 		out->buf[i++] = *(temp_ptr++);
 	}
-
 	/* check to see if any data attached to the command */
-	if (data_ptr != NULL) {
+	if (count) {
 		/* there is data, put a marker between command and data */
 		out->buf[i++] = RS;
 		/* Now load in the data field */
-		while ((*data_ptr != NUL) && (i < MAX_RESPONSE_SIZE)) {
+		while (count && (i < MAX_RESPONSE_SIZE)) {
 			out->buf[i++] = *data_ptr++;
+			count--;
 		}
 	}
 	/* Attach the end control character to the respond packet */
@@ -710,7 +687,7 @@ void parse_err_response(u8 error_code)
 	error_code_str[0] = error_code;
 	error_code_str[1] = NUL;
 
-	parse_send_packet((u8 *) errStr, error_code_str);
+	parse_send_packet((u8 *) errStr, error_code_str, 1);
 }
 
 /*==============================================================================
@@ -773,7 +750,7 @@ void parse_ack_response(u8 * data_ptr)
 	/* terminate data */
 	*pResp = NUL;
 
-	parse_send_packet((u8 *) ackStr, resp_data);
+	parse_send_packet((u8 *) ackStr, resp_data, strlen(resp_data));
 }
 
 /*==============================================================================
