@@ -97,6 +97,7 @@ static BLOADER_COMMAND_TBL command_tbl[] = {
 	{(u8 *) "RESTART", BLOADER_COMMAND_RESTART},
 	{(u8 *) "RBRK", BLOADER_COMMAND_RBRK},
 	{(u8 *) "RBIN", BLOADER_COMMAND_RBIN},
+	{(u8 *) "FLASH", BLOADER_COMMAND_FLASH},
 };
 
 static const u8 ackStr[] = "ACK";
@@ -270,6 +271,9 @@ static void handle_command(u8 * command_ptr, u8 * data_ptr)
 		break;
 	case BLOADER_COMMAND_RBIN:
 		handle_command_RBIN(data_ptr);
+		break;
+	case BLOADER_COMMAND_FLASH:
+		handle_command_FLASH(data_ptr);
 		break;
 	default:
 		/* bad command */

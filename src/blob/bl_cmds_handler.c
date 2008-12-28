@@ -698,6 +698,41 @@ util_calc_csum(BLOADER_SECTIONS section, u8 * number_of_codegroup,
 GLOBAL FUNCTIONS
 ==============================================================================*/
 
+void handle_command_FLASH(u8 *data_ptr)
+{
+	u16 size;
+	u32 source, dest;
+	u8 rx_csum = 0;
+	u8 calc_csum = 0;
+	u16 i;			/* address bytes counter */
+
+	if (data_ptr == NULL) {
+		parse_err_response(BLOADER_ERR_DATA_INVALID);
+		return;
+	}
+
+	/* Calculate the checksum based on received data */
+	for (i = 0; i < 20; i++) {
+		calc_csum += data_ptr[i];
+	}
+
+	/* Converted the received address from ASCII string to number */
+	source = util_hexasc_to_u32(&data_ptr[0], 8);
+	dest = util_hexasc_to_u32(&data_ptr[8], 8);
+	size = util_hexasc_to_u32(&data_ptr[16], 4);
+
+	/* Converted the received checksum from ASCII string to number */
+	rx_csum = (u8) util_hexasc_to_u32(&data_ptr[20], 2);
+
+	/* Validate the checksum */
+	if (rx_csum != calc_csum) {
+		/* Bad checksum, return error */
+		parse_err_response(BLOADER_ERR_BAD_CHECKSUM);
+	} else {
+		printf("source %08x\ndest %08x\nsize %d\n", source, dest, size);
+	}
+}
+
 void handle_command_RBIN(u8 *data_ptr)
 {
 	u16 size;

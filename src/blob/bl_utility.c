@@ -303,20 +303,7 @@ void util_jump_to_ram(u32 ram_addr)
 
 void util_power_down(void)
 {
-
-#ifdef ZQ_DEBUG
-	PRINT_STR("Power down the phone\n");
-#endif /* ZQ_DEBUG */
-
-	GAFR2_U &= 0xffff3fff;
-	GAFR2_U |= 0x00004000;
-	GPCR2 = 0x00800000;
-	GPDR2 &= 0xff7fffff;
-	while (1) {
-#ifdef ZQ_DEBUG
-		PRINT_STR("Power down infinite looping\n");
-#endif /* ZQ_DEBUG */
-	}
+	GPCR(4) = GPIO_bit(4);
 }
 
 void util_restart(void)
