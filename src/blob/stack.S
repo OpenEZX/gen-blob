@@ -31,5 +31,5 @@
 
 
 .section ".stack"
-	/* 8kB stack should be enough */
-	.space	(8 * 1024)
+	/* 16kB stack should be enough */
+	.space	(16 * 1024)
