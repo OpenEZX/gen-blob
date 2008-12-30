@@ -73,7 +73,7 @@ int flash_dummy_ok(void)
 }
 
 /* initialise the flash blocks table */
-static void init_flash(void)
+void init_flash(void)
 {
 	int i = 0;
 	int j;
@@ -162,7 +162,7 @@ int flash_erase_region(u32 * start, u32 nwords)
 {
 	u32 *cur;
 	u32 *end;
-	int rv, i;
+	int rv;
 
 	cur = start;
 	end = start + nwords;
@@ -178,7 +178,6 @@ int flash_erase_region(u32 * start, u32 nwords)
 #endif
 
 	flash_driver->enable_vpp();
-	i = 0;
 	while (cur < end) {
 		SerialOutputString("erasing dirty block at 0x");
 		SerialOutputHex((u32) cur);
@@ -195,12 +194,7 @@ int flash_erase_region(u32 * start, u32 nwords)
 			flash_driver->disable_vpp();
 			return rv;
 		}
-
 		cur += 0x20000 / sizeof(*cur);
-		printlcd(".");
-		i++;
-		if ((i % 20) == 0)
-			printlcd("\n");
 	}
 	printlcd("\n");
 	flash_driver->disable_vpp();
@@ -402,27 +396,23 @@ int flash_write_region(u16 * dst, u16 * src, u32 nwords)
 {
 	unsigned long size;
 	unsigned short stat = 0;
-	int i;
 
-	i = 0;
+	printf("%08x %08x %d\n", dst, src, nwords);
+
 	while (nwords > 0) {
 		size = nwords;
 		if (size >= 0x20000)
 			size = 0x20000;
 		stat = flash_program_buf(dst, src, size);
 		if (stat) {
-			printlcd("!!!\n");
+			printlcd("FLASH ERROR\n");
 			return -EFLASHPGM;
 		}
-		printlcd(".");
-		i++;
-		if ((i % 20) == 0)
-			printlcd("\n");
+
 		nwords -= size;
 		dst += size / sizeof(*dst);
 		src += size / sizeof(*src);
 	}
-	printlcd("\n");
 	return stat;
 }
 

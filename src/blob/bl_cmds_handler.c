@@ -700,7 +700,7 @@ GLOBAL FUNCTIONS
 
 void handle_command_FLASH(u8 *data_ptr)
 {
-	u16 size;
+	u32 size;
 	u32 source, dest;
 	u8 rx_csum = 0;
 	u8 calc_csum = 0;
@@ -712,25 +712,51 @@ void handle_command_FLASH(u8 *data_ptr)
 	}
 
 	/* Calculate the checksum based on received data */
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 24; i++) {
 		calc_csum += data_ptr[i];
 	}
 
 	/* Converted the received address from ASCII string to number */
 	source = util_hexasc_to_u32(&data_ptr[0], 8);
 	dest = util_hexasc_to_u32(&data_ptr[8], 8);
-	size = util_hexasc_to_u32(&data_ptr[16], 4);
+	size = util_hexasc_to_u32(&data_ptr[16], 8);
 
 	/* Converted the received checksum from ASCII string to number */
-	rx_csum = (u8) util_hexasc_to_u32(&data_ptr[20], 2);
+	rx_csum = (u8) util_hexasc_to_u32(&data_ptr[24], 2);
 
 	/* Validate the checksum */
 	if (rx_csum != calc_csum) {
 		/* Bad checksum, return error */
 		parse_err_response(BLOADER_ERR_BAD_CHECKSUM);
-	} else {
-		printf("source %08x\ndest %08x\nsize %d\n", source, dest, size);
+		return;
 	}
+	if (size > 0x800000 /* 8MB */ || size % 0x20000 /* 128k blocks */) {
+		parse_err_response(BLOADER_ERR_FLASH_SIZE_INVALID);
+		return;
+	}
+	if ((dest + size) > 0x4000000 || dest % 0x20000 ||
+	    source < 0xa0000000 || source % 8 ||
+	    (source + size) > 0xa2000000) {
+		parse_err_response(BLOADER_ERR_ADDRESS_INVALID);
+		return;
+	}
+	if (flash_unlock_region(dest, size >> 2) < 0) {
+		printf("flash unlock failed\n");
+		parse_err_response(BLOADER_ERR_FLASH_NOT_ERASED);
+		return;
+	}
+	if (flash_erase_region(dest, size >> 2) < 0) {
+		printf ("erase failed\n");
+		parse_err_response(BLOADER_ERR_ERASE_FAILED);
+		return;
+	}
+	if (flash_write_region(dest, source, size) < 0) {
+		printf("write failed\n");
+		parse_err_response(BLOADER_ERR_PROGRAMMING);
+		return;
+	}
+	printf("OK\n");
+	parse_ack_response(NULL);
 }
 
 void handle_command_RBIN(u8 *data_ptr)

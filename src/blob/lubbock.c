@@ -78,7 +78,7 @@ static flash_descriptor_t lubbock_flash_descriptors[] = {
 
 #endif
 
-static void init_lubbock_flash_driver(void)
+void init_lubbock_flash_driver(void)
 {
 	flash_descriptors = lubbock_flash_descriptors;
 
