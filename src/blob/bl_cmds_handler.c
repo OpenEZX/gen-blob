@@ -755,7 +755,6 @@ void handle_command_FLASH(u8 *data_ptr)
 		parse_err_response(BLOADER_ERR_PROGRAMMING);
 		return;
 	}
-	printf("OK\n");
 	parse_ack_response(NULL);
 }
 

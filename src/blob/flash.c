@@ -397,8 +397,6 @@ int flash_write_region(u16 * dst, u16 * src, u32 nwords)
 	unsigned long size;
 	unsigned short stat = 0;
 
-	printf("%08x %08x %d\n", dst, src, nwords);
-
 	while (nwords > 0) {
 		size = nwords;
 		if (size >= 0x20000)
