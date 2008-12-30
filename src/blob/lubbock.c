@@ -69,7 +69,7 @@ static flash_descriptor_t lubbock_flash_descriptors[] = {
 static flash_descriptor_t lubbock_flash_descriptors[] = {
 	{
 	      size:1 * 128 * 1024,
-	      num:256,
+	      num:512,
       lockable:1},
 	{
 	 /* NULL block */

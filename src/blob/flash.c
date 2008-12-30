@@ -196,7 +196,6 @@ int flash_erase_region(u32 * start, u32 nwords)
 		}
 		cur += 0x20000 / sizeof(*cur);
 	}
-	printlcd("\n");
 	flash_driver->disable_vpp();
 
 	return 0;
@@ -496,7 +495,6 @@ static int do_flash_lock(u32 * start, u32 nwords, int lock)
 
 	rv = address_range_to_block_range((u32) start, nwords * sizeof(u32),
 					  &sb, &eib);
-
 	if (rv < 0)
 		return rv;
 
