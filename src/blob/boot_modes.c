@@ -192,6 +192,7 @@ void enter_simple_pass_through_mode(void)
 
 	if (is_key_press_down(0x04000031, 0) ||
 	    is_key_press_down(0x04000003, 0) ||
+	    is_key_press_down(0x04000033, 0) ||
 	    is_key_press_down(0x04000012, 0) ||
 	    is_key_press_down(0x04000042, 0)) {
 		EnableLCD_8bit_active();
