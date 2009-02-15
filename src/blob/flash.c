@@ -51,8 +51,8 @@
 #include <blob/command.h>
 
 extern void printlcd(char *cntrl_string);
-/* this is enough for a 16MB flash with 128kB blocks */
-#define NUM_FLASH_BLOCKS	(128 * 3)
+/* this is enough for a 64MB flash with 128kB blocks */
+#define NUM_FLASH_BLOCKS	(64 * 1024) / 128
 
 typedef struct {
 	u32 start;
