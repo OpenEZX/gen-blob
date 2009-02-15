@@ -206,12 +206,15 @@ void enter_simple_pass_through_mode(void)
 		init_flash();
 		USB_gpio_init();
 		usbctl_init();
+		
+		pcap_switch_off_usb();
 		GPCR(99) = GPIO_bit(99);	// USB_READY=low
 		{
 			int i = 5000 * 4;
 			while (i--) ;
 		}
 		GPSR(99) = GPIO_bit(99);	// USB_READY =high
+		pcap_switch_on_usb();
 		/* hwuart_init(230400); */
 		printlcd("OpenEZX blob 090215\nUSB ready\n");
 		for (;;) {
