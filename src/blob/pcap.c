@@ -36,7 +36,6 @@
 #include <util.h>
 #include <time.h>
 #include <lcd_ezx.h>*/
-#include <linux/string.h>
 #include <pxa.h>
 #include <blob/types.h>
 #include <blob/log.h>

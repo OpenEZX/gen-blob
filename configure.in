@@ -316,7 +316,7 @@ if test ! -d "$linux_prefix/include" ; then
 	AC_MSG_ERROR([Please supply a proper prefix with the --with-linux-prefix flag])
 	exit -1
 fi
-if test ! -f "$linux_prefix/include/asm/setup.h" ; then
+if test ! -f "$linux_prefix/arch/arm/include/asm/setup.h" ; then
 	AC_MSG_RESULT([no])
 	AC_MSG_ERROR([The Linux source tree in $linux_prefix is not configured.])
 	AC_MSG_ERROR([Please run "make lart_config ; yes no | make old_config" in the])
@@ -324,7 +324,7 @@ if test ! -f "$linux_prefix/include/asm/setup.h" ; then
 	exit -1
 fi
 AC_MSG_RESULT([yes])
-CFLAGS=`echo $CFLAGS -I${linux_prefix}/include`
+CFLAGS=`echo $CFLAGS -I${linux_prefix}/include -I${linux_prefix}/arch/arm/include`
 
 
 
@@ -515,7 +515,6 @@ include/blob/Makefile
 include/blob/arch/Makefile
 src/Makefile
 src/blob/Makefile
-src/diag/Makefile
 src/lib/Makefile
 tools/Makefile
 utils/Makefile

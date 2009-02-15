@@ -13,7 +13,6 @@
 SUBDIRS		= \
 	lib \
 	blob \
-	diag
 
 
 CLEANFILES	= ${srcdir}/*~

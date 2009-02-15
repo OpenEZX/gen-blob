@@ -39,7 +39,6 @@
 #include <blob/util.h>
 #include <blob/time.h>
 #include <blob/lcd_ezx.h>
-#include <linux/string.h>
 #include <blob/log.h>
 #include "usb_ctl_bvd.h"
 #include "pcap.h"

@@ -38,7 +38,7 @@
 #include <blob/serial.h>
 #include <blob/pxa.h>
 
-#include <asm-arm/setup.h>
+#include <asm/setup.h>
 
 static void setup_start_tag(void);
 static void setup_memory_tags(void);

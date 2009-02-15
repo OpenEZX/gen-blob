@@ -64,7 +64,6 @@
 #include <blob/time.h>
 #include <blob/lcd_ezx.h>
 #include <blob/bt_uart.h>
-#include <linux/string.h>
 
 #include <blob/log.h>
 #include <blob/HW_init.h>

@@ -1721,7 +1721,7 @@ if test ! -d "$linux_prefix/include" ; then
 	{ echo "configure: error: Please supply a proper prefix with the --with-linux-prefix flag" 1>&2; exit 1; }
 	exit -1
 fi
-if test ! -f "$linux_prefix/include/asm/setup.h" ; then
+if test ! -f "$linux_prefix/arch/arm/include/asm/setup.h" ; then
 	echo "$ac_t""no" 1>&6
 	{ echo "configure: error: The Linux source tree in $linux_prefix is not configured." 1>&2; exit 1; }
 	{ echo "configure: error: Please run "make lart_config ; yes no | make old_config" in the" 1>&2; exit 1; }
@@ -1729,7 +1729,7 @@ if test ! -f "$linux_prefix/include/asm/setup.h" ; then
 	exit -1
 fi
 echo "$ac_t""yes" 1>&6
-CFLAGS=`echo $CFLAGS -I${linux_prefix}/include`
+CFLAGS=`echo $CFLAGS -I${linux_prefix}/include -I${linux_prefix}/arch/arm/include`
 
 
 
@@ -2091,7 +2091,6 @@ include/blob/Makefile
 include/blob/arch/Makefile
 src/Makefile
 src/blob/Makefile
-src/diag/Makefile
 src/lib/Makefile
 tools/Makefile
 utils/Makefile
@@ -2211,7 +2210,6 @@ include/blob/Makefile
 include/blob/arch/Makefile
 src/Makefile
 src/blob/Makefile
-src/diag/Makefile
 src/lib/Makefile
 tools/Makefile
 utils/Makefile

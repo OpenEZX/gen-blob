@@ -10,7 +10,6 @@
  */
 
 #include <stdarg.h>
-#include <linux/string.h>
 #include <linux/ctype.h>
 
 #include <common.h>

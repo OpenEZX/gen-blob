@@ -36,7 +36,7 @@
 
 #include <blob/types.h>
 #include <blob/serial.h>
-#include <asm-arm/setup.h>
+#include <asm/setup.h>
 
 
 typedef enum {

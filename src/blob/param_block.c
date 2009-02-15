@@ -39,7 +39,6 @@
 #include <blob/param_block.h>
 #include <blob/main.h>
 #include <blob/util.h>
-#include <blob/sa1100.h>
 
 /*
  *  Paramater Tag parsing.
@@ -90,17 +89,6 @@ static int parse_ptag_baud(const struct ptag *ptag)
 }
 
 __ptagtable(PTAG_BAUD, parse_ptag_baud);
-
-static int parse_ptag_gpio(const struct ptag *ptag)
-{
-	GPDR &= ~ptag->u.gpio.mask;
-	if ((GPSR & ptag->u.gpio.mask) == ptag->u.gpio.level)
-		return -1;
-	else
-		return 0;
-}
-
-__ptagtable(PTAG_GPIO, parse_ptag_gpio);
 
 /*
  * Scan the tag table for this tag, and call its parse function.

@@ -86,8 +86,7 @@ VERSION = @VERSION@
 
 SUBDIRS = \
 	lib \
-	blob \
-        diag	
+	blob
 
 CLEANFILES = ${srcdir}/*~
 mkinstalldirs = $(SHELL) $(top_srcdir)/tools/mkinstalldirs

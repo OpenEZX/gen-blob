@@ -33,15 +33,12 @@
 
 #ifndef BLOB_TYPES_H
 #define BLOB_TYPES_H
+#include <asm/byteorder.h>
 
 typedef unsigned char		uchar;
-typedef unsigned short ushort;
-typedef unsigned long	ulong;
 typedef volatile unsigned long	vu_long;
 typedef volatile unsigned short vu_short;
 typedef volatile unsigned char	vu_char;
-//typedef	__u64		uint64_t;
-typedef unsigned long uint64_t;
 typedef uint64_t lbaint_t;
 
 typedef signed char s8;
@@ -52,10 +49,6 @@ typedef unsigned short u16;
 
 typedef signed int s32;
 typedef unsigned int u32;
-
-#ifndef USE_BLOB_TOGETHER_WITH_LIBC
-typedef u32 size_t;
-#endif
 
 typedef enum
 {
