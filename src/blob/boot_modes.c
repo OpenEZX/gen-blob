@@ -183,10 +183,10 @@ void enter_simple_pass_through_mode(void)
 	udc_disable();
 	keypad_init();
 
-	if (*(unsigned long *)(FLAG_ADDR) == DUMPKEYS_FLAG) {
+	if (*(unsigned long *)(0xa1000000) == DUMPKEYS_FLAG) {
 		EnableLCD_8bit_active();
 		printf("Dump keycode\n");
-		*(unsigned long *)(FLAG_ADDR) = NO_FLAG;
+		*(unsigned long *)(0xa1000000) = NO_FLAG;
 		while (1) {
 		  	u8 key = read_key();
 			printf("key = %02x\n", key);
@@ -194,13 +194,13 @@ void enter_simple_pass_through_mode(void)
 	}
 
 
-	if (*(unsigned long *)(FLAG_ADDR) == USBMODE_FLAG ||
+	if (*(unsigned long *)(0xa1000000) == USBMODE_FLAG ||
 	    is_key_press_down(0x04000031, 0) ||
 	    is_key_press_down(0x04000003, 0) ||
 	    is_key_press_down(0x04000033, 0) ||
 	    is_key_press_down(0x04000012, 0) ||
 	    is_key_press_down(0x04000042, 0)) {
-		*(unsigned long *)(FLAG_ADDR) = NO_FLAG;
+		*(unsigned long *)(0xa1000000) = NO_FLAG;
 		EnableLCD_8bit_active();
 		init_lubbock_flash_driver();
 		init_flash();
