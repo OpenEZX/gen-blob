@@ -224,6 +224,16 @@ void enter_simple_pass_through_mode(void)
 		}
 	}
 
+	/* check for boot from flash flag */
+	if (*(unsigned long *)(GEN1_KERN_FLAG_ADDR) == KERN_ON_FLASH_FLAG) {
+		memcpy(KERNEL_RAM_BASE, GEN1_KERN_FLAG_ADDR+4, KERN_MAX_SIZE);
+		boot_linux(cmdline, machid);
+	}
+	else if (*(unsigned long *)(GEN2_KERN_FLAG_ADDR) == KERN_ON_FLASH_FLAG) {
+		memcpy(KERNEL_RAM_BASE, GEN2_KERN_FLAG_ADDR+4, KERN_MAX_SIZE);
+		boot_linux(cmdline, machid);
+	}
+
 	/* turn on the power */
 	pcap_mmc_power_on(1);
 	udelay(1000);
