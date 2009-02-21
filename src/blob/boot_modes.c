@@ -165,6 +165,27 @@ int boot_menu(menu_t * menu)
 	return 0;
 }
 
+static inline int check_enter_menu(void)
+{
+	return	is_key_press_down(0x04000002, 0) ||
+		is_key_press_down(0x04000043, 0) ||
+		is_key_press_down(0x04000013, 0);
+}
+
+static inline int check_enter_usb(void)
+{
+	return	*(unsigned long *)(0xa1000000) == USBMODE_FLAG ||
+		is_key_press_down(0x04000031, 0) ||
+		is_key_press_down(0x04000003, 0) ||
+		is_key_press_down(0x04000033, 0) ||
+		is_key_press_down(0x04000012, 0) ||
+		is_key_press_down(0x04000042, 0);
+}
+
+static inline int check_enter_dumpkeys(void)
+{
+	return *(unsigned long *)(0xa1000000) == DUMPKEYS_FLAG;
+}
 
 /* 
  * add enter_simple_pass_through_mode 
@@ -183,7 +204,7 @@ void enter_simple_pass_through_mode(void)
 	udc_disable();
 	keypad_init();
 
-	if (*(unsigned long *)(0xa1000000) == DUMPKEYS_FLAG) {
+	if (check_enter_dumpkeys()) {
 		EnableLCD_8bit_active();
 		printf("Dump keycode\n");
 		*(unsigned long *)(0xa1000000) = NO_FLAG;
@@ -194,12 +215,7 @@ void enter_simple_pass_through_mode(void)
 	}
 
 
-	if (*(unsigned long *)(0xa1000000) == USBMODE_FLAG ||
-	    is_key_press_down(0x04000031, 0) ||
-	    is_key_press_down(0x04000003, 0) ||
-	    is_key_press_down(0x04000033, 0) ||
-	    is_key_press_down(0x04000012, 0) ||
-	    is_key_press_down(0x04000042, 0)) {
+	if (check_enter_usb()) {
 		*(unsigned long *)(0xa1000000) = NO_FLAG;
 		EnableLCD_8bit_active();
 		init_lubbock_flash_driver();
@@ -224,16 +240,17 @@ void enter_simple_pass_through_mode(void)
 		}
 	}
 
-	/* check for boot from flash flag */
-	if (*(unsigned long *)(GEN1_KERN_FLAG_ADDR) == KERN_ON_FLASH_FLAG) {
-		memcpy(KERNEL_RAM_BASE, GEN1_KERN_FLAG_ADDR+4, KERN_MAX_SIZE);
-		boot_linux(cmdline, machid);
+	if (!check_enter_menu()) {
+		/* check for boot from flash flag */
+		if (*(unsigned long *)(GEN1_KERN_FLAG_ADDR) == KERN_ON_FLASH_FLAG) {
+			memcpy(KERNEL_RAM_BASE, GEN1_KERN_FLAG_ADDR+4, KERN_MAX_SIZE);
+			boot_linux(cmdline, machid);
+		}
+		else if (*(unsigned long *)(GEN2_KERN_FLAG_ADDR) == KERN_ON_FLASH_FLAG) {
+			memcpy(KERNEL_RAM_BASE, GEN2_KERN_FLAG_ADDR+4, KERN_MAX_SIZE);
+			boot_linux(cmdline, machid);
+		}
 	}
-	else if (*(unsigned long *)(GEN2_KERN_FLAG_ADDR) == KERN_ON_FLASH_FLAG) {
-		memcpy(KERNEL_RAM_BASE, GEN2_KERN_FLAG_ADDR+4, KERN_MAX_SIZE);
-		boot_linux(cmdline, machid);
-	}
-
 	/* turn on the power */
 	pcap_mmc_power_on(1);
 	udelay(1000);
@@ -256,9 +273,7 @@ void enter_simple_pass_through_mode(void)
 	if (menu.default_machid > 0)
 		machid = menu.default_machid;
 
-	if (is_key_press_down(0x04000002, 0) ||
-	    is_key_press_down(0x04000043, 0) ||
-	    is_key_press_down(0x04000013, 0)) {
+	if (check_enter_menu()) {
 		EnableLCD_8bit_active();
 		ret = boot_menu(&menu);
 		if (ret < 0 || !go_menu_entry) {
@@ -277,7 +292,7 @@ void enter_simple_pass_through_mode(void)
 		char *buf = (char *)KERNEL_RAM_BASE;
 
 		if (lcd) printf("Loading %s...\n", kernel);
-		size = file_fat_read(kernel, buf, 0x200000);	// 2MB
+		size = file_fat_read(kernel, buf, 0x400000);	// 4MB
 
 		/* turn off mmc controler, otherwise 2.4 kernel freezes */
 		mmc_exit();
