@@ -216,7 +216,7 @@ void enter_simple_pass_through_mode(void)
 		GPSR(99) = GPIO_bit(99);	// USB_READY =high
 		pcap_switch_on_usb();
 		/* hwuart_init(230400); */
-		printlcd("OpenEZX blob 090215\nUSB ready\n");
+		printlcd("OpenEZX blob 210215\nUSB ready\n");
 		for (;;) {
 			if (ICPR & 0x800) {
 				udc_int_hndlr(0x11, 0);
