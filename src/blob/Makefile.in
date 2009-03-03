@@ -117,7 +117,8 @@ bin_PROGRAMS = \
 	blob \
 	blob-chain \
 	blob-a780 \
-	blob-a1200
+	blob-a1200 \
+	blob-gen2-kernel
 
 
 INCLUDES =  \
@@ -585,6 +586,11 @@ blob-a780: blob
 
 blob-a1200: blob
 	dd if=blob of=$@ bs=1k seek=2 conv=sync
+
+blob-gen2-kernel: blob blob-a1200 zImage boot_from_flash_magic
+	dd if=blob-a1200 of=tmp.img conv=sync
+	dd if=boot_from_flash_magic of=tmp.img bs=1 seek=131072 conv=sync
+	cat tmp.img zImage >$@ 
 
 blob-chain: blob-start-chain blob-rest
 	rm -f $@
