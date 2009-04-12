@@ -355,7 +355,6 @@ void pcap_switch_off_usb(void)
 		pcap_is_init = 1;
 		ssp_pcap_init();
 	}
-	SSP_PCAP_get_bit_from_PCAP(SSP_PCAP_ADJ_BIT_BUSCTRL_USB_PU);
 	SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_BUSCTRL_USB_PU);
 	return;
 }
@@ -366,7 +365,6 @@ void pcap_switch_on_usb(void)
 		pcap_is_init = 1;
 		ssp_pcap_init();
 	}
-	SSP_PCAP_get_bit_from_PCAP(SSP_PCAP_ADJ_BIT_BUSCTRL_USB_PU);
 	SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_BUSCTRL_USB_PU);
 	return;
 }

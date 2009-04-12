@@ -39,7 +39,6 @@ typedef struct {
 	int level;
 } initlist_t;
 
-
 #define __init __attribute__((unused, __section__(".initlist")))
 
 #define __initlist(fn, lvl) \

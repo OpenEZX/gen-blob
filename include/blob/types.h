@@ -39,7 +39,8 @@ typedef unsigned char		uchar;
 typedef volatile unsigned long	vu_long;
 typedef volatile unsigned short vu_short;
 typedef volatile unsigned char	vu_char;
-typedef uint64_t lbaint_t;
+typedef __u64 lbaint_t;
+typedef unsigned int size_t;
 
 typedef signed char s8;
 typedef unsigned char u8;
@@ -49,6 +50,9 @@ typedef unsigned short u16;
 
 typedef signed int s32;
 typedef unsigned int u32;
+
+typedef unsigned long ulong;
+typedef unsigned short ushort;
 
 typedef enum
 {
