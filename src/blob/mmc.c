@@ -421,21 +421,18 @@ static int sd_init_card(struct mmci *mmc, int verbose)
 	ulong resp[4];
 
 	mmc_cmd(MMC_CMD_GO_IDLE_STATE, 0, RESPONSE_NONE, 0);
-//	udelay(10000);
 	for (i = 0; i < retries; i++) {
-		ret = mmc_cmd(MMC_CMD_APP_CMD, 0, RESPONSE_NONE, 0);
+		mmc_cmd(MMC_CMD_APP_CMD, 0, RESPONSE_NONE, 0);
 		udelay(1000);
-		ret = mmc_cmd(MMC_CMD_SD_SEND_OP_COND, 0x00010000, RESPONSE_R3,
+		mmc_cmd(MMC_CMD_SD_SEND_OP_COND, 0x00010000, RESPONSE_R3,
 									&resp);
 		if (resp[0] & 0x80000000) {	/* POWER UP of clear BUSY BIT */
 			break;
 		}
 		udelay(200000);
 	}
-	if (i == retries) {
-		printf("CMD41 Timeout\n");
-		return -1;
-	}
+	if (i == retries)
+		return -2;
 
 	ret = mmc_cmd(MMC_CMD_ALL_SEND_CID, 0, RESPONSE_R2_CID,
 						(ulong *)&mmc->raw_cid);
@@ -467,7 +464,6 @@ mmc_init(int verbose)
 {
 	int ret;
 
-#if 1				// GPIO
 	/* Setup GPIO for PXA27x MMC/SD controller */
 	set_GPIO_mode(GPIO32_MMCCLK_MD);
 	set_GPIO_mode(GPIO112_MMCCMD_MD);
@@ -475,7 +471,6 @@ mmc_init(int verbose)
 	set_GPIO_mode(GPIO109_MMCDAT1_MD);
 	set_GPIO_mode(GPIO110_MMCDAT2_MD);
 	set_GPIO_mode(GPIO111_MMCDAT3_MD);
-#endif
 
 	CKEN |= CKEN12_MMC;	/* enable MMC unit clock */
 
@@ -485,21 +480,19 @@ mmc_init(int verbose)
 
 	ret = sd_init_card(&mmci, verbose);
 	if (ret)
-		return -1;
+		return ret;
 	
 	/* Get CSD from the card CMD9 */
 	ret = mmc_cmd(MMC_CMD_SEND_CSD, mmci.rca << 16, RESPONSE_R2_CSD,
 						(ulong *)&mmci.raw_csd);
 	if (ret)
-		return -2;
+		return ret;
 	mmc_decode_csd(&mmci);
 	mmc_decode_cid(&mmci);
 	if (verbose) {
 		mmc_dump_csd(&mmci.csd);
 		mmc_dump_cid(&mmci.cid);
 	}
-	if (ret)
-		return -3;
 	MMC_STRPCL = MMC_STRPCL_STOP_CLK;
 	MMC_I_MASK = ~MMC_I_MASK_CLK_IS_OFF;
 	while(!(MMC_I_REG & MMC_I_REG_CLK_IS_OFF));

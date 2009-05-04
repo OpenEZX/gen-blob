@@ -201,8 +201,8 @@ void enter_simple_pass_through_mode(void)
 	int machid = 0;
 	int lcd = 0;
 
-	udc_disable();
 	keypad_init();
+	udc_disable();
 
 	if (check_enter_dumpkeys()) {
 		EnableLCD_8bit_active();
@@ -213,7 +213,6 @@ void enter_simple_pass_through_mode(void)
 			printf("key = %02x\n", key);
 		}
 	}
-
 
 	if (check_enter_usb()) {
 		*(unsigned long *)(0xa1000000) = NO_FLAG;
@@ -232,7 +231,7 @@ void enter_simple_pass_through_mode(void)
 		GPSR(99) = GPIO_bit(99);	// USB_READY =high
 		pcap_switch_on_usb();
 		/* hwuart_init(230400); */
-		printlcd("OpenEZX blob 090221\nUSB ready\n");
+		printlcd("OpenEZX blob 090504\nUSB ready\n");
 		for (;;) {
 			if (ICPR & 0x800) {
 				udc_int_hndlr(0x11, 0);
@@ -240,7 +239,7 @@ void enter_simple_pass_through_mode(void)
 		}
 	}
 
-	if (!check_enter_menu()) {
+	if (check_enter_menu() == 0) {
 		/* check for boot from flash flag */
 		if (*(unsigned long *)(GEN1_KERN_FLAG_ADDR) == KERN_ON_FLASH_FLAG) {
 			memcpy(KERNEL_RAM_BASE, GEN1_KERN_FLAG_ADDR+4, KERN_MAX_SIZE);
@@ -259,7 +258,8 @@ void enter_simple_pass_through_mode(void)
 //	printlcd("mmc ok\n"); while(1);
 	if (ret != 0) {
 		EnableLCD_8bit_active();
-		printlcd("Cannot find MMC card\n");
+		printf("Cannot find MMC card\n");
+		printf("%s\n", (ret == -2 ? "CMD41 exausted retries" : "Timeout"));
 		while (1) ;
 	}
 	file_detectfs();
@@ -291,7 +291,7 @@ void enter_simple_pass_through_mode(void)
 		int size;
 		char *buf = (char *)KERNEL_RAM_BASE;
 
-		if (lcd) printf("Loading %s...\n", kernel);
+		if (lcd) printf("Loading \"%s\"...\n", kernel);
 		size = file_fat_read(kernel, buf, 0x400000);	// 4MB
 
 		/* turn off mmc controler, otherwise 2.4 kernel freezes */
@@ -304,7 +304,7 @@ void enter_simple_pass_through_mode(void)
 		}
 		if (!lcd)
 			EnableLCD_8bit_active();
-		printf("Cannot load kernel from:\n   %s\n", kernel);
+		printf("Cannot load kernel from:\n   \"%s\"\n", kernel);
 		while (1) ;
 	}
 }

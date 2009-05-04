@@ -46,47 +46,47 @@
 /* initialize function */
 void keypad_init(void)
 {
-//      printf("keypad_init\n");
-	//currently, not touch CKEN- see start.S
-
-	//init gpio
 	set_GPIO_mode(97 | GPIO_ALT_FN_3_IN);
 	set_GPIO_mode(98 | GPIO_ALT_FN_3_IN);
-
 	set_GPIO_mode(100 | GPIO_ALT_FN_1_IN);
 	set_GPIO_mode(101 | GPIO_ALT_FN_1_IN);
 	set_GPIO_mode(102 | GPIO_ALT_FN_1_IN);
+
 	set_GPIO_mode(103 | GPIO_ALT_FN_2_OUT);
 	set_GPIO_mode(104 | GPIO_ALT_FN_2_OUT);
 	set_GPIO_mode(105 | GPIO_ALT_FN_2_OUT);
 	set_GPIO_mode(106 | GPIO_ALT_FN_2_OUT);
 	set_GPIO_mode(107 | GPIO_ALT_FN_2_OUT);
 	set_GPIO_mode(108 | GPIO_ALT_FN_2_OUT);
-	//       for(i=0;i<100;i++);  
-	//init regs
 
-	KPC = 0x32a7f202;
+	KPC = 0x32a7f000; /* Direct Keys disabled */
 	//currently keep KPKDI reset value, 100ms
 	KPKDI = 0x64;
-	/*
-	   logvarhex("kpypad_init():KPC=0x",KPC);
-	   logvarhex("kpypad_init():KPKDI=0x",KPKDI);
-	 */
+
+	Delay(200); /* delay a bit so it works on all hw versions */
 	return;
 
+}
+
+u32 read_kpas(void) {
+	u32 kpas;
+	while (1) {
+		kpas = KPAS;
+		/* retry until data is valid */
+		if (!(kpas & 0xf8000000))
+			return kpas;
+	}
 }
 
 /* check key press down event */
 /* return 1, key pressed down now, ret=0, key not pressed */
 /* key_val: value of KPAS to check, simple design, ???fix me: caller has to know KPAS value to check */
 /* Deb_val: Debounce value, if we use manual scan, just delay this period (uSec) */
-
 int is_key_press_down(u32 key_val, u32 Deb_val)
 {
-//      printf("key = %08x\n", KPAS);
-	if (KPAS == key_val) {	/* a key down signal got */
+	if (read_kpas() == key_val) {	/* a key down signal got */
 		Delay(Deb_val);	/* make debounce */
-		if (KPAS == key_val)
+		if (read_kpas() == key_val)
 			return 1;
 		else
 			return 0;
@@ -96,8 +96,12 @@ int is_key_press_down(u32 key_val, u32 Deb_val)
 
 u8 read_key()
 {
-	while (!(0x04000000 & KPAS)) ;
-	return (KPAS & 0xff);
+	u32 kpas;
+	while (1) {
+		kpas = read_kpas();
+		if (0x04000000 & kpas)
+			return (kpas & 0xff);
+	}
 }
 
 /* exit list handler */
