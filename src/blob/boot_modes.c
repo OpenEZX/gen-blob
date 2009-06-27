@@ -254,7 +254,7 @@ void enter_simple_pass_through_mode(void)
 	}
 	/* turn on the power */
 	pcap_mmc_power_on(1);
-	udelay(3000000);
+	udelay(1000);
 //	EnableLCD_8bit_active();
 	ret = mmc_init(0);
 //	printlcd("mmc ok\n"); while(1);
