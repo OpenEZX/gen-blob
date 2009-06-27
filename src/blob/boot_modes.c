@@ -221,8 +221,10 @@ void enter_simple_pass_through_mode(void)
 		init_flash();
 		USB_gpio_init();
 		usbctl_init();
-		
+
+		pcap_mmc_power_on(0);
 		pcap_switch_off_usb();
+
 		GPCR(99) = GPIO_bit(99);	// USB_READY=low
 		{
 			int i = 5000 * 4;
@@ -231,7 +233,7 @@ void enter_simple_pass_through_mode(void)
 		GPSR(99) = GPIO_bit(99);	// USB_READY =high
 		pcap_switch_on_usb();
 		/* hwuart_init(230400); */
-		printlcd("OpenEZX blob 090504\nUSB ready\n");
+		printlcd("OpenEZX blob 090627\nUSB ready\n");
 		for (;;) {
 			if (ICPR & 0x800) {
 				udc_int_hndlr(0x11, 0);
@@ -252,7 +254,7 @@ void enter_simple_pass_through_mode(void)
 	}
 	/* turn on the power */
 	pcap_mmc_power_on(1);
-	udelay(1000);
+	udelay(3000000);
 //	EnableLCD_8bit_active();
 	ret = mmc_init(0);
 //	printlcd("mmc ok\n"); while(1);
