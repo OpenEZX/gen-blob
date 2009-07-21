@@ -765,7 +765,7 @@ u32 SSP_PCAP_get_register_value_from_buffer
 #define VAP_TF_MASK	0xFFFFF0FF
 #define VAP_SD_MASK	0xFFFFFF9F
 
-unsigned int vaux_backup;
+unsigned int vaux_backup = 0;
 
 void pcap_mmc_power_on(int on)
 {
@@ -778,7 +778,9 @@ void pcap_mmc_power_on(int on)
 		SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
 				&vaux_backup);
 	else {
-		SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
+		/* Restore the backup value only if we saved it before */
+		if (vaux_backup != 0)
+			SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
 				vaux_backup);
 		return;
 	}
