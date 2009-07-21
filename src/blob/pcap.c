@@ -765,8 +765,6 @@ u32 SSP_PCAP_get_register_value_from_buffer
 #define VAP_TF_MASK	0xFFFFF0FF
 #define VAP_SD_MASK	0xFFFFFF9F
 
-unsigned int vaux_backup = 0;
-
 void pcap_mmc_power_on(int on)
 {
 	unsigned int ssp_pcap_register_val;
@@ -774,29 +772,35 @@ void pcap_mmc_power_on(int on)
 		pcap_is_init = 1;
 		ssp_pcap_init();
 	}
-	if (on)
+
+	if (on) {
+		/* Set VAP_MMC (PCAP VAUX3 && VAUX2) */
 		SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
-				&vaux_backup);
-	else {
-		/* Restore the backup value only if we saved it before */
-		if (vaux_backup != 0)
-			SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
-				vaux_backup);
-		return;
+					&ssp_pcap_register_val);
+
+		ssp_pcap_register_val &= (VAP_TF_MASK | VAP_SD_MASK);
+		ssp_pcap_register_val |= (VAP_TF | VAP_SD);
+
+		SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
+					ssp_pcap_register_val);
+
+		SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
+		SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX2_EN);
+
+	} else {
+		/* Clear VAP_MMC (PCAP VAUX3 && VAUX2) */
+		SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
+					&ssp_pcap_register_val);
+
+		ssp_pcap_register_val &= (VAP_TF_MASK | VAP_SD_MASK);
+
+		SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
+					ssp_pcap_register_val);
+
+		SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
+		SSP_PCAP_bit_clean(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX2_EN);
 	}
 
-	/* open VAP_MMC (PCAP VAUX3 && VAUX2) */
-	SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
-				     &ssp_pcap_register_val);
-	ssp_pcap_register_val =
-	    (ssp_pcap_register_val & (VAP_TF_MASK | VAP_SD_MASK)) |
-	    (VAP_TF | VAP_SD);
-	SSP_PCAP_write_data_to_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
-				    ssp_pcap_register_val);
-	SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX3_EN);
-	SSP_PCAP_bit_set(SSP_PCAP_ADJ_BIT_AUX_VREG_VAUX2_EN);
-
-	SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
-				     &ssp_pcap_register_val);
-//      DEBUG("AUX_VREG=0x%x\n", ssp_pcap_register_val);
+	//SSP_PCAP_read_data_from_PCAP(SSP_PCAP_ADJ_AUX_VREG_REGISTER,
+	//DEBUG("AUX_VREG=0x%x\n", ssp_pcap_register_val);
 }
