@@ -29,7 +29,7 @@
  *
  */
 
-#ident "$Id: time.h,v 1.2 2001/10/07 20:16:57 erikm Exp $"
+/* $Id: time.h,v 1.2 2001/10/07 20:16:57 erikm Exp $ */
 
 #ifndef BLOB_TIME_H
 #define BLOB_TIME_H

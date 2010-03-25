@@ -22,7 +22,7 @@
  * 2005-Dec-14 - (Motorola) Added EZX parameter
  */
 
-#ident "$Id: linux.c,v 1.8 2002/01/06 15:46:17 erikm Exp $"
+/* $Id: linux.c,v 1.8 2002/01/06 15:46:17 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

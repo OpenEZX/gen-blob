@@ -30,7 +30,7 @@
  *
  */
 
-#ident "$Id: uucodec.h,v 1.1 2001/10/07 15:17:49 erikm Exp $"
+/* $Id: uucodec.h,v 1.1 2001/10/07 15:17:49 erikm Exp $ */
 
 #ifndef BLOB_UUCODEC_H
 #define BLOB_UUCODEC_H

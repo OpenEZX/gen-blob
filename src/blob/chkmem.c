@@ -29,7 +29,7 @@
  *
  */
 
-#ident "$Id: chkmem.c,v 1.6 2001/10/29 11:49:48 seletz Exp $"
+/* $Id: chkmem.c,v 1.6 2001/10/29 11:49:48 seletz Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

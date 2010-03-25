@@ -28,7 +28,7 @@
  *
  */
 
-#ident "$Id: xmodem.h,v 1.1 2002/01/05 20:21:49 erikm Exp $"
+/* $Id: xmodem.h,v 1.1 2002/01/05 20:21:49 erikm Exp $ */
 
 #ifndef BLOB_XMODEM_H
 #define BLOB_XMODEM_H

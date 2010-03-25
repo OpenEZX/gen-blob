@@ -33,7 +33,7 @@
  *
  */
 
-#ident "$Id: flash.c,v 1.11 2002/01/03 16:07:17 erikm Exp $"
+/* $Id: flash.c,v 1.11 2002/01/03 16:07:17 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

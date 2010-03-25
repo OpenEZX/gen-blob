@@ -20,7 +20,7 @@
  *
  */
 
-#ident "$Id: intel32.c,v 1.4 2002/01/03 16:07:18 erikm Exp $"
+/* $Id: intel32.c,v 1.4 2002/01/03 16:07:18 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

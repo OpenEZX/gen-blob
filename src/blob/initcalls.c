@@ -27,7 +27,7 @@
  *
  */
 
-#ident "$Id: initcalls.c,v 1.3 2002/01/03 16:07:17 erikm Exp $"
+/* $Id: initcalls.c,v 1.3 2002/01/03 16:07:17 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

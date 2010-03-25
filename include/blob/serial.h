@@ -31,7 +31,7 @@
  * 2005-Dec_14 - (Motorola) For ezx platform
  */
 
-#ident "$Id: serial.h,v 1.5 2002/01/05 20:14:34 erikm Exp $"
+/* $Id: serial.h,v 1.5 2002/01/05 20:14:34 erikm Exp $ */
 
 #ifndef BLOB_SERIAL_H
 #define BLOB_SERIAL_H

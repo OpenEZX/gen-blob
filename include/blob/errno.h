@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: errno.h,v 1.4 2002/01/02 01:21:41 erikm Exp $"
+/* $Id: errno.h,v 1.4 2002/01/02 01:21:41 erikm Exp $ */
 
 #ifndef BLOB_ERRNO_H
 #define BLOB_ERRNO_H

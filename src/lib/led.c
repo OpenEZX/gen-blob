@@ -34,7 +34,7 @@
  *
  */
 
-#ident "$Id: led.c,v 1.5 2001/10/15 21:27:05 erikm Exp $"
+/* $Id: led.c,v 1.5 2001/10/15 21:27:05 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

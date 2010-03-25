@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: reboot.c,v 1.7 2002/01/06 15:46:17 erikm Exp $"
+/* $Id: reboot.c,v 1.7 2002/01/06 15:46:17 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

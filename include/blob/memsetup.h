@@ -27,7 +27,7 @@
  *     Developer's Manual", April 1999
  */
 
-#ident "$Id: memsetup.h,v 1.4 2001/12/27 18:27:37 erikm Exp $"
+/* $Id: memsetup.h,v 1.4 2001/12/27 18:27:37 erikm Exp $ */
 
 #ifndef BLOB_MEMSETUP_H
 #define BLOB_MEMSETUP_H

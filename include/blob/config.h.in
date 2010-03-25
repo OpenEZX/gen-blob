@@ -38,7 +38,7 @@
  *
  */
 
-#ident "$Id: acconfig.h,v 1.12 2002/01/07 14:58:16 erikm Exp $"
+/* $Id: acconfig.h,v 1.12 2002/01/07 14:58:16 erikm Exp $ */
 
 #ifndef BLOB_CONFIG_H
 #define BLOB_CONFIG_H

@@ -23,7 +23,7 @@
  *
  */
 
-#ident "$Id: md5support.h,v 1.1 2002/01/06 18:59:40 erikm Exp $"
+/* $Id: md5support.h,v 1.1 2002/01/06 18:59:40 erikm Exp $ */
 
 #ifndef BLOB_MD5SUPPORT_H
 #define BLOB_MD5SUPPORT_H

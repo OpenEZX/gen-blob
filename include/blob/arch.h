@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: arch.h,v 1.4 2001/12/27 18:27:37 erikm Exp $"
+/* $Id: arch.h,v 1.4 2001/12/27 18:27:37 erikm Exp $ */
 
 #ifndef BLOB_ARCH_H
 #define BLOB_ARCH_H

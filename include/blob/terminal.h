@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: terminal.h,v 1.2 2001/10/07 22:36:11 erikm Exp $"
+/* $Id: terminal.h,v 1.2 2001/10/07 22:36:11 erikm Exp $ */
 
 #ifndef BLOB_TERMINAL_H
 #define BLOB_TERMINAL_H

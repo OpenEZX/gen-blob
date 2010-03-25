@@ -24,7 +24,7 @@
  *
  */
 
-#ident "$Id: command_hist.h,v 1.1 2001/10/07 23:32:05 erikm Exp $"
+/* $Id: command_hist.h,v 1.1 2001/10/07 23:32:05 erikm Exp $ */
 
 #ifndef BLOB_COMMAND_HIST_H
 #define BLOB_COMMAND_HIST_H

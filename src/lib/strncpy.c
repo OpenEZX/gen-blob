@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: strncpy.c,v 1.2 2002/01/06 17:04:36 erikm Exp $"
+/* $Id: strncpy.c,v 1.2 2002/01/06 17:04:36 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

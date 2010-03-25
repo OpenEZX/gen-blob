@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: serial-pxa.c,v 1.2 2002/01/03 16:07:18 ytang5 Exp $"
+/* $Id: serial-pxa.c,v 1.2 2002/01/03 16:07:18 ytang5 Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

@@ -29,7 +29,7 @@
  *
  */
 
-#ident "$Id: flash.h,v 1.9 2001/12/31 00:28:53 erikm Exp $"
+/* $Id: flash.h,v 1.9 2001/12/31 00:28:53 erikm Exp $ */
 
 #ifndef BLOB_FLASH_H
 #define BLOB_FLASH_H

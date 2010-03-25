@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: sa1111.h,v 1.4 2002/01/07 17:54:14 seletz Exp $"
+/* $Id: sa1111.h,v 1.4 2002/01/07 17:54:14 seletz Exp $ */
 
 #ifndef BLOB_SA1111_H
 #define BLOB_SA1111_H

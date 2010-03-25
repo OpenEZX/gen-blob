@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: commands.c,v 1.2 2001/10/07 22:36:11 erikm Exp $"
+/* $Id: commands.c,v 1.2 2001/10/07 22:36:11 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

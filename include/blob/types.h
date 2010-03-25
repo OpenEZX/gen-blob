@@ -29,7 +29,7 @@
  *
  */
 
-#ident "$Id: types.h,v 1.1.1.1 2002/07/17 00:32:33 cvs Exp $"
+/* $Id: types.h,v 1.1.1.1 2002/07/17 00:32:33 cvs Exp $ */
 
 #ifndef BLOB_TYPES_H
 #define BLOB_TYPES_H

@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: icache.h,v 1.1 2001/10/07 20:16:57 erikm Exp $"
+/* $Id: icache.h,v 1.1 2001/10/07 20:16:57 erikm Exp $ */
 
 #ifndef BLOB_ICACHE_H
 #define BLOB_ICACHE_H

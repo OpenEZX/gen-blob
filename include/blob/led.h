@@ -19,7 +19,7 @@
  *
  */
 
-#ident "$Id: led.h,v 1.3 2001/10/15 21:27:05 erikm Exp $"
+/* $Id: led.h,v 1.3 2001/10/15 21:27:05 erikm Exp $ */
 
 #ifndef BLOB_LED_H
 #define BLOB_LED_H

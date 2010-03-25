@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: partition.h,v 1.2 2001/12/26 23:38:36 erikm Exp $"
+/* $Id: partition.h,v 1.2 2001/12/26 23:38:36 erikm Exp $ */
 
 #ifndef BLOB_PARTITION_H
 #define BLOB_PARTITION_H

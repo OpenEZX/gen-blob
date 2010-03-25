@@ -19,7 +19,7 @@
  *
  */
 
-#ident "$Id: linux.h,v 1.4 2001/12/27 18:27:37 erikm Exp $"
+/* $Id: linux.h,v 1.4 2001/12/27 18:27:37 erikm Exp $ */
 
 #ifndef BLOB_LINUX_H
 #define BLOB_LINUX_H

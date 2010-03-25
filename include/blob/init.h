@@ -19,7 +19,7 @@
  *
  */
 
-#ident "$Id: init.h,v 1.3 2002/01/03 16:07:17 erikm Exp $"
+/* $Id: init.h,v 1.3 2002/01/03 16:07:17 erikm Exp $ */
 
 #ifndef BLOB_INIT_H
 #define BLOB_INIT_H

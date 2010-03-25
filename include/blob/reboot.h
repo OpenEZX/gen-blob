@@ -21,7 +21,7 @@
  *
  */
 
-#ident "$Id: reboot.h,v 1.1 2001/10/07 22:36:11 erikm Exp $"
+/* $Id: reboot.h,v 1.1 2001/10/07 22:36:11 erikm Exp $ */
 
 #ifndef BLOB_REBOOT_H
 #define BLOB_REBOOT_H

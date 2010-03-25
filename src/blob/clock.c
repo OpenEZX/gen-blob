@@ -29,7 +29,7 @@
  *
  */
 
-#ident "$Id: clock.c,v 1.3 2001/10/07 23:01:08 erikm Exp $"
+/* $Id: clock.c,v 1.3 2001/10/07 23:01:08 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

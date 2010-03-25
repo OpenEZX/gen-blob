@@ -33,7 +33,7 @@
  *
  */
 
-#ident "$Id: serial.c,v 1.7 2002/01/05 20:14:34 erikm Exp $"
+/* $Id: serial.c,v 1.7 2002/01/05 20:14:34 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

@@ -29,7 +29,7 @@
  *
  */
 
-#ident "$Id: param_block.h,v 1.2 2001/10/07 15:27:35 erikm Exp $"
+/* $Id: param_block.h,v 1.2 2001/10/07 15:27:35 erikm Exp $ */
 
 
 #ifndef BLOB_PARAM_BLOCK_H

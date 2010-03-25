@@ -25,7 +25,7 @@
  * sources, file drivers/mtd/bootldr.c.
  */
 
-#ident "$Id: bootldrpart.c,v 1.2 2001/12/26 23:38:36 erikm Exp $"
+/* $Id: bootldrpart.c,v 1.2 2001/12/26 23:38:36 erikm Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>

@@ -38,7 +38,7 @@
  *
  */
 
-#ident "$Id: main.c,v 1.23 2002/01/07 14:48:25 seletz Exp $"
+/* $Id: main.c,v 1.23 2002/01/07 14:48:25 seletz Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include <blob/config.h>
