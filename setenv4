@@ -1,0 +1,4 @@
+export CC=arm-oe-linux-gnueabi-gcc
+export AR=arm-oe-linux-gnueabi-ar
+export OBJCOPY=arm-oe-linux-gnueabi-objcopy
+export RANLIB=arm-oe-linux-gnueabi-ranlib
