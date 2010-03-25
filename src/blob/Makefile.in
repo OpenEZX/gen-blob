@@ -587,10 +587,21 @@ blob-a780: blob
 blob-a1200: blob
 	dd if=blob of=$@ bs=1k seek=2 conv=sync
 
-blob-gen2-kernel: blob blob-a1200 zImage boot_from_flash_magic
+# Assemble a kernel for gen2 to run from flash
+needed_kernel_files := zImage boot_from_flash_magic
+kernel_files:= $(wildcard $(needed_kernel_files))
+
+ifeq ($(kernel_files), $(needed_kernel_files))
+blob-gen2-kernel: blob blob-a1200 $(needed_kernel_files)
 	dd if=blob-a1200 of=tmp.img conv=sync
 	dd if=boot_from_flash_magic of=tmp.img bs=1 seek=131072 conv=sync
 	cat tmp.img zImage >$@ 
+else
+blob-gen2-kernel: blob blob-a1200
+	$(warning Some file are missing to execute $@: $(filter-out $(kernel_files), $(needed_kernel_files)))
+endif
+
+
 
 blob-chain: blob-start-chain blob-rest
 	rm -f $@
