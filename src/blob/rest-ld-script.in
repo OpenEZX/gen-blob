@@ -89,7 +89,7 @@ SECTIONS
 
 	/* the BSS section should *always* be the last section */
 	. = ALIGN(4);
-	.bss : {
+	.bss(NOLOAD) : {
 		__bss_start = .;
 		/* first the real BSS data */
 		*(.bss) 
