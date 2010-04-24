@@ -147,7 +147,7 @@ int boot_menu(menu_t * menu)
 		if (key == 0x14 || key == 0x21 || key == 0x23)
 			break;
 		/* up */
-		else if (key == 0x04 || key == 0x32 || key == 0x00 || key == 31) {
+		else if (key == 0x04 || key == 0x32 || key == 0x00 || key == 0x31) {
 			if (menu->curr_entry == 0)
 				menu->curr_entry = menu->num - 1;
 			else
