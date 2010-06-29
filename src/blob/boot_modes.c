@@ -153,7 +153,7 @@ int boot_menu(menu_t * menu)
 			else
 				menu->curr_entry--;
 			show_menu(menu);
-			/* down */
+		/* down */
 		} else if (key == 0x44 || key == 0x11 || key == 0x10) {
 			menu->curr_entry++;
 			if (menu->curr_entry == menu->num)
