@@ -116,7 +116,9 @@ static u8 separator_clear = 0;	/* if the separator has been processed */
 static u8 BIN_cmd_flag = 0;
 static u16 BIN_bytes_to_read = 0;	/* number of bytes to read in BIN cmd */
 
-static struct mybuf in = { "", 0 }, out1 = { "", 0 }, out2 = { "", 0 };
+static struct mybuf in   __attribute__((aligned(4))) = {"", 0 };
+static struct mybuf out1 __attribute__((aligned(4))) = {"", 0 };
+static struct mybuf out2 __attribute__((aligned(4))) = {"", 0 };
 
 /*==============================================================================
 GLOBAL VARIABLES
